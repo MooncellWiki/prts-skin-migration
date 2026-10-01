@@ -852,6 +852,38 @@ async def step_d_class(c: Ctx) -> None:
         ),
         "文字色改用语义变量（带暗色值）",
     )
+    await c.edit(
+        "微件:SectionTabs.css",
+        chain(
+            # 解析器会把前几个按钮包进 <p>、最后一个留在外面，浮动因此错位；
+            # 改成 flex 并让 <p> 不生成盒子，按钮就都是同一行的弹性项
+            sub(
+                ".section_tab {\n  overflow: hidden;\n}",
+                ".section_tab {\n"
+                "  display: flex;\n"
+                "  flex-wrap: wrap;\n"
+                "  overflow: hidden;\n"
+                "}\n\n"
+                ".section_tab > p {\n"
+                "  display: contents;\n"
+                "}",
+            ),
+            sub(
+                "  font-weight: bold;\n  color: #000;",
+                "  font-weight: bold;\n  color: var(--prts-page-text, #000);",
+            ),
+            sub(
+                "  background-color: #fff;\n"
+                "  border:4px solid #00AEF6;\n"
+                "  color: #000;",
+                "  background-color: var(--prts-page-card-bg, #fff);\n"
+                "  border:4px solid #00AEF6;\n"
+                "  color: var(--prts-page-text, #000);",
+            ),
+        ),
+        "标签文字色、选中标签底色改用语义变量（带暗色值）；"
+        "标签栏改 flex，修按钮上下错位",
+    )
 
 
 PARSER_OUTPUT_OPEN = (

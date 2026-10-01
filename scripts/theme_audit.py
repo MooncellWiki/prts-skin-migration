@@ -160,6 +160,58 @@ _SWITCH = """
 }
 """
 
+# --expand：展开 AKCollapse（微件脚本 hide()，直接改 display）和 mw-collapsible，
+# 折叠里的内容默认量不到，集成战略这类长页大半内容都在折叠里
+_EXPAND = """
+() => {
+  for (const el of document.querySelectorAll('.AKCollapse, .AKCollapse-content')) {
+    el.style.display = 'block';
+  }
+  if (window.jQuery) {
+    jQuery('.mw-collapsible.mw-collapsed').each(function () {
+      const api = jQuery(this).data('mw-collapsible');
+      if (api) api.expand();
+    });
+  }
+}
+"""
+
+
+# --preview：正文换成 parse API 渲染的改后版本（theme_apply --dump 的产物），
+# 不用先写进站点。换完重新触发 wikipage.content，折叠表格 / 标签页照常初始化；
+# 微件里的 <script> 不会执行
+_INJECT = """
+(html) => {
+  const target = document.querySelector('.mw-parser-output');
+  const holder = document.createElement('div');
+  holder.innerHTML = html;
+  target.innerHTML = (holder.querySelector('.mw-parser-output') || holder).innerHTML;
+  if (window.mw && window.jQuery) mw.hook('wikipage.content').fire(jQuery(target));
+}
+"""
+
+
+async def _preview_html(base: str, title: str, text: str) -> str:
+    import httpx
+
+    async with httpx.AsyncClient(timeout=180) as client:
+        resp = await client.post(
+            f"{base}/api.php",
+            data={
+                "action": "parse",
+                "title": title,
+                "text": text,
+                "contentmodel": "wikitext",
+                "prop": "text",
+                "disablelimitreport": 1,
+                "formatversion": 2,
+                "format": "json",
+            },
+            headers={"User-Agent": "prts-skin-migration theme_audit"},
+        )
+        resp.raise_for_status()
+        return resp.json()["parse"]["text"]
+
 
 async def run(args: argparse.Namespace) -> None:
     from playwright.async_api import async_playwright
@@ -200,6 +252,15 @@ async def run(args: argparse.Namespace) -> None:
                 title = queue.get_nowait()
                 record: dict[str, Any] = {"page": title, "modes": {}}
                 try:
+                    preview = None
+                    if args.preview:
+                        dumped = Path(args.preview) / (
+                            title.replace("/", "__") + ".wiki"
+                        )
+                        if dumped.exists():
+                            text = dumped.read_text(encoding="utf-8")
+                            preview = await _preview_html(args.base, title, text)
+                            record["preview"] = True
                     url = f"{args.base}/w/{quote(title.replace(' ', '_'))}"
                     audit = "(threshold) => {%s\nreturn contrastAudit({threshold});}"
                     audit %= audit_src
@@ -214,6 +275,14 @@ async def run(args: argparse.Namespace) -> None:
                             timeout=args.timeout * 1000,
                         )
                         await page.wait_for_timeout(800)  # 微件 / 懒加载脚本收尾
+                        if preview is not None:
+                            await page.evaluate(_INJECT, preview)
+                            await page.wait_for_timeout(1500)
+                        if args.css:  # 站点级样式（Common.css 等）的改动
+                            await page.add_style_tag(path=args.css)
+                        if args.expand:
+                            await page.evaluate(_EXPAND)
+                            await page.wait_for_timeout(500)
                         for mode in modes:
                             scheme = "light" if mode == "day" else "dark"
                             await page.emulate_media(color_scheme=scheme)
@@ -476,6 +545,13 @@ def main() -> None:
     p_run.add_argument(
         "--bust", action="store_true", help="URL 加随机参数绕过 CDN（线上复测用）"
     )
+    p_run.add_argument(
+        "--expand", action="store_true", help="先展开 AKCollapse / mw-collapsible 再量"
+    )
+    p_run.add_argument(
+        "--preview", help="目录：其中有 <标题>.wiki 的页面，正文换成它的渲染结果再量"
+    )
+    p_run.add_argument("--css", help="渲染后追加这份样式表再量")
     p_run.add_argument("pages", nargs="*")
 
     p_report = sub.add_parser("report")

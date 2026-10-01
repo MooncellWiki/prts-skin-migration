@@ -67,12 +67,18 @@ class Ctx:
     """
 
     def __init__(
-        self, wiki: Wiki, live: Wiki | None, dry_run: bool, show_diff: bool
+        self,
+        wiki: Wiki,
+        live: Wiki | None,
+        dry_run: bool,
+        show_diff: bool,
+        dump: Path | None = None,
     ) -> None:
         self.wiki = wiki
         self.live = live
         self.dry_run = dry_run
         self.show_diff = show_diff
+        self.dump = dump
         self.step = ""
         self.plan: dict[str, list[PlannedEdit]] = {}
         self.written: list[str] = []
@@ -119,6 +125,11 @@ class Ctx:
         if new.rstrip() == old.rstrip():  # MediaWiki 保存时会去掉结尾空白
             print(f"  = {title}: 已是目标状态")
             return
+        if self.dump is not None:
+            self.dump.mkdir(parents=True, exist_ok=True)
+            (self.dump / (title.replace("/", "__") + ".wiki")).write_text(
+                new, encoding="utf-8"
+            )
         if self.show_diff:
             # 只看本次改动：底稿（--from-live 时是线上正文）→ 新正文
             diff = difflib.unified_diff(
@@ -1102,6 +1113,9 @@ async def main() -> None:
     parser.add_argument("--from-live", action="store_true")
     parser.add_argument("--show-diff", action="store_true")
     parser.add_argument(
+        "--dump", type=Path, help="改后的正文写到这个目录（给 theme_audit --preview）"
+    )
+    parser.add_argument(
         "--only", action="append", choices=list(STEPS), help="只跑指定步骤，可重复"
     )
     args = parser.parse_args()
@@ -1118,7 +1132,7 @@ async def main() -> None:
     ) as wiki:
         if not args.dry_run:
             await wiki.login(*get_settings().require_credentials())
-        ctx = Ctx(wiki, live, args.dry_run, args.show_diff or args.dry_run)
+        ctx = Ctx(wiki, live, args.dry_run, args.show_diff or args.dry_run, args.dump)
         for name, register in STEPS.items():  # 全部登记，按 --only 挑页面执行
             ctx.step = name
             await register(ctx)

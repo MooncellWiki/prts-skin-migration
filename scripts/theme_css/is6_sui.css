@@ -1,0 +1,13 @@
+/* 页内手写的暗色规则按 style 原文匹配。折叠表格展开 / 收起时脚本改了行的 display，
+   浏览器把整段 style 重新序列化（background: rgb(217, 255, 243) …），原文匹配随之失效，
+   默认折叠的表格一打开就是浅底。补上序列化后的写法，色值沿用手写规则 */
+html.skin-theme-clientpref-night .mw-parser-output [style*="background: rgb(217, 255, 243)"],
+html.skin-theme-clientpref-night .mw-parser-output [style*="background: rgb(189, 254, 233)"],
+html.skin-theme-clientpref-night .mw-parser-output [style*="background: rgb(253, 247, 238)"] {
+  background: #18352f !important;
+  color: #e9fbf7 !important;
+}
+html.skin-theme-clientpref-night .mw-parser-output [style*="background-color: rgb(249, 225, 121)"] {
+  background-color: #5f4700 !important;
+  color: #fff3cd !important;
+}

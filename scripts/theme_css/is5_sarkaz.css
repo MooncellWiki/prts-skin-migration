@@ -1,0 +1,5 @@
+/* 折叠按钮白字：white-ct 的定义只写在 巫仪档案库 等子页面里，本页的表格用了这个类却没加载到，
+   深色表头上是皮肤链接色（浅色 1.3:1） */
+.white-ct .mw-collapsible-text {
+  color: #fff !important;
+}

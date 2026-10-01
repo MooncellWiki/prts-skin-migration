@@ -25,19 +25,26 @@ html.skin-theme-clientpref-night body {
 /* 深色折叠表：Vector 的表头文字靠 var(--color-base)，皮肤 tables.css 的
    .wikitable > * > tr > th { color }（0,1,3）压过了上方 .mw-collapsible-dark th（0,1,1），
    表头变成深底深字。这里补足特指度。折叠按钮走 --color-progressive，上方变量块已设成橙色；
-   表头里的链接同样用这个橙色（Vector 下链接色也是 --color-progressive）。 */
-table.mw-collapsible-dark > * > tr > th {
+   表头里的链接同样用这个橙色（Vector 下链接色也是 --color-progressive）。
+   .mw-collapsible-dark th 的深底对所有后代表头生效，嵌套在里面的表格（集成战略收藏品分组等）一并处理 */
+table.mw-collapsible-dark > * > tr > th,
+table.mw-collapsible-dark .wikitable > * > tr > th {
   color: #fff;
 }
 table.mw-collapsible-dark > * > tr > th a,
-table.mw-collapsible-dark > * > tr > th a:visited {
+table.mw-collapsible-dark > * > tr > th a:visited,
+table.mw-collapsible-dark .wikitable > * > tr > th a,
+table.mw-collapsible-dark .wikitable > * > tr > th a:visited {
   color: #ff8f00;
 }
-table.mw-collapsible-dark > * > tr > th a:hover {
+table.mw-collapsible-dark > * > tr > th a:hover,
+table.mw-collapsible-dark .wikitable > * > tr > th a:hover {
   color: #ffa333;
 }
 table.mw-collapsible-dark > * > tr > th .mw-collapsible-toggle-default::before,
-table.mw-collapsible-dark > * > tr > th .mw-collapsible-toggle-default::after {
+table.mw-collapsible-dark > * > tr > th .mw-collapsible-toggle-default::after,
+table.mw-collapsible-dark .wikitable > * > tr > th .mw-collapsible-toggle-default::before,
+table.mw-collapsible-dark .wikitable > * > tr > th .mw-collapsible-toggle-default::after {
   color: #c8ccd1;
 }
 

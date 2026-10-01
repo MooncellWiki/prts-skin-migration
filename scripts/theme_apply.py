@@ -37,6 +37,7 @@ from wikibot.theme_os import (
     strip_generated,
     style_spans,
 )
+from wikibot.theme_page import derive, mark_dark_tables
 from wikibot.wiki import Wiki
 
 DOC = "prts-skin-migration/docs/主题适配盘点.md"
@@ -1096,6 +1097,140 @@ async def step_enemy_level(c: Ctx) -> None:
             )
         ),
         "变更高亮格悬停时保持深底",
+    )
+
+
+# --------------------------------------------------------------------------- 条目页
+
+
+@dataclass(frozen=True)
+class PageDark:
+    """条目页暗色区块（§13.12）的参数。"""
+
+    # 子页面会被主条目嵌入：区块放页尾的 <noinclude> 里，嵌入时不重复。
+    # 主条目放进页内第一段 {{#widget:style}}，不多出空段落
+    sub: bool = True
+    skip: frozenset[str] = frozenset()  # 页内已经手写过暗色规则的色值
+    extra: str | None = None  # 追加的手写片段（scripts/theme_css/）
+
+
+IS_ROOTS = ("岁的界园志异", "沉沦者的黑流树海", "萨卡兹的无终奇语")
+IS_PAGE_OPTS = {
+    "岁的界园志异": PageDark(
+        sub=False,
+        # 页内手写过这几种底色的暗色规则（#18352f 一系），沿用；序列化写法见 is6_sui.css
+        skip=frozenset({"#d9fff3", "#bdfee9", "#fdf7ee", "#ffffff", "#f9e179"}),
+        extra="is6_sui.css",
+    ),
+    "沉沦者的黑流树海": PageDark(sub=False),
+    "萨卡兹的无终奇语": PageDark(sub=False, extra="is5_sarkaz.css"),
+}
+# 只被嵌入、不单独阅读的片段（图标、带参数的预览）：样式由嵌入它们的页面推导
+IS_EMBED_ONLY = {
+    "岁的界园志异/通宝图标",
+    "岁的界园志异/钱盒预览",
+    "沉沦者的黑流树海/零件图标",
+    "萨卡兹的无终奇语/思绪图标",
+}
+PAGE_DARK_NOTE = "主题适配：页内写死的浅色底 / 深色字的暗色值，由源码推导，见 " + DOC
+
+# 界园页手写的这条把所有 color:#132229 / black 的元素改成白字，
+# 浅色渐变格子（没被手写的底色规则换掉）和徽章上因此成了浅底白字
+_SUI_TEXT_RULE = re.compile(
+    r"\n(?:  html\.skin-theme-clientpref-(?:night|os) body\.page-岁的界园志异 "
+    r'\.mw-parser-output \[style\*="color: ?(?:#132229|black)"\][,]? ?\{?\n?)+'
+    r"    color: #f8f9fa !important;\n  \}"
+)
+
+
+def drop_sui_text_rule(text: str) -> str | None:
+    new, count = _SUI_TEXT_RULE.subn("", text)
+    if count not in (0, 2):
+        raise SystemExit(f"界园页的黑字规则应有 night / os 各 1 条，实际 {count} 条")
+    return new if count else None
+
+
+def place_page_block(text: str, css: str, sub: bool) -> str:
+    """把 ``page-dark`` 区块放进条目：已有就替换，否则按 ``sub`` 选位置。"""
+    name = "page-dark"
+    block = f"/* theme:begin {name} {PAGE_DARK_NOTE} */\n{css}\n/* theme:end {name} */"
+    pattern = _block_re(name)
+    if pattern.search(text):
+        return pattern.sub(lambda _: block, text, count=1)
+    spans = [s for s in style_spans(text) if not text[: s[0]].rstrip().endswith(">")]
+    if sub or not spans:
+        return text.rstrip("\n") + (
+            f"\n<noinclude>{{{{#widget:style|style=\n{block}\n}}}}</noinclude>\n"
+        )
+    start, end = spans[0]
+    css_now = strip_generated(text[start:end])
+    return text[:start] + css_now.rstrip() + "\n\n" + block + "\n" + text[end:]
+
+
+def page_dark(opts: PageDark, embedded: list[str]) -> Transform:
+    def run(text: str) -> str | None:
+        current = _block_re("page-dark").sub("", text)
+        css = derive([current, *embedded], skip=opts.skip).css()
+        if opts.extra:
+            css = snippet(opts.extra) + "\n" + css
+        if not css.strip():
+            return None
+        return place_page_block(text, css, opts.sub)
+
+    return run
+
+
+async def _embedded_articles(wiki: Wiki, title: str) -> list[str]:
+    """页面嵌入的主名字空间页面（子页面、其他条目）的源码。"""
+    data = await wiki.get(
+        action="query", prop="templates", titles=title, tlnamespace=0, tllimit="max"
+    )
+    pages = data["query"]["pages"]  # formatversion=2：列表
+    titles = [t["title"] for p in pages for t in p.get("templates", [])]
+    return [(await wiki.read(t)).content for t in titles]
+
+
+@step("is_pages")
+async def step_is_pages(c: Ctx) -> None:
+    """§13.12：集成战略三个主题的条目与子页面。"""
+    source = c.live or c.wiki
+    for root in IS_ROOTS:
+        titles = [root]
+        async for ref in source.iter_allpages(namespace=0, prefix=root + "/"):
+            if ref.title not in IS_EMBED_ONLY:
+                titles.append(ref.title)
+        for title in titles:
+            opts = IS_PAGE_OPTS.get(title, PageDark())
+            transforms: list[Transform] = [mark_dark_tables]
+            if title == "岁的界园志异":
+                transforms.append(drop_sui_text_rule)
+            transforms.append(page_dark(opts, await _embedded_articles(source, title)))
+            await c.edit(
+                title,
+                chain(*transforms),
+                "深色底表格挂 prts-table-dark；页内浅色底 / 深色字补暗色值",
+            )
+    # 岁的界园志异/炎国干员速查 → 集成战略/炎国干员速查：表格由微件脚本生成，写死白底
+    await c.edit(
+        "微件:SuiYanOperatorQuickRef",
+        chain(
+            sub(
+                "text-align:center;background:#fff;')",
+                "text-align:center;background:var(--prts-page-card-bg, #fff);')",
+                expected=2,
+            ),
+            sub(
+                "'background:#eaecf0;color:#202122;",
+                "'background:var(--prts-muted-section-bg, #eaecf0);"
+                "color:var(--prts-page-text, #202122);",
+            ),
+            sub(
+                "'background:#f8f9fa;color:#202122;",
+                "'background:var(--prts-page-subtle-bg, #f8f9fa);"
+                "color:var(--prts-page-text, #202122);",
+            ),
+        ),
+        "表格底色 / 表头改用语义变量（浅色值不变），暗色下不再是白底",
     )
 
 

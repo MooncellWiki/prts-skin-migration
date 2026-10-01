@@ -1,0 +1,18 @@
+/* 评级单元格悬停：皮肤的 .wikitable 行悬停底色特异性更高，会盖掉蓝底只剩白字 */
+.wikitable > tbody > tr > td.statusRanked:hover {
+  background: #0098dc;
+  color: #fff;
+}
+/* 评级弹窗：底色 / 文字 / 边框跟随主题（原先写死白底，暗色下浅字看不清），并盖过皮肤顶栏 */
+.EnemyRankModal {
+  z-index: var(--ak-z-modal, 2);
+}
+.ERankModal-content {
+  background-color: var(--prts-page-card-bg, #fefefe);
+  color: var(--prts-page-text, #202122);
+  border-color: var(--prts-page-border, #888);
+}
+.ERankModal-close:hover,
+.ERankModal-close:focus {
+  color: var(--prts-page-text, #000);
+}

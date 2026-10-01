@@ -1061,6 +1061,33 @@ async def step_cbox2(c: Ctx) -> None:
     )
 
 
+@step("enemy_level")
+async def step_enemy_level(c: Ctx) -> None:
+    """敌人信息等级表：皮肤的行悬停底色盖掉了深底只剩白字；评级弹窗写死白底。"""
+    await c.edit(
+        "微件:EnemyDataController",
+        edit_style_tag(
+            lambda css: upsert_block(css, "enemy-rank", snippet("enemy_rank.css"), NOTE)
+        ),
+        "评级单元格悬停蓝底不再被皮肤行悬停盖掉；评级弹窗底色 / 文字跟随主题",
+    )
+    await c.edit(
+        "模板:敌人信息/levelcontent/styles.css",
+        with_block("enemy-level-diff", "enemy_level_diff.css", NOTE),
+        "变更高亮格悬停时保持深底",
+    )
+    # 旧模板不加载上面那张样式表，.diff_block 写在自己的 #widget:style 里
+    await c.edit(
+        "模板:敌人信息/level",
+        edit_widget_style(
+            lambda css: upsert_block(
+                css, "enemy-level-diff", snippet("enemy_level_diff.css"), NOTE
+            )
+        ),
+        "变更高亮格悬停时保持深底",
+    )
+
+
 @step("os_branch")
 async def step_os_branch(c: Ctx) -> None:
     """§3：由 night 规则机械生成 os 分支。"""

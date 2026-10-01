@@ -1,0 +1,4 @@
+/* 变更高亮格：皮肤的 .wikitable 行悬停底色会盖掉深底，浅色下只剩白字 */
+.wikitable > tbody > tr:hover > td.diff_block {
+  background: #2f2f2f;
+}

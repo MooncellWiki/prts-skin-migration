@@ -1,0 +1,29 @@
+/* 分组列逐层 nowrap，列表项（上面的 .hlist li）与链接（站点 CSS 的 .nowraplinks a）也不换行，
+   嵌套几层的 navbox 最小宽度到 400–775px，手机 / 平板上把整页撑宽。桌面（≥1120）不受影响。 */
+@media (max-width: 1119px) {
+  /* 列表项改成不可拆的 inline-block：放得下时照旧整项换行，只有单项比一行还宽才在项内折行 */
+  .navbox .hlist li {
+    display: inline-block;
+    white-space: normal;
+  }
+  .navbox .hlist li a,
+  .navbox .hlist li .selflink {
+    white-space: normal;
+  }
+  /* 皮肤的分隔符 " · " 写在 li::after 里，inline-block 会吃掉它末尾的空格；pre 保住项间距 */
+  .navbox .hlist li:not(:last-child)::after {
+    white-space: pre;
+  }
+}
+@media (max-width: 639px) {
+  /* 分组名只在空格 / 标点处折行（keep-all：汉字之间不断开），内边距减半 */
+  th.navbox-group,
+  th.navbox-group a {
+    white-space: normal;
+    word-break: keep-all;
+  }
+  th.navbox-group {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+}

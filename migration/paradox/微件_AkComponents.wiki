@@ -1,0 +1,25 @@
+<noinclude>用法：模板最外层元素加 <code>ak-host</code> 类，模板里写一次 <code><nowiki>{{#widget:AkComponents}}</nowiki></code>。
+
+模板直接输出设计系统组件（<code>.ak-archive</code> 等）的 HTML 时用。Arknights 皮肤本来就全套加载组件样式，什么都不做；
+其他皮肤（Vector / Vector 2022 / Minerva …）用 JS 加载皮肤自己的 <code>skins.arknights.components</code> + <code>skins.arknights.fonts</code>，
+加载完给页面里的 <code>.ak-host</code> 加 <code>ak-scope</code> 当作用域根。做法同新首页（<code>微件:Mpstyle/newskin</code>）。
+
+* 样式到位前 <code>.ak-host</code> 先 <code>visibility: hidden</code>，免得闪一下没样式的版面；脚本没跑起来 3 秒后照常显示，无 JS 的访客不藏。
+* 旧 Vector / Minerva 的 <code>&lt;html&gt;</code> 不带 <code>skin-theme-clientpref-*</code>，令牌会跟随系统明暗，系统暗色下组件会变成亮页面里的一块黑，所以钉成亮色（<code>&lt;html data-theme="light"&gt;</code>）。
+* 一页里写多次只输出一份。
+
+见 prts-skin-migration/migration/paradox/README.md。
+</noinclude><includeonly><!--{assign var=akComponentsCount value=($akComponentsCount|default:0)+1 scope="global"}--><!--{if ($akComponentsCount)<2}--><style>
+.client-js body:not(.skin-arknights) .ak-host:not(.ak-scope){visibility:hidden;animation:ak-host-reveal 0s 3s forwards}
+@keyframes ak-host-reveal{to{visibility:visible}}
+</style><script>
+(function () {
+  if (document.body.classList.contains('skin-arknights')) { return; }
+  var root = document.documentElement;
+  if (!/(^|\s)skin-theme-clientpref-/.test(root.className)) { root.setAttribute('data-theme', 'light'); }
+  /* RLQ 的数组形式：mediawiki.base 就绪后 using 这些模块再回调（函数形式那时还没有 mw.loader.using） */
+  (window.RLQ = window.RLQ || []).push([['skins.arknights.components', 'skins.arknights.fonts'], function () {
+    $(function () { $('.ak-host').addClass('ak-scope'); });
+  }]);
+})();
+</script><!--{/if}--></includeonly>

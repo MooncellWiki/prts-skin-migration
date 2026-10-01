@@ -1,0 +1,11 @@
+<includeonly>{{#widget:AkComponents}}<templatestyles src="悖论模拟/styles.css" /><div class="ak-archive ak-not-prose ak-host prts-paradox">
+<div class="ak-archive__head"><span class="ak-archive__kicker">Paradox · 悖论模拟</span><span class="ak-archive__title">{{{name}}}</span><span class="ak-archive__req"><span class="ak-overline">解锁方式</span><span class="ak-elite"><img src="{{filepath:精英_{{{精英化|0}}}.png}}" alt="" />精英{{#switch:{{{精英化|0}}}|0=零|1=一|2=二|#default={{{精英化}}}}} Lv{{{等级|1}}}</span></span></div>
+<div class="ak-archive__body">
+{{#regex:{{#regex:{{{description}}}|/\n(?=<span style="color:[^"]*#000000)/|$0$0|1}}|/<span style="color:[^"]*#000000[^"]*">(.*?)<\/span>/|<b>$1</b>}}
+</div>
+<div class="ak-archive__foot"><span class="ak-stage ak-not-prose" style="padding:6px 12px">[[悖论模拟_{{{name}}}|<span class="ak-stage__code" style="font-size:var(--ak-fs-body)">PARADOX<small>关卡情报</small></span><span><span class="ak-stage__name">{{#if:{{{zoneName|}}}{{{stageName|}}}|{{{zoneName|}}} {{{stageName|}}}|悖论模拟 · {{{name}}}}}</span><span class="ak-stage__meta"><span>前往关卡页 »</span></span></span>]]</span><span class="ak-overline">首次通关奖励</span><span class="ak-item-list">{{#vardefine:i|1}}{{#while:
+|{{#ifeq:{{#var:i}}|1|true|{{#if:{{{报酬内容{{#var:i}}|}}}|true}}}}
+|{{#vardefine:item|{{{报酬内容{{#var:i}}|{{{报酬内容|合成玉}}}}}}}}<span class="ak-item ak-item--sm" data-ak-tip="{{#var:item}}"><img src="{{filepath:道具_带框_{{#var:item}}.png|80}}" alt="{{#var:item}}" /><span class="ak-item__count">{{{报酬数量{{#var:i}}|{{{报酬数量|200}}}}}}</span></span>{{#vardefine:i|{{#expr:{{#var:i}}+1}}}}}}</span></div>
+</div>{{#if:{{NAMESPACE}}||[[分类:拥有悖论模拟的干员]]{{#set:
+|悖论模拟=悖论模拟_{{{name}}}
+}}}}</includeonly><noinclude>{{doc}}</noinclude>

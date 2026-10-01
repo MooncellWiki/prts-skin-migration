@@ -1,41 +1,32 @@
-<noinclude>{{#widget:SkinSwitch}}用法：<code><nowiki>{{#widget:SkinSwitch}}</nowiki></code>
+<noinclude>{{#widget:SkinSwitchLink}}用法：<code><nowiki>{{#widget:SkinSwitchLink}}</nowiki></code>
 
-* 当前不是 Arknights 皮肤：按钮显示「切换到新版皮肤」，点击切到 Arknights。
-* 当前是 Arknights 皮肤：按钮显示「恢复默认皮肤」，点击回到站点默认皮肤。
+* 当前不是 Arknights 皮肤：链接显示「切换到新版皮肤」，点击切到 Arknights。
+* 当前是 Arknights 皮肤：链接显示「恢复默认皮肤」，点击回到站点默认皮肤。
 
 参数（都可省略）：
 * <code>old</code>：从新皮肤点回去时的目标皮肤。留空 = 站点默认皮肤（清掉偏好）；默认皮肤换成 Arknights 之后填 <code>vector</code>。
 * <code>anon</code>：未登录访客怎么切。<code>cookie</code>（默认）= 写 cookie 长期生效，靠 Varnish 和 post-config.php 里的钩子认这个 cookie；<code>useskin</code> = 只给当前页面加 <code>?useskin=</code>，换页即失效。
 * <code>cookie</code>：cookie 名，默认 <code>akskin</code>，要和后端的 <code>$mcSkinCookie</code>、Varnish 一致。
-* <code>new_text</code> / <code>old_text</code>：两种状态下的按钮文字。
+* <code>new_text</code> / <code>old_text</code>：两种状态下的链接文字。
 </noinclude><includeonly><!--{assign var=skinSwitchCount value=($skinSwitchCount|default:0)+1 scope="global"}--><!--{if ($skinSwitchCount)<2}--><style>
+/* 普通链接外观：颜色 / 悬停 / 访问色都不在这里定，交给皮肤自带的 a 规则，自动跟随主题。
+   注意元素不带 href，所以不会进入 :visited，永远是主题的「正常链接色」而不是已访问色。 */
 .skin-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  margin: 0;
-  padding: 0.35em 0.9em;
-  border: 1px solid var(--ak-accent, #0098dc);
-  border-radius: 2px;
-  background: var(--ak-accent, #0098dc);
-  color: var(--ak-accent-fg, #fff);
-  font: inherit;
-  font-weight: 600;
-  line-height: 1.4;
   cursor: pointer;
+  white-space: nowrap;
 }
-.skin-switch:hover { filter: brightness(1.1); }
-.skin-switch:focus-visible { outline: 2px solid var(--ak-focus, #0098dc); outline-offset: 2px; }
-.skin-switch[disabled] { opacity: 0.6; cursor: progress; }
-/* 页面的解析缓存各皮肤共用，按钮文字不能在服务端定，两种都输出、按 body 上的皮肤类二选一 */
+.skin-switch[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: progress;
+  pointer-events: none;
+}
+.skin-switch:focus-visible {
+  outline: 2px solid var(--ak-focus, currentColor);
+  outline-offset: 2px;
+}
+/* 页面的解析缓存各皮肤共用，链接文字不能在服务端定，两种都输出、按 body 上的皮肤类二选一 */
 body.skin-arknights .skin-switch__to-new,
 body:not(.skin-arknights) .skin-switch__to-old { display: none; }
-/* 切回旧皮肤的按钮不抢眼 */
-body.skin-arknights .skin-switch {
-  background: transparent;
-  color: var(--ak-fg, inherit);
-  border-color: var(--ak-border-strong, currentColor);
-}
 </style><script>
 (window.RLQ = window.RLQ || []).push(function () {
   var NEW_SKIN = 'arknights';
@@ -60,18 +51,21 @@ body.skin-arknights .skin-switch {
   function hasCookie(name) {
     return ('; ' + document.cookie).indexOf('; ' + name + '=') !== -1;
   }
+  function isBusy(el) {
+    return el.getAttribute('aria-disabled') === 'true';
+  }
 
-  function switchSkin(btn) {
+  function switchSkin(el) {
     var toNew = mw.config.get('skin') !== NEW_SKIN;
     // 空串 = 站点默认皮肤
-    var target = toNew ? NEW_SKIN : (btn.getAttribute('data-old') || '');
-    var cookie = btn.getAttribute('data-cookie') || 'akskin';
+    var target = toNew ? NEW_SKIN : (el.getAttribute('data-old') || '');
+    var cookie = el.getAttribute('data-cookie') || 'akskin';
     if (!/^[a-z0-9-]*$/.test(target) || !/^[\w-]+$/.test(cookie)) {
       return;
     }
     var fromMobile = cookie + '_m';
     var loggedIn = mw.config.get('wgUserName') !== null;
-    var anonCookie = btn.getAttribute('data-anon') !== 'useskin';
+    var anonCookie = el.getAttribute('data-anon') !== 'useskin';
     var persistent = loggedIn || anonCookie;
 
     var url = new URL(location.href);
@@ -104,7 +98,7 @@ body.skin-arknights .skin-switch {
       }
     }
 
-    btn.disabled = true;
+    el.setAttribute('aria-disabled', 'true');
     mw.notify(
       (toNew ? '正在切换到新版皮肤…' : '正在恢复默认皮肤…') +
         (persistent ? '' : '未登录时只对当前页面生效，登录后切换可以保存。'),
@@ -119,16 +113,33 @@ body.skin-arknights .skin-switch {
       // 值为 null = 恢复成站点默认值
       return new mw.Api().saveOption('skin', target || null);
     }).then(go, function () {
-      btn.disabled = false;
+      el.removeAttribute('aria-disabled');
       mw.notify('皮肤切换失败，请稍后再试，或到「参数设置 → 外观」里手动切换。', { type: 'error', tag: 'skin-switch' });
     });
   }
 
+  function pick(e) {
+    var el = e.target.closest && e.target.closest('.skin-switch');
+    return el && !isBusy(el) ? el : null;
+  }
+
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest && e.target.closest('.skin-switch');
-    if (btn && !btn.disabled) {
-      switchSkin(btn);
+    var el = pick(e);
+    if (el) {
+      switchSkin(el);
+    }
+  });
+
+  // role="link" 的元素不会自己响应键盘，Enter / 空格要手动处理
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+    var el = pick(e);
+    if (el) {
+      e.preventDefault();
+      switchSkin(el);
     }
   });
 });
-</script><!--{/if}--><button type="button" class="skin-switch" data-old="<!--{$old|default:''|escape:'html'}-->" data-anon="<!--{$anon|default:'cookie'|escape:'html'}-->" data-cookie="<!--{$cookie|default:'akskin'|escape:'html'}-->"><span class="skin-switch__to-new"><!--{$new_text|default:'切换到新版皮肤'|escape:'html'}--></span><span class="skin-switch__to-old"><!--{$old_text|default:'恢复默认皮肤'|escape:'html'}--></span></button></includeonly>
+</script><!--{/if}--><a class="skin-switch" role="link" tabindex="0" aria-disabled="false" data-old="<!--{$old|default:''|escape:'html'}-->" data-anon="<!--{$anon|default:'cookie'|escape:'html'}-->" data-cookie="<!--{$cookie|default:'akskin'|escape:'html'}-->"><span class="skin-switch__to-new"><!--{$new_text|default:'切换到新版皮肤'|escape:'html'}--></span><span class="skin-switch__to-old"><!--{$old_text|default:'恢复默认皮肤'|escape:'html'}--></span></a></includeonly>

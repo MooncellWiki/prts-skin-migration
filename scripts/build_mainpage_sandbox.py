@@ -6,9 +6,10 @@
    简写 / ``calc()`` 也不认：设计稿 37 KB 灌进去被拒 122 处、只剩 21 KB，被丢的正是 hero
    局部重映射令牌那套核心手法。所以样式走微件（原始 ``<style>``，无净化器），
    和现网 ``微件:Mpstyle`` 同一条路。
-2. **``<a>`` 不在 wikitext 白名单里**——设计稿把 ``<a class>`` 当整块可点的容器用。
-   转成「带类名的容器 + 里面一条 wikitext 真链接」（``.mp-a``）：链接 ``display: contents``
-   不参与布局，再用 ``::after`` 铺满容器。是真链接，不靠脚本。
+2. **``<a>`` 不在 wikitext 白名单里**，写不出 ``<a class>``——设计稿已经照
+   wikitext 的样子写：整块可点的格子是「带类名的容器（``.mp-a``）+ 里面一条
+   不带类名的 ``<a>``」，这里只把 ``<a>`` 换成 wikitext 真链接。链接怎么铺满容器、
+   为什么不能用 ``display: contents``（拖不出链接），见设计稿 ``.mp-a`` 那段样式。
 3. **内联 ``<svg><use>`` 会被转义**——图标转成 CSS ``mask-image`` 类，
    与皮肤自己的 ``.ak-icon``（OOUI 图标包）同一机制，颜色照样跟 ``currentColor``。
 4. **``<input>`` 会被转义**——设计稿那个「演示：特别开放周」开关只在预览里有，去掉。
@@ -83,9 +84,10 @@ BUTTON_OPEN = re.compile(r"<button\s+([^>]*?)>")
 BUTTON_CLOSE = re.compile(r"</button>")
 TYPE_ATTR = re.compile(r'\s*\btype="[^"]*"')
 NAV_TILE = re.compile(
-    r'<a class="mp-nav__tile"[^>]*><img class="mp-nav__icon" '
+    r'<div class="mp-nav__tile mp-a"><a href="[^"]*"><img class="mp-nav__icon" '
     r'src="assets/mainpage/nav/([a-z]+)\.png"[^>]*>'
-    r'<span class="mp-nav__zh">([^<]*)</span><span class="mp-nav__en">([^<]*)</span></a>'
+    r'<span class="mp-nav__zh">([^<]*)</span><span class="mp-nav__en">([^<]*)</span>'
+    r"</a></div>"
 )
 # wikitext 的 HTML 白名单里没有 <nav>，换成 <div> 保留类名
 NAV_TAG = re.compile(r"<(/?)nav\b")
@@ -103,9 +105,9 @@ DESIGN_NOTE = re.compile(
     r".*?</div></div>",
     re.DOTALL,
 )
-CLASS_ATTR = re.compile(r'\s*\bclass="([^"]*)"')
-BLOCK_DISPLAY = ("flex", "grid", "block", "table", "list-item")
 HREF = re.compile(r'\s*\bhref="([^"]*)"')
+# 链接所在的格子：设计稿里 .mp-a 容器的开标签后面紧跟着 <a>
+CONTAINER = re.compile(r'<(?:div|span)\s[^>]*\bclass="([^"]*)"[^>]*>$')
 TAGS = re.compile(r"<[^>]+>")
 LABEL = re.compile(r'mp-label">([^<]+)<')
 # 行首是这些就不会被 MediaWiki 当成段落；其余的行并到上一行去（见 convert_body）
@@ -314,38 +316,7 @@ def icon_css(design: Path, needed: set[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def block_classes(style: str, design: Path) -> set[str]:
-    """从设计稿 CSS 里挑出「块级」类名。
-
-    MediaWiki 会给连续的行内元素套 <p>，套进网格容器里就把每个格子挤成一行。
-    所以 <a> 的容器该用 <div> 还是 <span>，按设计稿自己声明的 display 判，不靠猜。
-    """
-    # 组件类（.ak-op-card 之类）定义在设计系统的 CSS 包里，不在页面 <style> 中，
-    # 只扫页面会漏判，漏判就会被 MediaWiki 套 <p>，网格塌成一列。
-    sources = [style]
-    css_root = design / "packages/css/src"
-    if not css_root.is_dir():
-        raise SystemExit(f"找不到设计系统的 CSS 包：{css_root}")
-    for folder in ("components", "arknights", "base", "decor"):
-        sources += [
-            f.read_text(encoding="utf-8")
-            for f in sorted((css_root / folder).glob("*.css"))
-        ]
-    sources.append((css_root / "utilities.css").read_text(encoding="utf-8"))
-
-    found: set[str] = set()
-    for rule in re.finditer(r"([^{}]+)\{([^}]*)\}", "\n".join(sources)):
-        decl = re.search(r"\bdisplay\s*:\s*([a-z-]+)", rule.group(2))
-        if not decl or decl.group(1) not in BLOCK_DISPLAY:
-            continue
-        for sel in rule.group(1).split(","):
-            parts = sel.strip().split()
-            if parts:
-                found.update(re.findall(r"\.([a-zA-Z0-9_-]+)", parts[-1]))
-    return found
-
-
-def convert_body(body: str, blocks: set[str]) -> tuple[str, set[str], list[str], int]:
+def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
     """正文 HTML → wikitext 能活下来的形式。"""
     icons: set[str] = set()
 
@@ -372,17 +343,21 @@ def convert_body(body: str, blocks: set[str]) -> tuple[str, set[str], list[str],
     )
     body = BUTTON_CLOSE.sub("</span>", body)
 
-    # wikitext 不放行裸 <a>，而设计稿把 <a class> 当整块可点的容器用。
-    # 类名留在容器上（样式、脚本都按类名找它），里面放一条 wikitext 真链接；
-    # 没有类名的 <a> 就是普通文字链接，直接写成 [[目标|文字]]。
+    # wikitext 不放行裸 <a>：一律换成 [[目标|内容]]。整块可点的格子设计稿已经写成
+    # 「.mp-a 容器 + 不带类名的 <a>」，容器原样留着（样式、脚本都按类名找它）。
     anchors = 0
 
     def swap_anchor(m: re.Match[str]) -> str:
         nonlocal anchors
         anchors += 1
         attrs, inner = m.group(1), m.group(2)
-        cls = CLASS_ATTR.search(attrs)
-        names = cls.group(1).split() if cls else []
+        if HREF.sub("", " " + attrs).strip():
+            raise SystemExit(
+                f"设计稿里的 <a {attrs}> 带了 href 以外的属性，wikitext 写不出来："
+                "类名 / data-* 挂到外面的 .mp-a 容器上"
+            )
+        box = CONTAINER.search(body, 0, m.start())
+        names = box.group(1).split() if box else []
         text = TAGS.sub("", inner).strip()
         if "mp-res" in names:
             label = LABEL.findall(body[: m.start()])
@@ -391,13 +366,7 @@ def convert_body(body: str, blocks: set[str]) -> tuple[str, set[str], list[str],
             target = LINKS[text]
         else:
             raise SystemExit(f"链接「{text}」没有对应的目标页面，请补进 LINKS")
-        link = f"[[{target}|{inner}]]"
-        if not names:
-            return link
-        rest = HREF.sub("", CLASS_ATTR.sub("", " " + attrs)).strip()
-        tag = "div" if set(names) & blocks else "span"
-        rest = f" {rest}" if rest else ""
-        return f'<{tag} class="{" ".join(names)} mp-a"{rest}>{link}</{tag}>'
+        return f"[[{target}|{inner}]]"
 
     body = ANCHOR.sub(swap_anchor, body)
 
@@ -483,29 +452,6 @@ HOST_SCRIPT = """
 })();
 """
 
-# 放在设计稿样式**之前**：:where() 不加特指度，设计稿自己给容器写的 position 照样生效。
-LINK_SHIM = """
-/* ── 整块可点的容器（.mp-a）：wikitext 写不出 <a class>，类名在容器上、里面是一条真链接。
- *    链接 display:contents 不参与布局（子元素直接当容器的子项排），::after 铺满容器接点击；
- *    焦点环画在 ::after 上——display:contents 的元素自己没有盒子 ── */
-:where(.mp-a){position:relative}
-.mp.ak-not-prose .mp-a > a{display:contents;color:inherit;text-decoration:none}
-.mp-a > a::after{content:"";position:absolute;inset:0;z-index:1}
-.mp-a > a:focus-visible::after{outline:2px solid var(--ak-focus);outline-offset:2px}
-/* 贴边、会被 overflow 裁掉的那几种内缩（同设计稿对 .mp-hero__item / .mp-events__item 的处理） */
-.mp-hero__pic > a:focus-visible::after,.mp-hero__item > a:focus-visible::after,
-.mp-events__item > a:focus-visible::after{outline-offset:-2px}
-"""
-
-# 设计稿脚本里要跟着 wikitext 结构改的地方：(原文, 改后, 说明)。对不上就报错，不静默跳过。
-SCRIPT_PATCHES = [
-    (
-        "var a = li.firstElementChild;",
-        "var a = li.querySelector('a') || li.firstElementChild;",
-        "aria-current 标在链接上：链接现在在 .mp-hero__item 容器里面",
-    ),
-]
-
 KEY_SHIM = """
 /* <button> 在 wikitext 里写不出来，转成了 span[role=button]，回车 / 空格要自己接。
    上一张 / 下一张由 Swiper 的 a11y 模块接，这里只管暂停键。 */
@@ -540,14 +486,6 @@ def patch_heading_selectors(style: str) -> tuple[str, int]:
     return "\n".join(out), patched
 
 
-def patch_script(script: str) -> str:
-    for old, new, why in SCRIPT_PATCHES:
-        if script.count(old) != 1:
-            raise SystemExit(f"设计稿脚本变了，对不上这一处改动（{why}）：{old}")
-        script = script.replace(old, new)
-    return script
-
-
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--design", type=Path, default=Path("../prts-design"))
@@ -555,18 +493,16 @@ def main() -> None:
     args = ap.parse_args()
 
     style, body, script = extract(args.design)
-    blocks = block_classes(style, args.design)
     # 图标要在切槽之前收集：内容搬进模板后，页面上找不到它们了，
     # 但模板仍然在用这些 mp-i--* 类，mask 必须照常生成。
     all_icons = {m.group(2) for m in SVG_USE.finditer(body)}
     body = apply_nav(body)
     body, extracted = apply_slots(body)
     body = wrap_optional(body)
-    body, icons, unmapped, anchors = convert_body(body, blocks)
+    body, icons, unmapped, anchors = convert_body(body)
     style, headings = patch_heading_selectors(strip_preview_patch(style))
     style = (
-        LINK_SHIM
-        + style
+        style
         + icon_css(args.design, all_icons | icons)
         + nav_sprite_css()
         + HEADING_SHIM
@@ -592,7 +528,7 @@ def main() -> None:
         "    document.addEventListener('DOMContentLoaded', run);\n"
         "  } else { run(); }\n"
         "})(function () {\n"
-        f"{patch_script(script)}\n{KEY_SHIM}\n"
+        f"{script}\n{KEY_SHIM}\n"
         "});\n"
         "</script>\n"
     )
@@ -610,7 +546,7 @@ def main() -> None:
     tpl_dir = args.out / "templates"
     tpl_dir.mkdir(parents=True, exist_ok=True)
     for filename, html in extracted.items():
-        converted, _, more, n = convert_body(html, blocks)
+        converted, _, more, n = convert_body(html)
         unmapped = sorted(set(unmapped) | set(more))
         anchors += n
         # G8：「特别开放周」的起止本来就在 PRTS:Gameinfo/国服/基础 里人工维护

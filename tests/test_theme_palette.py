@@ -8,6 +8,7 @@ from wikibot.theme_palette import (
     dark_variant,
     from_oklch,
     parse_hex,
+    text_variant,
     to_oklch,
 )
 
@@ -51,3 +52,22 @@ def test_strong_colors_keep_white_text_readable(light: str) -> None:
 def test_neutrals_snap_to_skin_surfaces() -> None:
     assert dark_variant("#fdfdfd") == "#1a1b1c"
     assert dark_variant("#f7f7f7") == "#232425"
+
+
+@pytest.mark.parametrize(
+    "dark",
+    ["#8e2309", "#751830", "#0c493d", "#0000ff", "#006400", "#800080", "#7d0022"],
+)
+def test_text_variant_readable_on_every_surface(dark: str) -> None:
+    lifted = text_variant(dark)
+    for surface in ("#1a1b1c", "#232425", "#2d2e30"):
+        assert contrast(lifted, surface) >= 4.5
+    assert abs(to_oklch(lifted)[2] - to_oklch(dark)[2]) < 6  # 还是「那种红 / 那种绿」
+
+
+def test_text_variant_keeps_light_colors_and_neutralizes_black() -> None:
+    assert text_variant("#f1cd9f") == "#f1cd9f"
+    assert text_variant("#000000") == DARK_TEXT
+    grey = text_variant("#808080")  # 次要文字：够读，但仍比正文暗
+    assert contrast(grey, "#2d2e30") >= 4.5
+    assert contrast(grey, "#2d2e30") < contrast(DARK_TEXT, "#2d2e30") - 3

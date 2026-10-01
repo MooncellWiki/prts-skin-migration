@@ -121,3 +121,24 @@ def dark_variant(light: str, *, strong: bool | None = None) -> str:
     if chroma < _NEUTRAL_CHROMA and new_lightness <= max(surfaces.values()) + 0.02:
         return min(surfaces, key=lambda s: abs(surfaces[s] - new_lightness))
     return from_oklch(new_lightness, new_chroma, hue)
+
+
+def text_variant(color: str, *, min_contrast: float = 4.5) -> str:
+    """浅色画布上的文字色 → 暗色画布上的文字色。
+
+    够亮的原样返回；否则色相不变、彩度打折，把亮度抬到在最亮的暗色表面
+    （surface-3，表头 / 卡片）上也有 ``min_contrast``。黑 / 近黑是「普通正文」的意思，
+    直接用正文色；中灰是「次要文字」，照样只抬到够用为止，暗色下仍是灰的。
+    """
+    if contrast(color, DARK_SURFACES[-1]) >= min_contrast:
+        return color
+    lightness, chroma, hue = to_oklch(color)
+    if chroma < _NEUTRAL_CHROMA * 4 and lightness < 0.45:
+        return DARK_TEXT
+    new_chroma = min(chroma * _CHROMA_FACTOR, 0.16)
+    while lightness < 1:
+        lightness = min(1.0, lightness + 0.01)
+        candidate = from_oklch(lightness, new_chroma, hue)
+        if contrast(candidate, DARK_SURFACES[-1]) >= min_contrast:
+            return candidate
+    return DARK_TEXT

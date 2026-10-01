@@ -1,0 +1,222 @@
+<includeonly><link rel="stylesheet" href="//static.prts.wiki/charinfo/charinfo_20250518.min.css" media="screen and (min-width: 600px)">
+<link rel="stylesheet" href="//static.prts.wiki/charinfo/charinfom_20250518.min.css" media="screen and (max-width: 600px)">
+<style>
+@font-face {
+    font-family: 'charname';
+    src: url('//static.prts.wiki/charinfo/Charname_min_20260604.TTF');
+    font-weight: normal;
+    font-style: normal;
+}
+/* 桌面版舞台写死 1024px 宽，正文栏不够宽时收窄到正文栏宽（裁掉右侧）；右侧按钮与时装面板贴右边，跟着进来。
+   601 而非 600：恰好 600 宽时两份样式表都生效、charinfo.js 走手机版，这里不能插手。 */
+@media screen and (min-width: 601px) {
+    .charinfo-wrapper { max-width: 100%; }
+    .charinfo-wrapper .top-btns { width: auto; } /* 原 60%，收窄后按钮会挤成两行 */
+    .charinfo-wrapper .back img { object-fit: cover; } /* 背景是 width/height=100% 的 img，收窄后不压扁 */
+    /* 正文栏 < 600 时 charinfo.js 会写手机版的内联尺寸与缩放，与桌面样式对不上 */
+    .charinfo-container { width: auto !important; height: auto !important; }
+    .charinfo-wrapper { transform: none !important; }
+}
+</style>
+    <div class="charinfo-container">
+    <div id="charinfo-wrapper" class="charinfo-wrapper">
+        <div class="back-wrapper"><div class="back-skincolor"></div></div>
+        <div class="char-logo"><div class="charlogo-def"></div><div class="charlogo-skin"></div></div>
+        <div class="mobile-controler">
+                <div class="charimg-wrapper" id="charimg-wrapper">
+                    <div id="charimg" class="img-in"></div>
+                    <div id="charimg-dyn" class="img-out"><div class="dyn-bg"></div><div class="canvas-wrapper"><canvas id="dyn-canvas" width="2048" height="2048" style="transform:scale(0.25);transform-origin:left top;background-color:rgba(0,0,0,0);"></canvas></div><div class="dyn-fg"></div></div>
+                </div>
+            </div>
+        <div id="charimg-mask" class="charimg-mask"></div>
+        <div class="back-btn" style="display:none;opacity:0">
+            <div class="back-btn-img"><img src="https://static.prts.wiki/charinfo/img/ui/back.png" width="25px"></div>
+        </div>
+        <div class="control-btns">
+            <div class="fullscreen-btn">
+                <div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/fullscreen.png" width="30px"></div>
+                <div class="control-btn-text">全屏查看</div>
+            </div>
+            <div class="watchimg-btn"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/watch.png" width="30px"></div>
+            <div class="control-btn-text">看图模式</div></div>
+            <div class="watchimg-btn-m"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/watch.png" width="30px"></div>
+            <div class="control-btn-text">查看立绘</div></div>
+            <div class="download-btn"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/download.png" height="30px"></div>
+            <div class="control-btn-text">下载立绘</div></div>
+            <div class="voice-btn"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/voice.png" height="30px"></div>
+            <div class="control-btn-text">试听语音</div></div>
+            <div class="img-switch-btn"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/switch.png" width="30px"></div>
+            <div class="control-btn-text">立绘切换</div></div>
+            <div class="dyn-btn"><div class="control-btn-flex"><img src="https://static.prts.wiki/charinfo/img/ui/dynOn.png" width="30px"></div>
+            <div class="control-btn-text">动态立绘</div></div>
+        </div>
+        <div class="charvoice-wrapper">
+            <div class="charvoice-title">VOICE</div>
+            <div class="charvoice-content"></div>
+        </div>
+        <div class="hiddenchar-btn"><div class="hiddenchar-btn-img"><img src="https://static.prts.wiki/charinfo/img/ui/eyeOn.png" width="24px"></div><div class="hiddenchar-btn-text">隐藏角色</div></div>
+        <div class="music-btn">
+            <div class="music-btn-inner"><img src="https://static.prts.wiki/charinfo/img/ui/musicOff.png" width="100%"></div>
+            <div id="music-info" class="music-info"></div>
+        </div>
+        <div class="top-btns">
+            <div class="stage-btn-wrapper"></div>
+            <div class="skins-btn" elite="" style="display:none"><div class="skins-btn-img"><img src="https://static.prts.wiki/charinfo/img/ui/skin.png"></div><div class="skins-btn-blue" style="opacity: 0;"><img src="https://static.prts.wiki/charinfo/img/ui/skin_blue.png"></div><div class="skins-btn-en">OUTFIT</div><div class="skins-btn-text">时装</div></div>
+            <div class="backswitcher-btn"><div class="backswitcher-img"><img src="https://static.prts.wiki/charinfo/img/ui/back_switch.png" width="24px"></div><div class="backswitcher-text">更换场景</div></div>
+            
+        </div>
+        <div class="skinswitcher-bg">
+            <div class="skinswitcher-wrapper"></div>
+        </div>
+        <div class="backswitcher-bg">
+            <div class="backswitcher-wrapper"></div>
+        </div>
+        <div class="bottom-btns">
+            <div class="charclass-img"><img src=""></div>
+            <div class="branch-wrapper">
+                <div class="branch-flex">
+                    <div class="branch-img"></div>
+                    <div class="branch-text"></div>
+                </div>
+            </div>
+            <div class="char-pos"><div class="char-pos-text"></div></div>
+            <div class="char-tag-wrapper">
+                <div class="char-tag-flex"></div>
+            </div>
+        </div>
+        <div class="charname-wrapper">
+            <div class="charname"></div>
+            <div class="charname-en"></div>
+            <div class="charstar"><img src="" height="100%"></div>
+        </div>
+        <div class="paintercv-wrapper">
+            <div class="charpainter">
+                <div class="charpainter-title">
+                    <div class="charpainter-img"><img src="https://static.prts.wiki/charinfo/img/ui/painter.png" height="22px"></div>
+                    <div class="charpainter-text-flex"><span class="charpainter-text"></span></div><div class="charpainter-collapse"><img src="https://static.prts.wiki/charinfo/img/ui/plus.png" height="16px"></div>
+                </div>
+                <div class="painter-wrapper">
+                    <div class="painter">
+                        <span class="painter-left">绘制</span><span class="painter-name"></span>
+                    </div>
+                    <div class="designer">
+                        <span class="designer-left">原案</span><span class="designer-name"></span>
+                    </div>
+                </div>
+                <div class="introduce-wrapper">
+                    <div class="introduce-title"></div>
+                    <div class="introduce-content"></div>
+                </div>
+            </div>
+            <div class="charcv">
+                <div class="charcv-title"><div class="charcv-img"><img src="https://static.prts.wiki/charinfo/img/ui/cv.png" height="22px"></div><div class="charcv-text-flex"><span class="charcv-text"></span></div><div class="charcv-collapse"><img src="https://static.prts.wiki/charinfo/img/ui/plus.png" height="16px"></div></div>
+                <div class="charcv-content"></div>
+            </div>
+        </div>
+        <div class="dynControler">
+                <div class="chardyn-title"><div class="charcv-img"><img src="https://static.prts.wiki/charinfo/img/ui/dynOn.png" height="22px"></div><div class="charcv-text-flex"><span class="chardyn-text">动作切换</span></div><div class="chardyn-collapse"><img src="https://static.prts.wiki/charinfo/img/ui/plus.png" height="16px"></div></div>
+                <div class="chardyn-content"></div>
+            </div>
+    </div></div><div class="charimg-m"><div class="charimg-m-close"></div><div class="img-m"><div class="img-m-nodyn"><img src="" width="100%"></div><div class="img-m-dyn"></div></div></div>
+    <script src="https://static.prts.wiki/npm/crypto-js@3.1.9/core.min.js" type="application/javascript"></script>
+    <script src="https://static.prts.wiki/npm/crypto-js@3.1.9/md5.min.js" type="application/javascript"></script>
+    <script>
+    (window.RLQ = window.RLQ || []).push(["jquery", function () {}]);
+        const getPath = (filename) => {
+            let md5 = CryptoJS.MD5(filename.replaceAll(" ","_")).toString();
+            let result = md5.slice(0, 1) + '/' +  md5.slice(0, 2) + '/' + encodeURIComponent(filename.replaceAll(" ","_"))
+            return result
+        }
+        //角色json
+        var doc_name = "<!--{$docname|escape:'javascript'}-->"
+        var char_info={
+            "name":"<!--{$charname|escape:'javascript'}-->",
+            "nameEn":"<!--{$charnameEn|escape:'javascript'}-->",
+            "nameCustom":"<!--{$charnameCustom|escape:'javascript'}-->",
+            "star":<!--{$star|escape:'javascript'}-->,
+            "group":"<!--{$group|escape:'javascript'}-->",
+            "class":"<!--{$class|escape:'javascript'}-->",
+            "branch":"<!--{$branch|escape:'javascript'}-->",
+            "pos":"<!--{$pos|escape:'javascript'}-->",
+            "tag":"<!--{$tag|escape:'javascript'}-->",
+            "painter":"<!--{$painter|escape:'javascript'}-->",
+            "designer":"<!--{$designer|escape:'javascript'}-->",
+            "initcvtype":"<!--{$initcvtype|escape:'javascript'}-->",
+            "cv":{
+                "日文":{"name":"<!--{$cvjp|escape:'javascript'}-->","skin1":"<!--{$cvjpskin1|escape:'javascript'}-->","skin2":"<!--{$cvjpskin2|escape:'javascript'}-->","skin3":"<!--{$cvjpskin3|escape:'javascript'}-->","skin4":"<!--{$cvjpskin4|escape:'javascript'}-->","skin5":"<!--{$cvjpskin5|escape:'javascript'}-->","skin6":"<!--{$cvjpskin6|escape:'javascript'}-->","skin7":"<!--{$cvjpskin7|escape:'javascript'}-->","skin8":"<!--{$cvjpskin8|escape:'javascript'}-->","skin9":"<!--{$cvjpskin9|escape:'javascript'}-->","skin10":"<!--{$cvjpskin10|escape:'javascript'}-->"},
+                "中文-普通话":{"name":"<!--{$cvcn|escape:'javascript'}-->","skin1":"<!--{$cvcnskin1|escape:'javascript'}-->","skin2":"<!--{$cvcnskin2|escape:'javascript'}-->","skin3":"<!--{$cvcnskin3|escape:'javascript'}-->","skin4":"<!--{$cvcnskin4|escape:'javascript'}-->","skin5":"<!--{$cvcnskin5|escape:'javascript'}-->","skin6":"<!--{$cvcnskin6|escape:'javascript'}-->","skin7":"<!--{$cvcnskin7|escape:'javascript'}-->","skin8":"<!--{$cvcnskin8|escape:'javascript'}-->","skin9":"<!--{$cvcnskin9|escape:'javascript'}-->","skin10":"<!--{$cvcnskin10|escape:'javascript'}-->"},
+                "中文-方言":{"name":"<!--{$cvcnto|escape:'javascript'}-->","skin1":"<!--{$cvcntoskin1|escape:'javascript'}-->","skin2":"<!--{$cvcntoskin2|escape:'javascript'}-->","skin3":"<!--{$cvcntoskin3|escape:'javascript'}-->","skin4":"<!--{$cvcntoskin4|escape:'javascript'}-->","skin5":"<!--{$cvcntoskin5|escape:'javascript'}-->","skin6":"<!--{$cvcntoskin6|escape:'javascript'}-->","skin7":"<!--{$cvcntoskin7|escape:'javascript'}-->","skin8":"<!--{$cvcntoskin8|escape:'javascript'}-->","skin9":"<!--{$cvcntoskin9|escape:'javascript'}-->","skin10":"<!--{$cvcntoskin10|escape:'javascript'}-->"},
+                "英文":{"name":"<!--{$cven|escape:'javascript'}-->","skin1":"<!--{$cvenskin1|escape:'javascript'}-->","skin2":"<!--{$cvenskin2|escape:'javascript'}-->","skin3":"<!--{$cvenskin3|escape:'javascript'}-->","skin4":"<!--{$cvenskin4|escape:'javascript'}-->","skin5":"<!--{$cvenskin5|escape:'javascript'}-->","skin6":"<!--{$cvenskin6|escape:'javascript'}-->","skin7":"<!--{$cvenskin7|escape:'javascript'}-->","skin8":"<!--{$cvenskin8|escape:'javascript'}-->","skin9":"<!--{$cvenskin9|escape:'javascript'}-->","skin10":"<!--{$cvenskin10|escape:'javascript'}-->"},
+                "韩文":{"name":"<!--{$cvkr|escape:'javascript'}-->","skin1":"<!--{$cvkrskin1|escape:'javascript'}-->","skin2":"<!--{$cvkrskin2|escape:'javascript'}-->","skin3":"<!--{$cvkrskin3|escape:'javascript'}-->","skin4":"<!--{$cvkrskin4|escape:'javascript'}-->","skin5":"<!--{$cvkrskin5|escape:'javascript'}-->","skin6":"<!--{$cvkrskin6|escape:'javascript'}-->","skin7":"<!--{$cvkrskin7|escape:'javascript'}-->","skin8":"<!--{$cvkrskin8|escape:'javascript'}-->","skin9":"<!--{$cvkrskin9|escape:'javascript'}-->","skin10":"<!--{$cvkrskin10|escape:'javascript'}-->"},
+                "意大利语":{"name":"<!--{$cvita|escape:'javascript'}-->","skin1":"<!--{$cvitaskin1|escape:'javascript'}-->","skin2":"<!--{$cvitaskin2|escape:'javascript'}-->","skin3":"<!--{$cvitaskin3|escape:'javascript'}-->","skin4":"<!--{$cvitaskin4|escape:'javascript'}-->","skin5":"<!--{$cvitaskin5|escape:'javascript'}-->","skin6":"<!--{$cvitaskin6|escape:'javascript'}-->","skin7":"<!--{$cvitaskin7|escape:'javascript'}-->","skin8":"<!--{$cvitaskin8|escape:'javascript'}-->","skin9":"<!--{$cvitaskin9|escape:'javascript'}-->","skin10":"<!--{$cvitaskin10|escape:'javascript'}-->"},
+                "俄文":{"name":"<!--{$cvru|escape:'javascript'}-->","skin1":"<!--{$cvruskin1|escape:'javascript'}-->","skin2":"<!--{$cvruskin2|escape:'javascript'}-->","skin3":"<!--{$cvruskin3|escape:'javascript'}-->","skin4":"<!--{$cvruskin4|escape:'javascript'}-->","skin5":"<!--{$cvruskin5|escape:'javascript'}-->","skin6":"<!--{$cvruskin6|escape:'javascript'}-->","skin7":"<!--{$cvruskin7|escape:'javascript'}-->","skin8":"<!--{$cvruskin8|escape:'javascript'}-->","skin9":"<!--{$cvruskin9|escape:'javascript'}-->","skin10":"<!--{$cvruskin10|escape:'javascript'}-->"},
+                "德文":{"name":"<!--{$cvde|escape:'javascript'}-->","skin1":"<!--{$cvdeskin1|escape:'javascript'}-->","skin2":"<!--{$cvdeskin2|escape:'javascript'}-->","skin3":"<!--{$cvdeskin3|escape:'javascript'}-->","skin4":"<!--{$cvdeskin4|escape:'javascript'}-->","skin5":"<!--{$cvdeskin5|escape:'javascript'}-->","skin6":"<!--{$cvdeskin6|escape:'javascript'}-->","skin7":"<!--{$cvdeskin7|escape:'javascript'}-->","skin8":"<!--{$cvdeskin8|escape:'javascript'}-->","skin9":"<!--{$cvdeskin9|escape:'javascript'}-->","skin10":"<!--{$cvdeskin10|escape:'javascript'}-->"},
+                "法语":{"name":"<!--{$cvfr|escape:'javascript'}-->","skin1":"<!--{$cvfrskin1|escape:'javascript'}-->","skin2":"<!--{$cvfrskin2|escape:'javascript'}-->","skin3":"<!--{$cvfrskin3|escape:'javascript'}-->","skin4":"<!--{$cvfrskin4|escape:'javascript'}-->","skin5":"<!--{$cvfrskin5|escape:'javascript'}-->","skin6":"<!--{$cvfrskin6|escape:'javascript'}-->","skin7":"<!--{$cvfrskin7|escape:'javascript'}-->","skin8":"<!--{$cvfrskin8|escape:'javascript'}-->","skin9":"<!--{$cvfrskin9|escape:'javascript'}-->","skin10":"<!--{$cvfrskin10|escape:'javascript'}-->"},
+                "联动":{"name":"<!--{$cvlink|escape:'javascript'}-->","skin1":"<!--{$cvlinkskin1|escape:'javascript'}-->","skin2":"<!--{$cvlinkskin2|escape:'javascript'}-->","skin3":"<!--{$cvlinkskin3|escape:'javascript'}-->","skin4":"<!--{$cvlinkskin4|escape:'javascript'}-->","skin5":"<!--{$cvlinkskin5|escape:'javascript'}-->","skin6":"<!--{$cvlinkskin6|escape:'javascript'}-->","skin7":"<!--{$cvlinkskin7|escape:'javascript'}-->","skin8":"<!--{$cvlinkskin8|escape:'javascript'}-->","skin9":"<!--{$cvlinkskin9|escape:'javascript'}-->","skin10":"<!--{$cvlinkskin10|escape:'javascript'}-->"},
+            },
+            "initback":"<!--{$initback|escape:'javascript'}-->",
+        }
+        //语音范围限制
+        //var voice_keys=["干员报到","任命助理","闲置","问候","交谈1","交谈2","交谈3","信赖提升后交谈1","信赖提升后交谈2","信赖提升后交谈3"]
+        var voice_keys=["cn_011","cn_001","cn_010","cn_042","cn_002","cn_003","cn_004","cn_007","cn_008","cn_009","cn_034","cn_036","cn_037"]
+        if(char_info.star>=3){
+            voice_keys.push("cn_005","cn_006")
+        }else if(char_info.star==2){
+            voice_keys.push("cn_005")
+        }
+        //立绘json
+        var charimg_params={
+            "elite0":{"painter":"<!--{$elite0painter|escape:'javascript'}-->","voice_id":"<!--{$elite0voiceid|escape:'javascript'}-->","url":"","scale":<!--{$elite0scale|escape:'javascript'}-->,"x":<!--{$elite0x|escape:'javascript'}-->,"y":<!--{$elite0y|escape:'javascript'}-->,"introduce_name":"<!--{$elite0inname|escape:'javascript'}-->","introduce":"<!--{$elite0introduce|escape:'javascript'}-->"},
+            "elite1":{"painter":"<!--{$elite1painter|escape:'javascript'}-->","voice_id":<!--{$elite1voiceid|escape:'javascript'}-->"","url":"","scale":<!--{$elite1scale|escape:'javascript'}-->,"x":<!--{$elite1x|escape:'javascript'}-->,"y":<!--{$elite1y|escape:'javascript'}-->,"introduce_name":"<!--{$elite1inname|escape:'javascript'}-->","introduce":"<!--{$elite1introduce|escape:'javascript'}-->"},
+            "elite2":{"painter":"<!--{$elite2painter|escape:'javascript'}-->","voice_id":"<!--{$elite2voiceid|escape:'javascript'}-->","url":"","scale":<!--{$elite2scale|escape:'javascript'}-->,"x":<!--{$elite2x|escape:'javascript'}-->,"y":<!--{$elite2y|escape:'javascript'}-->,"introduce_name":"<!--{$elite2inname|escape:'javascript'}-->","introduce":"<!--{$elite2introduce|escape:'javascript'}-->"}
+        }
+        //时装json
+        var charskin_params={
+            "skin1":{"name":"<!--{$skin1name|escape:'javascript'}-->","voice_id":"<!--{$skin1voiceid|escape:'javascript'}-->","painter":"<!--{$skin1painter|escape:'javascript'}-->","series":"<!--{$skin1series|escape:'javascript'}-->","color":"<!--{$skin1color|escape:'javascript'}-->","introduce":"<!--{$skin1introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin1scale|escape:'javascript'}-->,"x":<!--{$skin1x|escape:'javascript'}-->,"y":<!--{$skin1y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin1sp|escape:'javascript'}-->","sub_scale":<!--{$skin1spscale|escape:'javascript'}-->,"sub_x":<!--{$skin1spx|escape:'javascript'}-->,"sub_y":<!--{$skin1spy|escape:'javascript'}-->},
+            "skin2":{"name":"<!--{$skin2name|escape:'javascript'}-->","voice_id":"<!--{$skin2voiceid|escape:'javascript'}-->","painter":"<!--{$skin2painter|escape:'javascript'}-->","series":"<!--{$skin2series|escape:'javascript'}-->","color":"<!--{$skin2color|escape:'javascript'}-->","introduce":"<!--{$skin2introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin2scale|escape:'javascript'}-->,"x":<!--{$skin2x|escape:'javascript'}-->,"y":<!--{$skin2y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin2sp|escape:'javascript'}-->","sub_scale":<!--{$skin2spscale|escape:'javascript'}-->,"sub_x":<!--{$skin2spx|escape:'javascript'}-->,"sub_y":<!--{$skin2spy|escape:'javascript'}-->},
+            "skin3":{"name":"<!--{$skin3name|escape:'javascript'}-->","voice_id":"<!--{$skin3voiceid|escape:'javascript'}-->","painter":"<!--{$skin3painter|escape:'javascript'}-->","series":"<!--{$skin3series|escape:'javascript'}-->","color":"<!--{$skin3color|escape:'javascript'}-->","introduce":"<!--{$skin3introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin3scale|escape:'javascript'}-->,"x":<!--{$skin3x|escape:'javascript'}-->,"y":<!--{$skin3y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin3sp|escape:'javascript'}-->","sub_scale":<!--{$skin3spscale|escape:'javascript'}-->,"sub_x":<!--{$skin3spx|escape:'javascript'}-->,"sub_y":<!--{$skin3spy|escape:'javascript'}-->},
+            "skin4":{"name":"<!--{$skin4name|escape:'javascript'}-->","voice_id":"<!--{$skin4voiceid|escape:'javascript'}-->","painter":"<!--{$skin4painter|escape:'javascript'}-->","series":"<!--{$skin4series|escape:'javascript'}-->","color":"<!--{$skin4color|escape:'javascript'}-->","introduce":"<!--{$skin4introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin4scale|escape:'javascript'}-->,"x":<!--{$skin4x|escape:'javascript'}-->,"y":<!--{$skin4y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin4sp|escape:'javascript'}-->","sub_scale":<!--{$skin4spscale|escape:'javascript'}-->,"sub_x":<!--{$skin4spx|escape:'javascript'}-->,"sub_y":<!--{$skin4spy|escape:'javascript'}-->},
+            "skin5":{"name":"<!--{$skin5name|escape:'javascript'}-->","voice_id":"<!--{$skin5voiceid|escape:'javascript'}-->","painter":"<!--{$skin5painter|escape:'javascript'}-->","series":"<!--{$skin5series|escape:'javascript'}-->","color":"<!--{$skin5color|escape:'javascript'}-->","introduce":"<!--{$skin5introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin5scale|escape:'javascript'}-->,"x":<!--{$skin5x|escape:'javascript'}-->,"y":<!--{$skin5y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin5sp|escape:'javascript'}-->","sub_scale":<!--{$skin5spscale|escape:'javascript'}-->,"sub_x":<!--{$skin5spx|escape:'javascript'}-->,"sub_y":<!--{$skin5spy|escape:'javascript'}-->},
+            "skin6":{"name":"<!--{$skin6name|escape:'javascript'}-->","voice_id":"<!--{$skin6voiceid|escape:'javascript'}-->","painter":"<!--{$skin6painter|escape:'javascript'}-->","series":"<!--{$skin6series|escape:'javascript'}-->","color":"<!--{$skin6color|escape:'javascript'}-->","introduce":"<!--{$skin6introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin6scale|escape:'javascript'}-->,"x":<!--{$skin6x|escape:'javascript'}-->,"y":<!--{$skin6y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin6sp|escape:'javascript'}-->","sub_scale":<!--{$skin6spscale|escape:'javascript'}-->,"sub_x":<!--{$skin6spx|escape:'javascript'}-->,"sub_y":<!--{$skin6spy|escape:'javascript'}-->},
+            "skin7":{"name":"<!--{$skin7name|escape:'javascript'}-->","voice_id":"<!--{$skin7voiceid|escape:'javascript'}-->","painter":"<!--{$skin7painter|escape:'javascript'}-->","series":"<!--{$skin7series|escape:'javascript'}-->","color":"<!--{$skin7color|escape:'javascript'}-->","introduce":"<!--{$skin7introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin7scale|escape:'javascript'}-->,"x":<!--{$skin7x|escape:'javascript'}-->,"y":<!--{$skin7y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin7sp|escape:'javascript'}-->","sub_scale":<!--{$skin7spscale|escape:'javascript'}-->,"sub_x":<!--{$skin7spx|escape:'javascript'}-->,"sub_y":<!--{$skin7spy|escape:'javascript'}-->},
+            "skin8":{"name":"<!--{$skin8name|escape:'javascript'}-->","voice_id":"<!--{$skin8voiceid|escape:'javascript'}-->","painter":"<!--{$skin8painter|escape:'javascript'}-->","series":"<!--{$skin8series|escape:'javascript'}-->","color":"<!--{$skin8color|escape:'javascript'}-->","introduce":"<!--{$skin8introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin8scale|escape:'javascript'}-->,"x":<!--{$skin8x|escape:'javascript'}-->,"y":<!--{$skin8y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin8sp|escape:'javascript'}-->","sub_scale":<!--{$skin8spscale|escape:'javascript'}-->,"sub_x":<!--{$skin8spx|escape:'javascript'}-->,"sub_y":<!--{$skin8spy|escape:'javascript'}-->},
+            "skin9":{"name":"<!--{$skin9name|escape:'javascript'}-->","voice_id":"<!--{$skin9voiceid|escape:'javascript'}-->","painter":"<!--{$skin9painter|escape:'javascript'}-->","series":"<!--{$skin9series|escape:'javascript'}-->","color":"<!--{$skin9color|escape:'javascript'}-->","introduce":"<!--{$skin9introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin9scale|escape:'javascript'}-->,"x":<!--{$skin9x|escape:'javascript'}-->,"y":<!--{$skin9y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin9sp|escape:'javascript'}-->","sub_scale":<!--{$skin9spscale|escape:'javascript'}-->,"sub_x":<!--{$skin9spx|escape:'javascript'}-->,"sub_y":<!--{$skin9spy|escape:'javascript'}-->},
+            "skin10":{"name":"<!--{$skin10name|escape:'javascript'}-->","voice_id":"<!--{$skin10voiceid|escape:'javascript'}-->","painter":"<!--{$skin10painter|escape:'javascript'}-->","series":"<!--{$skin10series|escape:'javascript'}-->","color":"<!--{$skin10color|escape:'javascript'}-->","introduce":"<!--{$skin10introduce|escape:'javascript'}-->","url":"","scale":<!--{$skin10scale|escape:'javascript'}-->,"x":<!--{$skin10x|escape:'javascript'}-->,"y":<!--{$skin10y|escape:'javascript'}-->,"head_url":"","logo_url":"","brand_url":"","sub_url":"","sub_skin":"<!--{$skin10sp|escape:'javascript'}-->","sub_scale":<!--{$skin10spscale|escape:'javascript'}-->,"sub_x":<!--{$skin10spx|escape:'javascript'}-->,"sub_y":<!--{$skin10spy|escape:'javascript'}-->},
+        }
+//背景json
+var back_list = {
+    "默认": { "url": "https://media.prts.wiki/5/59/Bg_default.png", "pre_url": "https://media.prts.wiki/9/9b/Pre_bg_default.png", "bgmname": "生命流", "bgm": "https://static.prts.wiki/music/music/beta1_180603/m_sys_void_combine.mp3", "loop_point": 34 },
+    "时装默认": { "url": "https://media.prts.wiki/9/97/Bg_skin.png", "pre_url": "https://media.prts.wiki/0/0a/Pre_bg_skin.png", "bgmname": "生命流", "bgm": "https://static.prts.wiki/music/music/beta1_180603/m_sys_void_combine.mp3", "loop_point": 34 },
+    "视野": { "url": "https://media.prts.wiki/2/20/Bg_rhodes_day.png", "pre_url": "https://media.prts.wiki/9/95/Pre_bg_rhodes_day.png", "bgmname": "生命流", "bgm": "https://static.prts.wiki/music/music/beta1_180603/m_sys_void_combine.mp3", "loop_point": 34 },
+    "夜幕": { "url": "https://media.prts.wiki/0/09/Bg_rhodes_night.png", "pre_url": "https://media.prts.wiki/0/0e/Pre_bg_rhodes_night.png", "bgmname": "如我所见", "bgm": "https://static.prts.wiki/music/music/beta2_180603/m_sys_tech_combine.mp3", "loop_point": 37.00937 },
+    "阴云": { "url": "https://media.prts.wiki/6/69/Bg_main_victoria.png", "pre_url": "https://media.prts.wiki/8/80/Pre_bg_main_victoria.png", "bgmname": "Ghost Hunter", "bgm": "https://static.prts.wiki/music/music/avg/m_avg_ghosthunter_combine.mp3", "loop_point": 36.119 },
+    "假日": { "url": "https://media.prts.wiki/9/9c/Bg_siesta.png", "pre_url": "https://media.prts.wiki/3/39/Pre_bg_siesta.png", "bgmname": "Ready?", "bgm": "https://static.prts.wiki/music/music/obt/m_sys_ddd_combine.mp3", "loop_point": 52 },
+    "商业": { "url": "https://media.prts.wiki/4/42/Bg_kazimierz.png", "pre_url": "https://media.prts.wiki/4/40/Pre_bg_kazimierz.png", "bgmname": "City", "bgm": "https://static.prts.wiki/music/music/beta3_181101/m_dia_street_combine.mp3", "loop_point": 18.54549 },
+    "严冬": { "url": "https://media.prts.wiki/e/e9/Bg_ursus.png", "pre_url": "https://media.prts.wiki/9/9f/Pre_bg_ursus.png", "bgmname": "Loneliness", "bgm": "https://static.prts.wiki/music/music/static/m_avg/m_avg_loneliness_combine.mp3", "loop_point": 51.42859 },
+    "山岳": { "url": "https://media.prts.wiki/b/b5/Bg_yan.png", "pre_url": "https://media.prts.wiki/5/53/Pre_bg_yan.png", "bgmname": "敬属春山", "bgm": "https://static.prts.wiki/music/music/act15side/m_sys_bitw_loop.mp3", "loop_point": 0 },
+    "秘海": { "url": "https://media.prts.wiki/1/1d/Bg_iberia.png", "pre_url": "https://media.prts.wiki/a/ac/Pre_bg_iberia.png", "bgmname": "暗潮", "bgm": "https://static.prts.wiki/music/music/act18d3d0/m_sys_act18d3d0_combine.mp3", "loop_point": 34.19 },
+    "庆典": { "url": "https://media.prts.wiki/6/65/Bg_anniversary.png", "pre_url": "https://media.prts.wiki/c/c7/Pre_bg_anniversary.png", "bgmname": "大柏墟", "bgm": "https://static.prts.wiki/music/music/beta2_180603/m_dia_nightoflongmen_combine.mp3", "loop_point": 1.5 },
+    "残垣": { "url": "https://media.prts.wiki/8/8e/Bg_rogue_1.png", "pre_url": "https://media.prts.wiki/7/7e/Pre_bg_rogue_1.png", "bgmname": "征兆", "bgm": "https://static.prts.wiki/music/music/rogue_1/m_avg_rglk1secretevent_loop.mp3", "loop_point": 0 },
+    "彼端": { "url": "https://media.prts.wiki/e/ef/Bg_rouge_2.png", "pre_url": "https://media.prts.wiki/e/ea/Pre_bg_rogue_2.png", "bgmname": "海愿", "bgm": "https://static.prts.wiki/music/music/rogue_2/m_sys_rglk2dlc_loop.mp3", "loop_point": 0 },
+    "澄空": { "url": "https://media.prts.wiki/9/99/Bg_laterano.png", "pre_url": "https://media.prts.wiki/4/42/Pre_bg_laterano.png", "bgmname": "圣城日常", "bgm": "https://static.prts.wiki/music/music/act16side/m_sys_act16side_combine.mp3", "loop_point": 8.777 },
+    "林野": { "url": "https://media.prts.wiki/7/75/Bg_rhine.png", "pre_url": "https://media.prts.wiki/7/7b/Pre_bg_rhine.png", "bgmname": "旅程", "bgm": "https://static.prts.wiki/music/music/act19side/m_sys_act19side_combine.mp3", "loop_point": 12.852 },
+    "足迹": { "url": "https://media.prts.wiki/2/29/%E5%9C%BA%E6%99%AF_%E8%B6%B3%E8%BF%B9.png", "pre_url": "https://media.prts.wiki/2/2b/Bg_kalts.png", "bgmname": "走过漫漫时空", "bgm": "https://static.prts.wiki/music/music/act18d0d0/m_sys_act18d0d0_combine.mp3", "loop_point": 36.153 },
+    "始发": { "url": "https://media.prts.wiki/a/a4/%E5%9C%BA%E6%99%AF_%E5%A7%8B%E5%8F%91.png", "pre_url": "https://media.prts.wiki/a/aa/Bg_rogue_3.png", "bgmname": "主宰", "bgm": "https://static.prts.wiki/music/music/rogue_3/m_bat_rglk3DLC_combine.mp3", "loop_point": 18.233 },
+    "显扬": { "url": "https://media.prts.wiki/4/44/%E5%9C%BA%E6%99%AF_%E6%98%BE%E6%89%AC.png", "pre_url": "https://media.prts.wiki/d/d8/Bg_rainbowsix_1.png", "bgmname": "Translucent", "bgm": "https://static.prts.wiki/music/music/act32side/m_act32side_sys_loop.mp3", "loop_point": 0 },
+    "花圃": { "url": "https://media.prts.wiki/e/ea/Bg_rhodes_flower.png", "pre_url": "https://media.prts.wiki/2/29/Pre_bg_rhodes_flower.png", "bgmname": "微茫", "bgm": "https://static.prts.wiki/music/music/act16mini/m_sys_act16mini_combine.mp3", "loop_point": 20.610 },
+    "甜度": { "url": "https://media.prts.wiki/4/48/Bg_sanrio.png", "pre_url": "https://media.prts.wiki/4/44/Bg_sanrio_pre.png", "bgmname": "Our Life", "bgm": "https://static.prts.wiki/music/music/act27side/m_avg_siestacity.mp3", "loop_point": 0 },
+    "旷漠": { "url": "https://media.prts.wiki/9/9b/Bg_sandboxv2.png", "pre_url": "https://media.prts.wiki/6/6e/Bg_sandboxv2_pre.png", "bgmname": "细沙", "bgm": "https://static.prts.wiki/music/music/act1sandbox/m_sys_act1sandbox_map_loop.mp3", "loop_point": 0 },
+    "地城": { "url": "https://media.prts.wiki/9/9c/Bg_dungeon.png", "pre_url": "https://media.prts.wiki/9/97/Bg_dungeon_pre.png", "bgmname": "雀跃的炉火", "bgm": "https://static.prts.wiki/music/music/act36side/m_sys_act36side_loop.mp3", "loop_point": 0 },
+    "青穰": { "url": "https://media.prts.wiki/c/c7/Bg_sui.png", "pre_url": "https://media.prts.wiki/4/45/Bg_sui_pre.png", "bgmname": "赴大荒", "bgm": "https://static.prts.wiki/music/music/act31side/m_act31side_sys_combine.mp3", "loop_point": 2.909 },
+    "意塑": { "url": "https://media.prts.wiki/9/9d/Bg_rogue_4.png", "pre_url": "https://media.prts.wiki/0/0c/Bg_rogue_4_pre.png", "bgmname": "Resolutely Burns the Fire of Lives", "bgm": "https://static.prts.wiki/music/music/act17mini/m_sys_act17mini_loop.mp3", "loop_point": 0 },
+    "泉湾": { "url": "https://media.prts.wiki/7/74/Bg_volcano_day.png", "pre_url": "https://media.prts.wiki/4/47/Bg_volcano_day_pre.png", "bgmname": "Misty Memory (Day Version)", "bgm": "https://static.prts.wiki/music/music/act27side/m_sys_act27side_day_loop.mp3", "loop_point": 0, "night": { "url": "https://media.prts.wiki/6/62/Bg_volcano_night.png", "pre_url": "https://media.prts.wiki/3/3f/Bg_volcano_night_pre.png", "bgmname": "Misty Memory (Night Version)", "bgm": "https://static.prts.wiki/music/music/act27side/m_sys_act27side_night_combine.mp3", "loop_point": 22.957 } },
+    "密约": { "url": "https://media.prts.wiki/6/60/Bg_recalrune.png", "pre_url": "https://media.prts.wiki/4/48/Bg_recalrune_pre.png", "bgmname": "Operation Blade", "bgm": "https://torappu.prts.wiki/assets/audio/music/recalrune/m_sys_recalrune_reward1_loop.mp3", "loop_point": 0 },
+    "聚光": { "url": "https://media.prts.wiki/9/93/Bg_avemujica.png", "pre_url": "https://media.prts.wiki/e/ed/Bg_avemujica_pre.png", "bgmname": "Georgette Me, Georgette You", "bgm": "https://torappu.prts.wiki/assets/audio/music/avemujica/m_sys3_avemujica_loop.mp3", "loop_point": 0 },
+};
+        var dyn_list=<!--{$dynlist}-->;
+        var now_dyn = ""
+        var devmode = 0
+    </script>
+    <script src="//static.prts.wiki/charinfo/charVoice20260604.js"></script>
+    <script src="//static.prts.wiki/charinfo/charId20260604.js"></script>
+    <script src="//static.prts.wiki/charinfo/charinfo_20260322_2.min.js"></script></includeonly>

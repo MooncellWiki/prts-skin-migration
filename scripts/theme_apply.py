@@ -949,11 +949,16 @@ async def step_dark_mode_fix(c: Ctx) -> None:
     # `color:` 必须写在 #switch 的每个分支里面：解析器函数的输出以 # 开头时，
     # 解析器会在前面补一个换行（防止被当成列表项），<poem> 又把换行换成 <br />，
     # 09-29 那版（color: 在 #switch 外面）在 {{#tag:poem|…}} 里输出
-    # style="color:<br /> #FF4F0B;"，颜色失效
+    # style="color:<br /> #FF4F0B;"，颜色失效。
+    # 黑字（10-01 加）：暗色下深底黑字，改跟正文色 --prts-page-text（浅色 #202122）。
+    # 悖论模拟描述里的关卡效果行（165 页）、navbox 分组名、集成战略条目都是这种写法。
+    # 分析与考据/角色导航 手机版表头写的 background: var(--,#EBF7FE) 是无效声明
+    # （-- 不是合法变量名，浏览器整条丢掉），表头本来就是皮肤底色，黑字跟随正文色正好
     color_fixed = (
         '<span style="{{#switch:{{lc:{{{1}}}}}'
         "|red|#f00|#ff0000=color:var(--prts-alert-text, {{{1}}})"
         "|#c0392b=color:var(--prts-red-text, {{{1}}})"
+        "|black|#000|#000000=color:var(--prts-page-text, {{{1}}})"
         '|#default=color:{{{1}}}}};">'
     )
     color_0929 = (
@@ -962,16 +967,24 @@ async def step_dark_mode_fix(c: Ctx) -> None:
         "|#c0392b=var(--prts-red-text, {{{1}}})"
         '|#default={{{1}}}}};">'
     )
+    color_0930 = (
+        '<span style="{{#switch:{{lc:{{{1}}}}}'
+        "|red|#f00|#ff0000=color:var(--prts-alert-text, {{{1}}})"
+        "|#c0392b=color:var(--prts-red-text, {{{1}}})"
+        '|#default=color:{{{1}}}}};">'
+    )
 
     def color_semantic(text: str) -> str | None:
-        if color_0929 in text:
-            return replace_once(text, color_0929, color_fixed)
+        for older in (color_0929, color_0930):
+            if older in text:
+                return replace_once(text, older, color_fixed)
         return sub('<span style="color:{{{1}}};">', color_fixed)(text)
 
     await c.edit(
         "模板:Color",
         color_semantic,
-        "红字改用语义变量 --prts-alert-text / --prts-red-text（暗色下提亮）；"
+        "红字改用语义变量 --prts-alert-text / --prts-red-text（暗色下提亮），"
+        "黑字改用 --prts-page-text（暗色下跟随正文色）；"
         "color: 移进 #switch 分支，修复 <poem> 里 # 开头的色值失效",
     )
 

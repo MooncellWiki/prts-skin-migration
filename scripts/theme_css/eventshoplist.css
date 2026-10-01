@@ -1,0 +1,5 @@
+/* 图标与文字垂直居中。核心的 mediawiki.skinning 里有 img { vertical-align: middle }，
+   Vector 会加载，Arknights 皮肤不加载，行内图标落在基线上、旁边的文字显得偏下 */
+.eventshoplist td img {
+  vertical-align: middle;
+}

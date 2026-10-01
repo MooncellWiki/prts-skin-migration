@@ -1,0 +1,6 @@
+/* 危机合约 navbox：分组底色 #f2bdb5 的暗色值按 模板:Navbox/styles.css 同一规则推导；
+   标题 / 下栏的 #633 深红本来就配白字，暗色下原样保留。其余（#fee 子分组、分组黑字、标题白字）
+   由 Navbox/styles.css 统一处理。 */
+html.skin-theme-clientpref-night body .mw-parser-output .cc-navbox [style*="#f2bdb5"] {
+  background: #54302b !important; /* ← #f2bdb5 */
+}

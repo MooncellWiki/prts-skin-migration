@@ -1,0 +1,17 @@
+/* 文档框（原为行内样式）。暗色值由浅色值推导，见 wikibot/theme_palette.py */
+.template-documentation {
+  background: aliceblue;
+  padding: 1em;
+  border: 1px solid #eee;
+}
+.template-documentation-header {
+  border-bottom: 1px solid #eee;
+}
+
+html.skin-theme-clientpref-night body .template-documentation {
+  background: #202529; /* ← aliceblue #f0f8ff */
+  border-color: #2d2e30; /* ← #eee */
+}
+html.skin-theme-clientpref-night body .template-documentation-header {
+  border-bottom-color: #2d2e30;
+}

@@ -1,0 +1,116 @@
+/* 配色：保留 Vector 的三级蓝（自 MediaWiki:Vector.css 分流，2026-09-29 拍板）。
+   皮肤 catlinks.css 60–64 行也给 navbox 上了色（灰底、标题左侧强调条）；这里的选择器经
+   TemplateStyles 加上 .mw-parser-output 前缀后与皮肤同特指度，且在页面里后加载，覆盖皮肤那几行。 */
+.navbox {
+  border: 1px solid #a2a9b1;
+  background: #fdfdfd;
+}
+.navbox-subgroup {
+  background: #fdfdfd;
+}
+.navbox th,
+.navbox-title {
+  background: #4487df;
+}
+.navbox-title {
+  border-left: 0;
+  color: #fff;
+}
+.navbox-title a,
+.navbox-title a:visited,
+.navbox-title div {
+  color: #fff;
+}
+.navbox-abovebelow,
+th.navbox-group,
+.navbox-subgroup .navbox-title {
+  background: #85c1f7;
+}
+.navbox-subgroup .navbox-group,
+.navbox-subgroup .navbox-abovebelow {
+  background: #ebf7fe;
+}
+.navbox-even {
+  background: #f7f7f7;
+}
+.navbox-odd {
+  background: transparent;
+}
+/* 分组、上下栏里的链接跟随文字色：皮肤链接色在二级蓝 #85c1f7 上只有 2.9:1（Vector 的 #36c 也只有 2.8），
+   站内模板本来也多用 {{color|#000|…}} 把分组名写成黑字 */
+.navbox-group a,
+.navbox-group a:visited,
+.navbox-abovebelow a,
+.navbox-abovebelow a:visited {
+  color: inherit;
+}
+
+/* 暗色：每个色值都由上面的浅色值推导（wikibot/theme_palette.py：OKLCH 里色相不变，
+   浅色调按离白多远映射到离皮肤暗色表面 #1a1b1c 多远，深色调压到白字可读的亮度，中性色吸附皮肤令牌）。
+   三级蓝暗色下仍是一级比一级离底色远；正文 #f0f0f0 对各级底色 ≥ 8.7:1，标题白字 7.2:1。 */
+html.skin-theme-clientpref-night body .navbox {
+  border-color: #454b50; /* ← #a2a9b1 */
+  background: #1a1b1c; /* ← #fdfdfd */
+}
+html.skin-theme-clientpref-night body .navbox-subgroup {
+  background: #1a1b1c;
+}
+html.skin-theme-clientpref-night body .navbox th,
+html.skin-theme-clientpref-night body .navbox-title {
+  background: #20579d; /* ← #4487df */
+}
+html.skin-theme-clientpref-night body .navbox-abovebelow,
+html.skin-theme-clientpref-night body th.navbox-group,
+html.skin-theme-clientpref-night body .navbox-subgroup .navbox-title {
+  background: #14466d; /* ← #85c1f7 */
+}
+html.skin-theme-clientpref-night body .navbox-subgroup .navbox-group,
+html.skin-theme-clientpref-night body .navbox-subgroup .navbox-abovebelow {
+  background: #1f272b; /* ← #ebf7fe */
+}
+html.skin-theme-clientpref-night body .navbox-even {
+  background: #232425; /* ← #f7f7f7 */
+}
+/* 暗色：各导航模板行内写死的浅色底（abovestyle / groupstyle 等参数），同样按上面的规则推导 */
+html.skin-theme-clientpref-night body .navbox [style*="var(--lightblue)"],
+html.skin-theme-clientpref-night body .navbox [style*="#ebf7fe"],
+html.skin-theme-clientpref-night body .navbox [style*="#EBF7FE"] {
+  background: #1f272b !important; /* ← #ebf7fe */
+}
+html.skin-theme-clientpref-night body .navbox [style*="#def"],
+html.skin-theme-clientpref-night body .navbox [style*="#DEF"],
+html.skin-theme-clientpref-night body .navbox [style*="#ddeeff"],
+html.skin-theme-clientpref-night body .navbox [style*="#DDEEFF"] {
+  background: #222d38 !important; /* ← #ddeeff */
+}
+html.skin-theme-clientpref-night body .navbox [style*="background-color:#fdfdfd"],
+html.skin-theme-clientpref-night body .navbox [style*="background-color:#FDFDFD"],
+html.skin-theme-clientpref-night body .navbox [style*="background:#fdfdfd"],
+html.skin-theme-clientpref-night body .navbox [style*="background:#FDFDFD"] {
+  background: #1a1b1c !important; /* ← #fdfdfd */
+}
+/* 模块给部分单元格行内画了 2px #fdfdfd 左边框（浅色下与底色相同、看不见），暗色下会露成白线 */
+html.skin-theme-clientpref-night body .navbox [style*="2px solid #fdfdfd"] {
+  border-left-color: transparent !important;
+}
+html.skin-theme-clientpref-night body .navbox [style*="#fdd"],
+html.skin-theme-clientpref-night body .navbox [style*="#FDD"],
+html.skin-theme-clientpref-night body .navbox [style*="#ffdddd"],
+html.skin-theme-clientpref-night body .navbox [style*="#FFDDDD"] {
+  background: #3d2828 !important; /* ← #ffdddd */
+}
+html.skin-theme-clientpref-night body .navbox [style*="#fee"],
+html.skin-theme-clientpref-night body .navbox [style*="#FEE"],
+html.skin-theme-clientpref-night body .navbox [style*="#ffeeee"],
+html.skin-theme-clientpref-night body .navbox [style*="#FFEEEE"] {
+  background: #2f2424 !important; /* ← #ffeeee */
+}
+/* 分组名常写成 {{color|#000|…}}，暗底上跟随文字色 */
+html.skin-theme-clientpref-night body .navbox span[style*="color:#000"],
+html.skin-theme-clientpref-night body .navbox span[style*="color: #000"],
+html.skin-theme-clientpref-night body .navbox span[style*="color:black"],
+html.skin-theme-clientpref-night body .navbox span[style*="color: black"],
+html.skin-theme-clientpref-night body .navbox span[style*="color:#202122"],
+html.skin-theme-clientpref-night body .navbox span[style*="color: #202122"] {
+  color: inherit !important;
+}

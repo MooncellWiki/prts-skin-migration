@@ -1,0 +1,6 @@
+<includeonly>{{#ifexpr:{{#time:U|{{{start|}}}}}>{{#time:U}}|<span class="ak-tag ak-tag--sm ak-tag--new">预告</span>}}</includeonly><noinclude>
+按 start 输出「预告」状态标：还没开始的才标，进行中的不输出。首页轮播专用。
+
+轮播的数据源是「进行中 + 48 小时内开始」，进行中是默认状态，不标；已结束的不会进轮播。
+<code>end</code> 参数不再使用，调用方传了也无妨。
+</noinclude>

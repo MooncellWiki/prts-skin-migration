@@ -1,0 +1,7 @@
+/* 行内图片与文字垂直居中，对齐 Vector 的行为：核心的 mediawiki.skinning 里有 img { vertical-align: middle }，
+   Vector 加载它，本皮肤不加载，「图标 + 文字」（道具图标等）的图标落在基线上、文字显得偏下。
+   特指度与核心那条相同（0,0,1），组件自己写的对齐照样盖得过；按设计系统 scope.css 的约定，
+   ak- 组件自己的图片、组件直接包着的图片、ak-not-prose 子树保持浏览器默认，不受影响。 */
+:where(.mw-parser-output) img:not(:where([class^="ak-"], [class*=" ak-"], :is([class^="ak-"], [class*=" ak-"]) > img, .ak-not-prose img)) {
+  vertical-align: middle;
+}

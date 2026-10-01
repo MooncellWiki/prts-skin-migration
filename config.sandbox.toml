@@ -1,0 +1,91 @@
+# 本地沙箱（../prts-sandbox）用的配置：写入打到 localhost:8080 的沙箱站点，不碰线上。
+#   uv run wikibot -c config.sandbox.toml apply -t template -r font-tag
+# 沙箱站点的登录账号见 prts-sandbox/README.md（Akdev / prts-sandbox-dev），
+# 用 WIKI_USERNAME / WIKI_PASSWORD 覆盖即可。
+# 注意 TOML 语法：顶层键必须写在所有 [表] 之前。
+
+api_url = "http://localhost:8080/api.php"
+user_agent = "PRTSSkinMigrationBot/0.1 (https://prts.wiki/w/User:BotPtilopsis)"
+
+# 要停用的内置规则 id，见 `wikibot rules`
+disabled_rules = []
+
+[client]
+timeout = 30.0          # 单次请求超时（秒）
+max_retries = 3         # 网络错误 / maxlag 的重试次数
+maxlag = 5              # MediaWiki maxlag 参数，机器人礼节
+read_batch_size = 50    # 一次 query 拉取的页面数（有 apihighlimits 可提到 500）
+concurrency = 4         # 并发读请求数，别把站点压垮
+edit_delay = 0.0        # 两次写入之间的间隔（秒）
+
+# 本地沙箱（../prts-sandbox）的 MySQL 直连，只读，用于离线扫描。
+# 口令是容器里的开发口令，不是线上凭据；要覆盖用环境变量 WIKI_SANDBOX_PASSWORD。
+[sandbox]
+host = "127.0.0.1"
+port = 3307
+user = "akdev"
+password = "akdev"
+database = "ak"
+table_prefix = "ak"
+
+# 直连数据库时库里只有 (名字空间, 页面名)，靠这张表拼回完整标题
+[namespace_names]
+8 = "MediaWiki"
+10 = "模板"
+14 = "分类"
+274 = "微件"
+828 = "模块"
+3000 = "泰拉大典"
+3002 = "样板"
+
+[paths]
+cache_dir = "cache"     # 页面快照落盘目录
+report_dir = "reports"  # scan / plan 报告输出目录
+state_path = "state.json"
+
+# ---------------------------------------------------------------------------
+# 迁移目标页面集合，命令行用 -t 选取。
+# namespace 见 https://prts.wiki/api.php?action=query&meta=siteinfo&siprop=namespaces
+# include / exclude 是正则，对完整标题（含名字空间前缀）做 search 匹配。
+# ---------------------------------------------------------------------------
+
+[targets.template]
+description = "模板名字空间"
+namespaces = [10]
+exclude = ['/doc$', '/sandbox$', '/testcases$', '\.css$', '^模板:!$']
+
+[targets.widget]
+description = "微件名字空间（Widgets 扩展，内含原始 HTML/JS）"
+namespaces = [274]
+
+[targets.module]
+description = "Scribunto 模块"
+namespaces = [828]
+exclude = ['/doc$']
+
+[targets.sitecss]
+description = "站点级 CSS / JS / 小工具"
+namespaces = [8]
+include = ['\.css$', '\.js$', '\.json$']
+
+[targets.styles]
+description = "TemplateStyles 子页面"
+namespaces = [10]
+include = ['\.css$']
+
+[targets.all]
+description = "模板 + 微件 + 模块 + 站点 CSS/JS，一次全扫"
+namespaces = [8, 10, 274, 828]
+
+# ---------------------------------------------------------------------------
+# 声明式正则规则：简单的「查找 → 替换」写在这里，改规则不用动代码。
+# 复杂逻辑写成 Python 规则，见 wikibot/rules/skin.py。
+# flags 可选 i / m / s / x，可组合，如 "im"。
+# ---------------------------------------------------------------------------
+
+# [[regex_rules]]
+# id = "legacy-bg-color"
+# description = "写死的浅色背景 → 新皮肤 CSS 变量"
+# pattern = 'background(-color)?\s*:\s*#(?:fff|ffffff)\b'
+# replacement = 'background\1: var(--background-color-base)'
+# flags = "i"

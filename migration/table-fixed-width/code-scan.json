@@ -1,0 +1,34 @@
+[
+ {
+  "ns": 828,
+  "title": "模块:EventShopList",
+  "line": 44,
+  "kind": "string-table-width",
+  "px": 600,
+  "excerpt": "table.insert(res_table, '{| class=\"wikitable logo eventshoplist\" style=\"white-space:normal;width:600px;max-width:100%;display:table;\"\\n')"
+ },
+ {
+  "ns": 828,
+  "title": "模块:IngameStory",
+  "line": 11,
+  "kind": "string-table-width",
+  "px": 800,
+  "excerpt": "table.insert(res_table, '\\n{| class=\"wikitable mw-collapsible mw-collapsed mw-collapsible-title-center ingame-story-table\" style=\"width:800px;line-height:40px;display:table;white-sp"
+ },
+ {
+  "ns": 828,
+  "title": "模块:ISEvent",
+  "line": 70,
+  "kind": "string-table-width",
+  "px": 560,
+  "excerpt": "table.insert(res_table, string.format('{| class=\"wikitable logo%s\" style=\"text-align:center;width:560px;display:table;white-space:normal\"\\n', s"
+ },
+ {
+  "ns": 828,
+  "title": "模块:StageDiff",
+  "line": 94,
+  "kind": "string-table-width",
+  "px": 600,
+  "excerpt": "'{|class=\"wikitable __canChangeDiff__\" style=\"text-align:center; width:600px; display:table; white-space:normal;tabl"
+ }
+]

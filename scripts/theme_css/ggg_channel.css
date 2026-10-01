@@ -1,0 +1,4 @@
+/* 频道表头行内写死 #fbe928 黄底，暗色下与 .announce 一致压暗（值沿用上方 .announce 的暗色） */
+html.skin-theme-clientpref-night body .mode_table > tbody > tr:first-child > th {
+  background: #4a4516 !important;
+}

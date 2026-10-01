@@ -1,0 +1,7 @@
+<includeonly><div class="mp-nav__tile mp-a">[[{{{link|}}}|<span class="mp-nav__icon" style="background-position:{{#expr:({{{posx|1}}}-1)*25}}% {{#expr:({{{posy|1}}}-1)*50}}%"></span><span class="mp-nav__zh">{{{label|}}}</span>{{#if:{{{enlabel|}}}|<span class="mp-nav__en">{{{enlabel}}}</span>}}]]</div></includeonly><noinclude>
+首页入口网格的一格：
+
+<code><nowiki>{{Mpbutton/sandbox|posx=1|posy=1|label=干员档案|enlabel=Operators|link=干员一览}}</nowiki></code>
+
+图标用站上那张 5×3 雪碧图，<code>posx</code> / <code>posy</code> 换算成百分比定位，格子缩放时图标跟着缩，不需要缩放脚本。
+</noinclude>

@@ -1,0 +1,6 @@
+<includeonly>{{首页/亮点干员卡/sandbox|1={{{1|}}}|module={{{2|}}}|sub={{{3|}}}|elite=2|link={{{1|}}}{{#if:{{{3|}}}|&#35;{{{3}}}}}}}</includeonly><noinclude>
+「新增模组」的一张卡，签名与 {{tl|新增模组}} 一致（<code>1</code>=干员 · <code>2</code>=模组类型 · <code>3</code>=模组名），
+[[首页/亮点干员/新增模组/数据]] 直接喂给它。
+
+链接到干员页的模组章节。锚点的井号写成 <code>&amp;#35;</code>：<code>#if</code> 的分支以井号开头会被当成有序列表。
+</noinclude>

@@ -1,0 +1,83 @@
+[project]
+name = "prts-skin-migration"
+version = "0.1.0"
+description = "把 prts.wiki 现有模板 / 微件迁移到新版皮肤的机器人"
+requires-python = ">=3.13, <4.0"
+dependencies = [
+    "click>=8.1.0,<9.0.0",
+    "loguru>=0.7.0,<1.0.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.7.0",
+    "httpx>=0.28.0,<1.0.0",
+    "tenacity>=9.0.0,<10.0.0",
+    "aiomysql>=0.3.2",
+]
+
+[project.scripts]
+wikibot = "wikibot.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0.0,<5",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.15.0,<1",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = [
+    "F",     # pyflakes
+    "W",     # pycodestyle warnings
+    "E",     # pycodestyle errors
+    "I",     # isort
+    "UP",    # pyupgrade
+    "ASYNC", # flake8-async
+    "C4",    # flake8-comprehensions
+    "T10",   # flake8-debugger
+    "T20",   # flake8-print
+    "PYI",   # flake8-pyi
+    "Q",     # flake8-quotes
+    "TC",    # flake8-type-checking
+    "TID",   # flake8-tidy-imports
+    "DTZ",   # flake8-datetimez
+    "RUF",   # Ruff-specific rules
+]
+ignore = [
+    "E402",   # module-import-not-at-top-of-file
+    "UP037",  # quoted-annotation
+    "RUF001", # ambiguous-unicode-character-string
+    "RUF002", # ambiguous-unicode-character-docstring
+    "RUF003", # ambiguous-unicode-character-comment
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["wikibot"]
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+[tool.pyright]
+extraPaths = ["./"]
+pythonVersion = "3.13"
+pythonPlatform = "All"
+typeCheckingMode = "standard"
+disableBytesTypePromotions = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.uv.build-backend]
+module-name = "wikibot"
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.8.4,<0.9.0"]
+build-backend = "uv_build"

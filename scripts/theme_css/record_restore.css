@@ -1,0 +1,12 @@
+/* 表头底色由调用方的「主题色」参数决定，文字色不能跟随明暗主题：固定为深字（与改动前浅色下一致）。
+   「反色」参数输出的 .revertrec 站内从来没有样式，调用方在浅色、深色主题色上都用过，这里也不赋予它含义。
+   链接和折叠按钮跟随文字色。 */
+.record-restore-title {
+  color: #202122;
+}
+.record-restore-title a,
+.record-restore-title a:visited,
+.record-restore-title .mw-collapsible-toggle,
+.record-restore-title .mw-collapsible-toggle .mw-collapsible-text {
+  color: inherit;
+}

@@ -1,0 +1,16 @@
+<includeonly><!--
+  今日信息 · 补充说明。按 G7 的决定重排：
+  网页活动搬到 Hero 下方（见 首页/网页活动），剿灭 & 周常刷新有专门的倒计时块，
+  这里只留「临时性、要提醒一眼」的信息，并按轻重分 danger / warning / 普通三档
+  ——旧版是清一色的 <p>，「服务器维护中」和「资质凭证刷新」长得一模一样。
+  数据源与旧版一致，都是 PRTS:Gameinfo 的分段引用。
+-->{{#ifeq:{{#lst:PRTS:Gameinfo/国服/服务器信息|cnservstatus}}|maintain|{{当前信息/条/sandbox|level=danger|icon=lock|'''服务器维护中'''{{#if:{{#lst:PRTS:Gameinfo/国服/服务器信息|cnmaintend}}|，预计维护至|，结束时间未定}}|until={{#lst:PRTS:Gameinfo/国服/服务器信息|cnmaintend}}|untilLabel=结束}}}}<!--
+-->{{#ifexpr:{{#time:U|{{#lst:PRTS:Gameinfo/国服/服务器维护|cnmaintstart}} -8 hours}} > {{#time:U}}|{{当前信息/条/sandbox|level=warning|icon=history|下一次停机维护|until={{#lst:PRTS:Gameinfo/国服/服务器维护|cnmaintstart}}|untilLabel=开始}}}}<!--
+-->{{#ifexpr:{{#time:U}} > {{#time:U|{{#lst:PRTS:Gameinfo/国服/服务器维护|cnmaintstart}} -8 hours}} and {{#time:U|{{#lst:PRTS:Gameinfo/国服/服务器维护|cnmaintend}} -8 hours}} > {{#time:U}}|{{#ifeq:{{#lst:PRTS:Gameinfo/国服/服务器维护|cnflmaint}}|是|{{当前信息/条/sandbox|level=danger|icon=reload|'''闪断更新中'''，无需停机|until={{#lst:PRTS:Gameinfo/国服/服务器维护|cnmaintend}}}}}}}}<!--
+-->{{#ifexpr:{{#time:j|+52 hours}}=2|{{当前信息/条/sandbox|icon=ticket|'''资质凭证采购'''将于今晚刷新。}}}}<!--
+-->{{#ifexpr: 16-{{#timel:j|-4 hours}}>0 and 16-{{#timel:j|-4 hours}}<=3|{{当前信息/条/sandbox|icon=target|[[关卡一览#保全派驻|保全派驻]]奖励周期进度即将刷新，注意派驻周期任务。|until={{#time: Y-m-d 20:00|{{#time:Y}}-{{#time:m}}-15}}|untilLabel=刷新}}}}<!--
+-->{{#ifexpr:{{#time:U|+720 hours}} > {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|towerseasonend}} -8 hours}} and {{#time:U}} < {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|towerseasonend}} -8 hours}}|{{当前信息/条/sandbox|icon=target|[[关卡一览#保全派驻|保全派驻]]'''{{#lst:PRTS:Gameinfo/国服/基础|towerseason}}'''即将结束，注意派驻周期任务。|until={{#lst:PRTS:Gameinfo/国服/基础|towerseasonend}}}}}}<!--
+-->{{#ifexpr:{{#time:U}} > {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|cncmpstart}} -8 hours}} and {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|cncmpend}} -8 hours}} > {{#time:U}}|{{当前信息/条/sandbox|icon=die|[[关卡一览#剿灭作战|全局剿灭模拟]]'''开放中'''。|until={{#lst:PRTS:Gameinfo/国服/基础|cncmpend}}}}}}<!--
+-->{{#ifexpr:{{#time:U}} > {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|cnbatstart}} -8 hours}} and {{#time:U|{{#lst:PRTS:Gameinfo/国服/基础|cnbatend}} -8 hours}} > {{#time:U}}|{{当前信息/条/sandbox|icon=infoFilled|'''再战激励'''生效中：挑战'''{{#lst:PRTS:Gameinfo/国服/基础|cnbat}}'''任意难度下未通关的关卡，失败返还全额理智且不破碎理智护盾。|until={{#lst:PRTS:Gameinfo/国服/基础|cnbatend}}}}}}{{当前信息/临时提醒/sandbox}}</includeonly><noinclude>
+首页「今日信息 · 补充说明」的内容。一条一行，见 {{tl|当前信息/条/sandbox}}。
+</noinclude>

@@ -1,0 +1,29 @@
+# 本项目（gitignore 不支持行内注释，注释必须单独成行）
+# 抓取下来的页面快照
+cache/
+# plan / scan 生成的报告
+reports/
+# 迁移进度
+state.json
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+
+# 环境变量
+.env
+.env.local
+
+# 编辑器 / 系统
+.idea/
+.vscode/*
+!.vscode/settings.json
+.DS_Store

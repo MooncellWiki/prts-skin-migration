@@ -1,0 +1,960 @@
+[
+ {
+  "category": "inline-block/flex/grid 内",
+  "signature": "div.template-spoilerhide[display:inline-block,max-width:%,width:len] > div.template-spoilerhide-content > TABLE[display:table]",
+  "tables": 2,
+  "pages": 2,
+  "sources": {
+   "直接改动页": 2
+  },
+  "examples": [
+   "愚人节活动/2023",
+   "怪盗的密室挑战"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "inline-block/flex/grid 内",
+  "signature": "div[display:inline-block] > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "登临意2024"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.mw-collapsed.mw-collapsible.wikitable[display:table,width:len] > tbody > tr > td > TABLE[display:table]",
+  "tables": 31,
+  "pages": 2,
+  "sources": {
+   "直接改动页": 28,
+   "模板引用页": 3
+  },
+  "examples": [
+   "愚人节活动",
+   "崔林特尔梅之金/PRTS金律记录"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "dd > table.mw-collapsed.mw-collapsible.wikitable[display:table] > tbody > tr > td > TABLE[display:table]",
+  "tables": 6,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 6
+  },
+  "examples": [
+   "沙洲遗闻/陌域"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.mw-collapsed.mw-collapsible.wikitable[width:len] > tbody > tr > td > div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE",
+  "tables": 3,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 3
+  },
+  "examples": [
+   "火蓝之心"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.wikitable > tbody > tr > td > TABLE[display:table]",
+  "tables": 2,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 2
+  },
+  "examples": [
+   "用户讨论:Hydrogina"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "div.section_tabcontent > table.wikitable[width:%,max-width:len] > tbody > tr > td > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "泰拉大典:角色/砾"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "div.section_tabcontent > table.wikitable[width:%,max-width:len] > tbody > tr > td > TABLE[max-width:%,display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "泰拉大典:角色/砾"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "div.section_tabcontent > table.wikitable[width:%,max-width:len] > tbody > tr > td > TABLE",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "泰拉大典:角色/砾"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.mw-collapsed.mw-collapsible.wikitable[width:len,display:table] > tbody > tr > td > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "游戏数据基础"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.wikitable[width:len] > tbody > tr > td > TABLE",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "单元格内",
+  "signature": "table.mw-collapsed.mw-collapsible.wikitable.wikitable[width:len] > tbody > tr > td > TABLE",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > TABLE",
+  "tables": 264,
+  "pages": 152,
+  "sources": {
+   "直接改动页": 132,
+   "模板引用页": 132
+  },
+  "examples": [
+   "用户:冬金/Sandbox/标题",
+   "泰拉大典:组织/莱茵生命"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > TABLE[display:table]",
+  "tables": 244,
+  "pages": 84,
+  "sources": {
+   "直接改动页": 74,
+   "模板引用页": 170
+  },
+  "examples": [
+   "用户:Rivdo/Sandbox/泰拉大典:角色/孑",
+   "泰拉大典:家具"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE[display:table]",
+  "tables": 213,
+  "pages": 62,
+  "sources": {
+   "模板引用页": 42,
+   "直接改动页": 171
+  },
+  "examples": [
+   "游戏数据基础",
+   "矢量突破/02",
+   "长夜临光2022",
+   "明日方舟：焰烬曙明OST",
+   "纷争演绎",
+   "崔林特尔梅之金/PRTS金律记录",
+   "用户:怀上乘凉梦/Sandbox",
+   "沃伦姆德的薄暮2021"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE",
+  "tables": 195,
+  "pages": 107,
+  "sources": {
+   "直接改动页": 99,
+   "模板引用页": 96
+  },
+  "examples": [
+   "泰拉大典:角色/赫拉格",
+   "用户:西站/大典角色3"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.collapsible-block-8 > div.collapsible-block-unfolded-8[display:none] > div.collapsible-block-content-8[display:block] > TABLE",
+  "tables": 130,
+  "pages": 2,
+  "sources": {
+   "直接改动页": 130
+  },
+  "examples": [
+   "用户:Mxxisv/时装回廊",
+   "用户:ZheiZhei/画师图库"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.enemyinfo > TABLE[display:table]",
+  "tables": 120,
+  "pages": 108,
+  "sources": {
+   "模板引用页": 30,
+   "直接改动页": 90
+  },
+  "examples": [
+   "多索雷斯假日2022",
+   "银心湖列车"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > TABLE[max-width:%,display:table]",
+  "tables": 63,
+  "pages": 63,
+  "sources": {
+   "直接改动页": 31,
+   "模板引用页": 32
+  },
+  "examples": [
+   "泰拉大典:角色/水月",
+   "用户:Rivdo/Sandbox/泰拉大典:角色/余"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.template-documentation > TABLE[display:table]",
+  "tables": 53,
+  "pages": 29,
+  "sources": {
+   "模板引用页": 28,
+   "直接改动页": 25
+  },
+  "examples": [
+   "模板:装置信息",
+   "模板:人员档案/sandbox",
+   "模板:普通关卡信息",
+   "模板:沙盘推演",
+   "模板:剿灭作战",
+   "模板:家具信息",
+   "模板:敌人信息/uncommon",
+   "模板:干员攻击范围"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.mw-collapsed.mw-collapsible > TABLE[display:table]",
+  "tables": 47,
+  "pages": 12,
+  "sources": {
+   "模板引用页": 24,
+   "直接改动页": 23
+  },
+  "examples": [
+   "保全派驻",
+   "岁的界园志异",
+   "萨卡兹的无终奇语/深入探索",
+   "公开招募",
+   "模板:主题曲调音/switch",
+   "叙拉古人2023",
+   "任务列表/存档：欢迎回到罗德岛"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div > div.mw-collapsed.mw-collapsible.u-content > div.u-photo > TABLE[display:inline-table]",
+  "tables": 37,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 37
+  },
+  "examples": [
+   "愚人节活动/2023/Archive"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > TABLE[float:right]",
+  "tables": 24,
+  "pages": 23,
+  "sources": {
+   "直接改动页": 22,
+   "模板引用页": 2
+  },
+  "examples": [
+   "泰拉大典:地理/长泉镇",
+   "泰拉大典:地理/龙门"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE",
+  "tables": 21,
+  "pages": 8,
+  "sources": {
+   "直接改动页": 14,
+   "模板引用页": 7
+  },
+  "examples": [
+   "傀影与猩红孤钻",
+   "音律联觉/灯下定影",
+   "罗德岛基建",
+   "火蓝之心",
+   "游戏数据基础/en"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.nomobile.thumb.tright > TABLE[@align=right]",
+  "tables": 18,
+  "pages": 18,
+  "sources": {
+   "直接改动页": 17,
+   "模板引用页": 1
+  },
+  "examples": [
+   "冰原战士",
+   "最后的骑士"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.mw-collapsible > TABLE[display:table]",
+  "tables": 17,
+  "pages": 7,
+  "sources": {
+   "模板引用页": 5,
+   "直接改动页": 12
+  },
+  "examples": [
+   "萨卡兹的无终奇语/深入探索",
+   "沉沦者的黑流树海",
+   "叙拉古人/待办事项记录"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.template-documentation > TABLE",
+  "tables": 14,
+  "pages": 11,
+  "sources": {
+   "模板引用页": 11,
+   "直接改动页": 3
+  },
+  "examples": [
+   "模板:干员时装",
+   "模板:种族考据",
+   "模板:道具考据",
+   "模板:组合包",
+   "模板:角色考据",
+   "模板:角色资料",
+   "模板:组织考据",
+   "模板:角色原型"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.mw-collapsed.mw-collapsible > TABLE",
+  "tables": 8,
+  "pages": 5,
+  "sources": {
+   "模板引用页": 4,
+   "直接改动页": 4
+  },
+  "examples": [
+   "傀影与猩红孤钻",
+   "傀影与猩红孤钻/猩红珍藏"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.AKCollapse.profession-coop[display:none,max-width:len] > div.AKCollapse-content > TABLE[display:table]",
+  "tables": 8,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 8
+  },
+  "examples": [
+   "次生预案"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.template-documentation > div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE[display:table]",
+  "tables": 4,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 4
+  },
+  "examples": [
+   "模板:需求材料干员"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.mb-center > TABLE[display:inline-table]",
+  "tables": 3,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 3
+  },
+  "examples": [
+   "愚人节活动/2023/Archive"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.section_tabcontent > div.tabber.tabber--init > div.tabber__section > div.tabber__panel > TABLE[display:table]",
+  "tables": 3,
+  "pages": 2,
+  "sources": {
+   "模板引用页": 3
+  },
+  "examples": [
+   "泰拉大典:角色/傀影",
+   "泰拉大典:角色/凛冬"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.AKCollapse.mhmission[display:none] > TABLE[display:table]",
+  "tables": 2,
+  "pages": 2,
+  "sources": {
+   "直接改动页": 1,
+   "模板引用页": 1
+  },
+  "examples": [
+   "泡影苍霆",
+   "落叶逐火2026"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.AKCollapse[display:none,max-width:len] > div.AKCollapse-content > TABLE[max-width:%]",
+  "tables": 2,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 2
+  },
+  "examples": [
+   "新人入门"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.tabber.tabber--init > div.tabber__section > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "重启锚点"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.april-fools-2023-section > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 1
+  },
+  "examples": [
+   "愚人节活动"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.mw-collapsed.mw-collapsible[max-width:len] > TABLE",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 1
+  },
+  "examples": [
+   "ORACLE DATABASE/index/pv2"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.AKCollapse.is5[display:none,max-width:len] > div.AKCollapse-content > dl > dd > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 1
+  },
+  "examples": [
+   "萨卡兹的无终奇语"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.thumb.tright > TABLE[@align=right]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "揭幕者们/互动记录"
+  ],
+  "verdict": "safe",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "带 class 的块容器内（需看计算样式）",
+  "signature": "div.nomobile > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "关卡一览/曲谱"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[display:table]",
+  "tables": 10965,
+  "pages": 3030,
+  "sources": {
+   "直接改动页": 8062,
+   "模板引用页": 2903
+  },
+  "examples": [
+   "关卡一览/主题曲",
+   "沉沦者的黑流树海",
+   "愚人节活动",
+   "保全派驻",
+   "游戏数据基础/jp",
+   "卫戍协议：盟约 下半",
+   "音律联觉/不觅浪尘",
+   "险地16-17 力竭声嘶"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE",
+  "tables": 3091,
+  "pages": 859,
+  "sources": {
+   "模板引用页": 1874,
+   "直接改动页": 1217
+  },
+  "examples": [
+   "刻俄柏的灰蕈迷境",
+   "衍生作品/出版物",
+   "愚人号2023",
+   "新人入门",
+   "ORACLE DATABASE/index/pv4",
+   "音律联觉/愚夜密函",
+   "CH-7 我方元素损伤",
+   "水月与深蓝之树/深蓝记录仪"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "div > TABLE[display:table]",
+  "tables": 65,
+  "pages": 31,
+  "sources": {
+   "模板引用页": 45,
+   "直接改动页": 20
+  },
+  "examples": [
+   "TN-1 冰霜与战火",
+   "沙中之火"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[max-width:%,display:table]",
+  "tables": 43,
+  "pages": 17,
+  "sources": {
+   "直接改动页": 43
+  },
+  "examples": [
+   "凯尔希(回声测试)",
+   "水月与深蓝之树/诡意行商",
+   "泰拉大典:集成战略/事件",
+   "BF-1 这是第一关"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "dl > dd > TABLE[display:table]",
+  "tables": 21,
+  "pages": 14,
+  "sources": {
+   "直接改动页": 15,
+   "模板引用页": 6
+  },
+  "examples": [
+   "崔林特尔梅之金",
+   "太阳甩在身后2025",
+   "尖灭测试作战",
+   "游城拓荒：铸基者",
+   "促融共竞/01",
+   "罗德岛鳞丸移动食坊",
+   "纷争演绎",
+   "卫戍协议/2024"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[max-width:%]",
+  "tables": 18,
+  "pages": 8,
+  "sources": {
+   "直接改动页": 15,
+   "模板引用页": 3
+  },
+  "examples": [
+   "刻俄柏的灰蕈迷境/诡意行商",
+   "配音一览/茅野愛衣",
+   "特派信使！使命必达？",
+   "模块:Arguments/doc",
+   "怪盗的密室挑战",
+   "叙拉古人/艺术评论"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "center > TABLE",
+  "tables": 9,
+  "pages": 9,
+  "sources": {
+   "模板引用页": 9
+  },
+  "examples": [
+   "促融共竞",
+   "矢量突破/03"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[display:inline-table]",
+  "tables": 6,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 6
+  },
+  "examples": [
+   "Mysterious Cave"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "blockquote > TABLE",
+  "tables": 3,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 3
+  },
+  "examples": [
+   "PRTS:编辑指南/衍生作品"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "div > div > TABLE[display:table]",
+  "tables": 2,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 2
+  },
+  "examples": [
+   "TN-4 辞旧岁"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "dl > dd > dl > dd > TABLE[display:table]",
+  "tables": 2,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 2
+  },
+  "examples": [
+   "重启锚点"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "dl > dd > TABLE",
+  "tables": 2,
+  "pages": 2,
+  "sources": {
+   "模板引用页": 1,
+   "直接改动页": 1
+  },
+  "examples": [
+   "音律联觉/灯下定影",
+   "沙中之火"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "div[position:relative] > TABLE[display:table]",
+  "tables": 2,
+  "pages": 2,
+  "sources": {
+   "模板引用页": 1,
+   "直接改动页": 1
+  },
+  "examples": [
+   "愚人节活动",
+   "愚人节活动/2024"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[display:table,max-width:len]",
+  "tables": 2,
+  "pages": 2,
+  "sources": {
+   "模板引用页": 1,
+   "直接改动页": 1
+  },
+  "examples": [
+   "落叶逐火2026",
+   "落叶逐火"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[@align=right]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "曼提柯杀手"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "small > TABLE[display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "模板引用页": 1
+  },
+  "examples": [
+   "假日威龙陈/天赋sandbox"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "正文流（块级容器）",
+  "signature": "(根) > TABLE[max-width:len,display:table]",
+  "tables": 1,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 1
+  },
+  "examples": [
+   "博士行为测试"
+  ],
+  "verdict": "safe",
+  "action": "改写"
+ },
+ {
+  "category": "绝对定位内",
+  "signature": "table.wikitable[width:len,max-width:%] > tbody > tr > td > span.screen_1_2[display:none,position:absolute,width:%,max-width:len] > span.mc-tooltips > span[display:none] > TABLE[max-width:%]",
+  "tables": 10,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 10
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "绝对定位内",
+  "signature": "table.wikitable[width:len,max-width:%] > tbody > tr > td > span.screen_4_2[display:none,position:absolute,width:%,max-width:len] > span.mc-tooltips > span[display:none] > TABLE[max-width:%]",
+  "tables": 9,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 9
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "绝对定位内",
+  "signature": "table.wikitable[width:len,max-width:%] > tbody > tr > td > span.screen_2_2[display:none,position:absolute,width:%,max-width:len] > span.mc-tooltips > span[display:none] > TABLE[max-width:%]",
+  "tables": 8,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 8
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ },
+ {
+  "category": "绝对定位内",
+  "signature": "table.wikitable[width:len,max-width:%] > tbody > tr > td > span.screen_3_2[display:none,position:absolute,width:%,max-width:len] > span.mc-tooltips > span[display:none] > TABLE[max-width:%]",
+  "tables": 7,
+  "pages": 1,
+  "sources": {
+   "直接改动页": 7
+  },
+  "examples": [
+   "怪盗的密室挑战"
+  ],
+  "verdict": "unverified",
+  "action": "跳过（不改）"
+ }
+]

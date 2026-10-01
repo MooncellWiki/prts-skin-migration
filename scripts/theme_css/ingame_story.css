@@ -1,0 +1,6 @@
+/* 标题栏是 #bdbdbd 灰底，折叠按钮（皮肤链接色）在上面不到 3:1，跟随标题文字色。
+   按钮是 <button>，皮肤给按钮、核心给按钮文字各上了一次链接色，两层都要改 */
+.ingame-story-title .mw-collapsible-toggle,
+.ingame-story-title .mw-collapsible-toggle .mw-collapsible-text {
+  color: inherit;
+}

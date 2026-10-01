@@ -1,0 +1,6 @@
+<includeonly><li class="{{#if:{{{level|}}}|is-{{{level}}}|mp-note}}"><span class="ak-icon {{#switch:{{{icon|info}}}|lock|die|history|reload|infoFilled=ak-icon--{{{icon}}}|#default=mp-i mp-i--{{{icon|info}}}}}"></span><span>{{{1|}}}</span>{{#if:{{{until|}}}|<span class="mp-notes__meta"><b>{{#time:n月j日 H:i|{{{until}}}}}</b> {{{untilLabel|结束}}}</span>}}</li></includeonly><noinclude>
+「今日信息 · 补充说明」里的一条。
+
+参数：<code>1</code>=正文 · <code>level</code>=<code>danger</code>/<code>warning</code>（留空为普通）·
+<code>icon</code>=图标名 · <code>until</code>=右侧时间 · <code>untilLabel</code>=时间后缀（默认「结束」）
+</noinclude>

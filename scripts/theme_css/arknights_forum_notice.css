@@ -1,0 +1,22 @@
+/* 反馈与建议版头的公告框（模板:反馈与建议/描述，类定义在 Common.css）：那边只写了浅色底、没写字色。
+   Vector 下 Flow 把版头文字一律压成黑色所以读得出来；本皮肤的版头文字跟随主题，暗色下成了浅底浅字。
+   浅色沿用 Common.css 的底色不动；暗色换成「边框色 10% 混进皮肤暗色 surface #1a1b1c」的深底，文字继承主题前景色。
+   写死色值而不用 color-mix()（Chrome 111 / Safari 16.2 / Firefox 113 起才支持）。
+   不放进模板的 TemplateStyles：Flow 版头会把 <style> 的内容当正文显示出来（Common.css 那段的注释里记着）。
+   不放进 Common.css：Vector 下版头文字是黑的，深底会撞色。 */
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-green,
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-teal {
+  background: #192a26;
+}
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-red {
+  background: #2f2222;
+}
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-blue {
+  background: #1e2630;
+}
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-yellow {
+  background: #302b21;
+}
+html.skin-theme-clientpref-night .mw-parser-output .forum-notice-orange {
+  background: #31221f;
+}

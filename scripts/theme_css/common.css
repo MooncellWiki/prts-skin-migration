@@ -1,0 +1,76 @@
+/* 页面级语义变量：浅色值见上方 :root。暗色值原先只写在 Gadget-darkModeFix.css（非默认小工具，
+   且没有自动偏好分支），所以默认暗色下 .prts-table-card-bg、var(--prts-page-text) 等仍是白底黑字。
+   中性色对齐皮肤暗色令牌（正文 #f0f0f0 / surface #1a1b1c / surface-2 #232425 / surface-3 #2d2e30）。 */
+:root {
+  --prts-alert-text: #ff0000; /* 醒目红字：{{color|red}} 等 */
+}
+
+html.skin-theme-clientpref-night body {
+  --prts-page-text: #f0f0f0;
+  --prts-page-border: #54595d;
+  --prts-page-card-bg: #1a1b1c;
+  --prts-page-subtle-bg: #232425;
+  --prts-page-shadow: rgba(0, 0, 0, 0.65);
+  --prts-red-text: #ff6b6b;
+  --prts-alert-text: #ff9d9d;
+  --prts-warning-text: #ffd27a;
+  --prts-warning-bg: #2a2111;
+  --prts-warning-border: #d89b32;
+  --prts-muted-text: #8d8d8d;
+  --prts-muted-section-bg: #2d2e30;
+  --prts-museum-panel-bg: #202326;
+  --prts-item-count-shadow: #111820;
+}
+
+/* 深色折叠表：Vector 的表头文字靠 var(--color-base)，皮肤 tables.css 的
+   .wikitable > * > tr > th { color }（0,1,3）压过了上方 .mw-collapsible-dark th（0,1,1），
+   表头变成深底深字。这里补足特指度。折叠按钮走 --color-progressive，上方变量块已设成橙色；
+   表头里的链接同样用这个橙色（Vector 下链接色也是 --color-progressive）。 */
+table.mw-collapsible-dark > * > tr > th {
+  color: #fff;
+}
+table.mw-collapsible-dark > * > tr > th a,
+table.mw-collapsible-dark > * > tr > th a:visited {
+  color: #ff8f00;
+}
+table.mw-collapsible-dark > * > tr > th a:hover {
+  color: #ffa333;
+}
+table.mw-collapsible-dark > * > tr > th .mw-collapsible-toggle-default::before,
+table.mw-collapsible-dark > * > tr > th .mw-collapsible-toggle-default::after {
+  color: #c8ccd1;
+}
+
+/* 深色底表格（收藏品 / 道具卡一类，整张表都是深灰底）：文字白色，表头跟随表格文字色。
+   皮肤的表头规则会压过从表格继承来的颜色，只在表格上写 color 管不到 th。
+   .prts-table-ra-token 原先只写了 --color-base，一并补上。 */
+.prts-table-dark,
+.prts-table-ra-token {
+  color: #fff;
+}
+table.prts-table-dark > * > tr > th,
+table.prts-table-ra-token > * > tr > th {
+  color: inherit;
+}
+/* 链接：皮肤链接色在 #7f8082 灰底上不到 2:1，用接近白的浅蓝（#7f8082 上 3.3:1、#464646 上 8:1） */
+.prts-table-dark a,
+.prts-table-dark a:visited,
+.prts-table-ra-token a,
+.prts-table-ra-token a:visited {
+  color: #d6f0ff;
+}
+
+/* 固定底色（多为深色）的单个表头 / 单元格：文字默认白色（行内写了 color 的以行内为准），
+   里面的链接和折叠按钮跟随文字色
+   （皮肤链接色 #0072a8 在深灰、深蓝底上不到 2:1。折叠按钮是 <button>，皮肤给按钮、核心给按钮文字
+   各上了一次链接色，两层都要改） */
+.prts-cell-dark,
+.wikitable > * > tr > .prts-cell-dark {
+  color: #fff;
+}
+.prts-cell-dark a,
+.prts-cell-dark a:visited,
+.prts-cell-dark .mw-collapsible-toggle,
+.prts-cell-dark .mw-collapsible-toggle .mw-collapsible-text {
+  color: inherit;
+}

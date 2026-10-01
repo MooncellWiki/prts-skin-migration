@@ -1,0 +1,28 @@
+<includeonly><style>
+div.fnameheader{
+    float: right;
+    font-size: 1em;
+    font-family: sans-serif;
+    white-space: nowrap;
+    word-break: keep-all;
+    /*background: linear-gradient(160deg, transparent 30%, #00000050);*/
+    padding-right: 5px;
+    /*text-shadow: 0 0 5px white;*/
+}
+</style>
+<script type="text/javascript">
+RLQ.push(['jquery',function(){
+
+/* Skin:Arknights：标题里的 .ak-en 是皮肤给英文副标题留的位（标题下方一行、半字号、灰色），手机上自然折行，不再分桌面 / 移动两份。
+   解析缓存各皮肤共用，只能在这里按皮肤分支。见 prts-skin-migration/migration/subname/README.md */
+if (mw.config.get('skin') === 'arknights') {
+$("\<div class\=\'prts-subname ak-en\'\><!--{$fullname|regex_replace:"/\"/":"\\\""|regex_replace:"/\n/":"\\n"|regex_replace:"/\//":"\\\/"}-->\<\/div\>").appendTo("#firstHeading");
+return;
+}
+
+$("\<div class\=\'fnameheader nomobile\'\ style\=\'text-align: right;\'><!--{$fullname|regex_replace:"/\"/":"\\\""|regex_replace:"/\n/":"\\n"|regex_replace:"/\//":"\\\/"}-->\<\/div\>").prependTo("#firstHeading");
+
+$("\<div class\=\'fnameheader nodesktop\'\ style\=\'font-size: .5em;float: none;font-weight: normal;font-style: italic;background: linear-gradient(90deg, #00000050, transparent 60%);padding: 3px;\'><!--{$fullname|regex_replace:"/\"/":"\\\""|regex_replace:"/\n/":"\\n"|regex_replace:"/\//":"\\\/"}-->\<\/div\>").prependTo("#firstHeading");
+
+}]);
+</script></includeonly>

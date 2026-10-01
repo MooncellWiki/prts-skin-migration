@@ -1,0 +1,50 @@
+--- a/prts/varnish/default.vcl
++++ b/prts/varnish/default.vcl
+@@ -51,6 +51,13 @@
+     }
+ 	unset req.http.X-Subdomain;
+ 
++	# 匿名换肤 cookie（微件:SkinSwitch 写入，etc/post-config.php 的 RequestContextCreateSkin 钩子读取）。
++	# 只认白名单里的值；选了皮肤的人不进移动版（移动版强制 Minerva）。
++	unset req.http.X-Skin;
++	if (req.http.cookie ~ "(^|;\s*)akskin=(arknights|vector)\s*(;|$)") {
++		set req.http.X-Skin = regsub(req.http.cookie, "^(?:.*;\s*)?akskin=(arknights|vector)\s*(?:;.*)?$", "\1");
++	}
++
+ 	if (req.http.cookie ~ "within.website-x-cmd-sisyphus-auth") {
+ 		set req.http.sisyphus = "1";
+ 	}
+@@ -59,7 +66,7 @@
+ 		if (req.url ~ "mobileaction=toggle_view_desktop") {
+ 			return(synth(751, "https://prts.wiki" + regsub(req.url, "mobileaction=toggle_view_desktop", "")));
+ 		}
+-		if (req.http.cookie !~ "stopMobileRedirect=true" && req.http.User-Agent ~ "(?i)^(lg-|sie-|nec-|lge-|sgh-|pg-)|(mobi|240x240|240x320|320x320|alcatel|android|audiovox|bada|benq|blackberry|cdm-|compal-|docomo|ericsson|hiptop|htc[-_]|huawei|ipod|kddi-|kindle|meego|midp|mitsu|mmp\/|mot-|motor|ngm_|nintendo|opera.m|palm|panasonic|philips|phone|playstation|portalmmm|sagem-|samsung|sanyo|sec-|sendo|sharp|softbank|symbian|teleca|up.browser|webos)") {
++		if (!req.http.X-Skin && req.http.cookie !~ "stopMobileRedirect=true" && req.http.User-Agent ~ "(?i)^(lg-|sie-|nec-|lge-|sgh-|pg-)|(mobi|240x240|240x320|320x320|alcatel|android|audiovox|bada|benq|blackberry|cdm-|compal-|docomo|ericsson|hiptop|htc[-_]|huawei|ipod|kddi-|kindle|meego|midp|mitsu|mmp\/|mot-|motor|ngm_|nintendo|opera.m|palm|panasonic|philips|phone|playstation|portalmmm|sagem-|samsung|sanyo|sec-|sendo|sharp|softbank|symbian|teleca|up.browser|webos)") {
+ 			return(synth(750, "https://m.prts.wiki" + req.url));
+ 		}
+ 	}
+@@ -67,6 +74,9 @@
+ 		if (req.url ~ "mobileaction=toggle_view_mobile") {
+ 			return(synth(752, "https://m.prts.wiki" + regsub(req.url, "mobileaction=toggle_view_mobile", "")));
+ 		}
++		if (req.http.X-Skin) {
++			return(synth(753, "https://prts.wiki" + req.url));
++		}
+ 		set req.http.X-Subdomain = "m";
+ 	}
+ 	# Pass requests from logged-in users directly.
+@@ -83,6 +93,14 @@
+ 	} else {
+ 		unset req.http.cookie;
+ 	}
++	# 归一化后的 cookie 进缓存键（vcl_hash），皮肤 cookie 追加在语言 cookie 后面
++	if (req.http.X-Skin) {
++		if (req.http.cookie) {
++			set req.http.cookie = req.http.cookie + "; akskin=" + req.http.X-Skin;
++		} else {
++			set req.http.cookie = "akskin=" + req.http.X-Skin;
++		}
++	}
+ 	# if (req.url ~ ".php") {
+ 	# 	if (vsthrottle.is_denied(client.identity, 30, 10s, 300s)) {
+     # 		# Client has exceeded 30 reqs per 10s.

@@ -1,0 +1,15 @@
+/* 皮肤把正文里的 .poem 画成引用块（左侧细线 + 缩进）；这里的 poem 只用来保留描述 / 备注的换行，
+   居中的描述左边多出一条竖线，去掉（同 悖论模拟 的处理） */
+.wikitable.multi-relic-table .poem {
+  padding-left: 0;
+  border-left: 0;
+}
+/* 主题行写死 #f2f2f2 浅灰底（上方规则和模板行内 style 各一份），暗色下浅底配浅字 / 浅色链接。
+   暗色值由浅色值推导（dark_variant，与皮肤表头同为 surface-2）；行内样式要 !important 才盖得住 */
+html.skin-theme-clientpref-night body .wikitable.multi-relic-table th.multi-relic-theme-head {
+  background: #232425 !important;
+}
+/* 折叠按钮写死 #36c，暗色底上同色相提亮（text_variant） */
+html.skin-theme-clientpref-night body .wikitable.multi-relic-table .multi-relic-collapse-toggle {
+  color: #6594ed;
+}

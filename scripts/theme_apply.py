@@ -1100,6 +1100,22 @@ async def step_enemy_level(c: Ctx) -> None:
     )
 
 
+@step("relic")
+async def step_relic(c: Ctx) -> None:
+    """收藏品/common：主题行写死浅灰底，暗色下浅底浅字；定宽 825px 在窄屏撑破页面。"""
+    await c.edit(
+        "模板:收藏品/common/styles.css",
+        chain(
+            # 同 table-fixed-width 迁移：桌面不变，窄于 825px 的正文栏里不再溢出，
+            # WebKit 也不再把定长 width 当成表格最小宽度
+            sub("    width: 825px;\n", "    width: min(825px, 100%);\n"),
+            with_block("relic-common", "relic_common.css", NOTE),
+        ),
+        "主题行暗色底、折叠按钮暗色字；描述 / 备注去掉皮肤的引用块竖线；"
+        "表格宽度不超过正文栏",
+    )
+
+
 # --------------------------------------------------------------------------- 条目页
 
 

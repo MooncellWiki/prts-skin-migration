@@ -2,6 +2,13 @@
    等级配色、明暗主题、窄屏都由组件负责，这里只写模板特有的部分。
    见 prts-skin-migration/migration/cbox2/README.md */
 
+/* 其他皮肤（旧 Vector / Vector 2022 / Minerva）的正文栏不限宽，铺满后太宽：最宽 825px（旧版 Cbox2 的定宽）。
+   限在外层 .prts-cbox2-host 上，不碰 .ak-cbox 本身——窄版 640px（组件）和页面给 .ak-cbox 写的限宽照样生效。
+   Arknights 皮肤的正文栏本身有限宽，不限 */
+body:not(.skin-arknights) .prts-cbox2-host {
+  max-width: 825px;
+}
+
 /* 自定义配色的框钉成亮色令牌，组件 1px 边框也就是亮色的浅灰，暗色页面上成了一圈白框。
    配色由传进来的颜色决定，边框透明、底色铺到边 */
 .ak-cbox.prts-cbox2--custom {

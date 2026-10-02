@@ -2,7 +2,7 @@
   外层 .ak-host：其他皮肤上 微件:AkComponents 给它加 .ak-scope，样式到位前先藏起来。
   自定义配色（bg 不是五个等级的默认值）的框钉成亮色：.ak-scope[data-theme="light"]，底色、图标井色、图标色原样，
   框里的文字 / 链接也用亮色令牌——这些颜色是按浅色方案挑的。行内 background 压过 .ak-scope[data-theme] 铺的画布底。
---><div class="ak-host"><div class="ak-cbox prts-cbox2 {{#switch:{{{lv|}}}
+--><div class="ak-host prts-cbox2-host"><div class="ak-cbox prts-cbox2 {{#switch:{{{lv|}}}
  |0=ak-cbox--tip
  |1=
  |2|3=ak-cbox--warning

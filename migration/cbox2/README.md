@@ -18,7 +18,7 @@
 ### 模板：输出 `.ak-cbox`
 
 ```
-.ak-host                                   其他皮肤上 微件:AkComponents 加 .ak-scope（同悖论模拟）
+.ak-host.prts-cbox2-host                   其他皮肤上 微件:AkComponents 加 .ak-scope（同悖论模拟）；最宽 825px（见「宽度」）
 └─ .ak-cbox.prts-cbox2[.ak-cbox--tip|--warning|--danger][.ak-cbox--narrow][boxclass]   role="note"
    ├─ span.ak-cbox__icon                   {{mdi}} / {{fa}}，20px
    └─ div.ak-cbox__body                    div.ak-cbox__title + 正文
@@ -33,7 +33,8 @@
   （原来是 FA 的 check / info / exclamation / times）。`line-height: 1` 让 20px 图标的中线对齐正文首行（实测都在 20px）
 - **标题**：`.ak-cbox__title`（加粗、等级色），不再是 `<big>'''…'''</big><br/>`
 - **正文**：照旧经 `{{#if:…|{{{text}}}}}` 输出——以 `*` `#` 开头的正文靠解析器补的换行成为列表（编辑页「用户页准则」那条就是有序列表）
-- **宽度**：默认铺满正文栏；`narrow=1 / yes / true / 是` → `.ak-cbox--narrow`（最宽 640px）。原来的 825px 定宽和 `cbox-autonarrow` 去掉
+- **宽度**：默认铺满正文栏；`narrow=1 / yes / true / 是` → `.ak-cbox--narrow`（最宽 640px）。原来的 825px 定宽和 `cbox-autonarrow` 去掉。
+  其他皮肤（旧 Vector / Vector 2022 / Minerva）的正文栏不限宽，铺满太宽，外层 `.prts-cbox2-host` 最宽 825px（旧版定宽，见下面「其他皮肤限宽」）
 - **单份 DOM**：去掉 `nomobile` / `nodesktop`，窄屏由组件负责
 - 直接调 `/core` 的两处（`复刻参阅`、`孤星2024`）还在用 `content=` 和 `boxclass=`，都保留
 
@@ -84,7 +85,7 @@
 
 ## 外观上的变化（有意为之，跟设计系统走）
 
-- 默认铺满正文栏（原 825px），窄版 640px
+- Arknights 皮肤上默认铺满正文栏（原 825px），其他皮肤照旧最宽 825px；窄版 640px
 - 标题不再放大，改为加粗等级色；正文字号是组件的 `--ak-fs-sm`
 - 不填 `icon` 的框换成线稿图标
 - 1px 边框、不投影（原来是阴影托起）；lv2 / lv3 同为黄色一档（组件文档的约定）
@@ -107,6 +108,25 @@
 
 脚本只删「每个选择器都只针对旧类名」的规则，删完逐条比对其余规则不变、旧类名一个不剩，否则不写。线上复测：切换框 12 个都回到 560px；
 孤星2024 的说明框暗色下是深色渐变、`#4b3c93` 图标井、`#f0f0f0` 正文。
+
+## 其他皮肤限宽（追加）
+
+上线后旧 Vector 上的框铺满了正文栏（1600 宽窗口下 1375px），比旧版的 825px 定宽宽出一大截。Arknights 皮肤的正文栏本身有限宽，不动。
+
+- `/core`：外层宿主加类 `prts-cbox2-host`
+- `Cbox2/styles.css`：`body:not(.skin-arknights) .prts-cbox2-host { max-width: 825px }`（TemplateStyles 把 `.mw-parser-output` 插在 `body:not(…)` 后面）
+
+上限加在宿主上而不是 `.ak-cbox`：写在 `.ak-cbox` 上的话，`body:not(…) .mw-parser-output .ak-cbox…` 的特指度会压过组件的 `.ak-cbox--narrow`（640px）
+和页面自己给 `.ak-cbox` 写的限宽（`岁的界园志异/事件一览` 的 `.legend_switch .ak-cbox {max-width: 35rem}`）。分在两层，各自的上限都生效。
+旧版 `cbox-autonarrow`（窗口 1500px 以下收窄到 640px）不恢复。
+
+沙箱验证（`config.sandbox.toml`，写入后 purge，1600 宽）：
+
+| 页面 | 皮肤 | 结果 |
+| --- | --- | --- |
+| 模板:Cbox2/doc | 旧 Vector | 正文栏 1375px；9 个宿主都是 825px、都加上了 `ak-scope`；各等级框和自定义配色框 825px，窄版 642px |
+| 模板:Cbox2/doc | Arknights | 宿主 `max-width: none`，框铺满正文栏 1030px，窄版 642px，与改前一致 |
+| 岁的界园志异/事件一览 | 旧 Vector | 12 个传说切换框 `max-width: 560px`（35rem）、宿主 825px；其余框 825px |
 
 ## 遗留
 

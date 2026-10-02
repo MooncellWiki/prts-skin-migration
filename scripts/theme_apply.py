@@ -1150,17 +1150,34 @@ def drop_sui_text_rule(text: str) -> str | None:
     return new if count else None
 
 
+_PAGE_NOINCLUDE = re.compile(
+    r"\s*(<noinclude>\{\{#widget:style\|style=\n/\* theme:begin page-dark\b)"
+)
+_HEADING_END = re.compile(r"(?:^|\n)=[^\n]*=[ \t]*$")
+
+
+def _page_noinclude_sep(before: str) -> str:
+    """页尾 <noinclude> 前的空白会跟着嵌入、在主条目里多出空行，所以紧贴前文；
+    前文以标题结尾时留一个换行，否则单看这页时那一行不再是标题。"""
+    return "\n" if _HEADING_END.search(before) else ""
+
+
 def place_page_block(text: str, css: str, sub: bool) -> str:
     """把 ``page-dark`` 区块放进条目：已有就替换，否则按 ``sub`` 选位置。"""
     name = "page-dark"
     block = f"/* theme:begin {name} {PAGE_DARK_NOTE} */\n{css}\n/* theme:end {name} */"
     pattern = _block_re(name)
     if pattern.search(text):
-        return pattern.sub(lambda _: block, text, count=1)
+        text = pattern.sub(lambda _: block, text, count=1)
+        # 旧版在 <noinclude> 前固定留一个换行，重跑时一并收紧
+        return _PAGE_NOINCLUDE.sub(
+            lambda m: _page_noinclude_sep(text[: m.start()]) + m[1], text, count=1
+        )
     spans = [s for s in style_spans(text) if not text[: s[0]].rstrip().endswith(">")]
     if sub or not spans:
-        return text.rstrip("\n") + (
-            f"\n<noinclude>{{{{#widget:style|style=\n{block}\n}}}}</noinclude>\n"
+        text = text.rstrip()
+        return text + _page_noinclude_sep(text) + (
+            f"<noinclude>{{{{#widget:style|style=\n{block}\n}}}}</noinclude>\n"
         )
     start, end = spans[0]
     css_now = strip_generated(text[start:end])

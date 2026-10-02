@@ -15,6 +15,12 @@
 见 `prod_title`），依赖页的保护补到与旧首页对应页面同级，最后把正文写进 `首页`
 （沿用现网 `首页` 里的 ``{{#seo:}}``）。覆盖已有页面时打印原 revid，回滚按它恢复。
 
+`首页` 按皮肤分流：Arknights 皮肤看新版，其它皮肤看旧版 `模板:首页/旧版`（源文件在
+`migration/mainpage/legacy/`，见 `LEGACY`）。解析缓存不分皮肤，两版都输出，由旧版带的
+TemplateStyles 按 body 上的皮肤类二选一。旧版首页原先用的页面里，被新版覆盖的模板另存成
+`/旧版` 副本；只有旧版在用的几页（`LEGACY_EDITS`）把调用改指过去。近期新增与临时提醒
+两版读同一份数据，共用模板看到变量 ``mp-legacy`` 就输出旧版的写法。
+
     uv run python scripts/build_mainpage_sandbox.py                           # 先生成
     uv run python scripts/mainpage_sandbox_apply.py --dry-run                 # 只打印 diff
     uv run python scripts/mainpage_sandbox_apply.py -c config.sandbox.toml    # 先在沙箱演练
@@ -40,13 +46,19 @@ from wikibot.wiki import Wiki
 SCRIPT = "prts-skin-migration/scripts/mainpage_sandbox_apply.py"
 SUMMARY = "新皮肤首页（首页/sandbox）：按设计稿落地，见 " + SCRIPT
 MAINPAGE = "首页"
-MAINPAGE_SUMMARY = "首页换成新版（按新皮肤设计稿重排，各皮肤通用），见 " + SCRIPT
+MAINPAGE_SUMMARY = (
+    "首页：Arknights 皮肤显示新版（按新皮肤设计稿生成），"
+    "其它皮肤显示旧版（模板:首页/旧版），见 " + SCRIPT
+)
 PROMOTE_SUMMARY = "新首页：由 /sandbox 版发布为正式版，见 " + SCRIPT
 DATA_SUMMARY = (
     "转成新首页的模板调用（BotPtilopsis 之后直接按这个格式写，"
     "见 MooncellWiki/Ptilopsis_Bot#26）"
 )
 PROTECT_SUMMARY = "新首页的依赖页：保护级别同旧首页对应的页面，见 " + SCRIPT
+LEGACY_SUMMARY = (
+    "首页按皮肤分流：非 Arknights 皮肤显示旧版首页（模板:首页/旧版），见 " + SCRIPT
+)
 # 正式页名默认是去掉 /sandbox；例外：模板:行动日历 还被 新人入门 用着（旧版表格），新版另起名。
 PROD_RENAME = {"模板:行动日历/sandbox": "模板:首页/行动日历"}
 # 旧首页的依赖页都有保护：结构性的 模板:首页轮播 / 行动日历 / Mpbutton 是 sysop，其余 autoconfirmed。
@@ -60,6 +72,11 @@ SYSOP_PAGES = {
 }
 LEVELS = {"": 0, "autoconfirmed": 1, "sysop": 2}
 SEO = re.compile(r"\{\{#seo:.*?\n\}\}", re.DOTALL)
+MP_ROOT = re.compile(r'^<div class="mp[ "]', re.MULTILINE)
+LEGACY_CALL = (
+    "{{首页/旧版}}<!-- 非 Arknights 皮肤显示这份旧版，下面的新版整块藏掉；"
+    "见 模板:首页/旧版 -->"
+)
 
 TEMPLATES = ROOT / "migration/mainpage/templates"
 
@@ -100,6 +117,47 @@ CREATE_ONLY = {
         "</noinclude><includeonly></includeonly>"
     ),
 }
+
+LEGACY_DIR = ROOT / "migration/mainpage/legacy"
+# 旧版首页（非 Arknights 皮肤）：页面标题 → 源文件。模板:首页/旧版 是正文，
+# 其余是被新版覆盖的页面在新版上线前那一版的副本（revid 写在各自的说明里）。
+LEGACY = {
+    "模板:首页/旧版/styles.css": "模板_首页_旧版_styles.css",
+    "模板:首页轮播/旧版": "模板_首页轮播_旧版.wiki",
+    "模板:Mpbutton/旧版": "模板_Mpbutton_旧版.wiki",
+    "模板:当前信息/旧版": "模板_当前信息_旧版.wiki",
+    "模板:首页/亮点干员图标/旧版": "模板_首页_亮点干员图标_旧版.wiki",
+    "首页/亮点干员/旧版": "页面_首页_亮点干员_旧版.wiki",
+    "模板:首页/旧版": "模板_首页_旧版.wiki",
+}
+# 保护同旧首页对应的页面：首页 本身、轮播、入口格是 sysop；
+# 分流样式决定首页显示哪一版，也是 sysop
+LEGACY_SYSOP = {
+    "模板:首页/旧版",
+    "模板:首页/旧版/styles.css",
+    "模板:首页轮播/旧版",
+    "模板:Mpbutton/旧版",
+}
+# 只有旧版首页在用的页面（新版不引用，此外只有用户页草稿）：把对已被新版覆盖的模板的调用
+# 改指 /旧版 副本。读现网正文再改，不整页覆盖，编辑在这期间的改动不会被冲掉。
+LEGACY_EDITS = [
+    "首页/mobile",
+    "首页/亮点干员/今天生日",
+    "首页/亮点干员/近期新增",
+    "首页/亮点干员/凭证兑换",
+]
+LEGACY_RENAMES = [
+    (re.compile(r"\{\{\s*首页轮播\s*\}\}"), "{{首页轮播/旧版}}"),
+    (re.compile(r"\{\{\s*[Mm]pbutton\s*\|"), "{{Mpbutton/旧版|"),
+    (re.compile(r"\{\{\s*当前信息\s*\}\}"), "{{当前信息/旧版}}"),
+    (re.compile(r"\{\{\s*:首页/亮点干员\s*\}\}"), "{{:首页/亮点干员/旧版}}"),
+    # {{首页/亮点干员图标|…}} 与 #ask 的 template=首页/亮点干员图标|…；
+    # /皮肤 /模组 两个旧模板没被覆盖，不动
+    (re.compile(r"首页/亮点干员图标(?=\s*\|)"), "首页/亮点干员图标/旧版"),
+    # 森空岛 App 按类名藏打赏入口（新版「关注 & 支持」卡片上线后加的），
+    # App 走手机版，看到的是旧版，旧版也要带
+    (re.compile(r'class="mp-support-us"'), 'class="mp-support-us skland-hidden"'),
+]
 
 HEADING = re.compile(r"^'''(.+?)'''$")
 STAGE = re.compile(r"^\*\s*\[\[([^\]|]+)(?:\|[^\]]*)?\]\]\s*$")
@@ -253,19 +311,39 @@ async def migrate_data(wiki: Wiki, dry_run: bool) -> None:
         await put(wiki, title, convert(page.content), dry_run, DATA_SUMMARY)
 
 
+def to_legacy(text: str) -> str:
+    """只有旧版首页在用的页面：对已被新版覆盖的模板的调用改指 /旧版 副本。
+
+    重复跑不会叠加。
+    """
+    for pattern, repl in LEGACY_RENAMES:
+        text = pattern.sub(repl, text)
+    return text
+
+
 def mainpage_text(page: str, current: str) -> str:
-    """真首页的正文：与 首页/sandbox 同一份，末尾接上现网 首页 里的 {{#seo:}}（标题 / 关键词 / 描述）。"""
+    """真首页的正文：与 首页/sandbox 同一份，新版前面插入旧版首页，
+    末尾接上现网 首页 里的 {{#seo:}}（标题 / 关键词 / 描述）。
+
+    旧版要排在新版前面：它带的分流样式先到，哪一版都不会先露一下再被藏掉；它设的变量
+    ``mp-legacy`` 在末尾清掉，后面的新版照常输出。
+    """
     seo = SEO.findall(current)
     if len(seo) != 1:
         raise SystemExit(
             f"现网 {MAINPAGE} 里的 {{{{#seo:}}}} 应当正好一处，实际 {len(seo)} 处，请人工看一下"
         )
+    roots = list(MP_ROOT.finditer(page))
+    if len(roots) != 1:
+        raise SystemExit(f"新版正文里应当正好一个 .mp 根节点，实际 {len(roots)} 个")
+    at = roots[0].start()
+    page = page[:at] + LEGACY_CALL + "\n" + page[at:]
     return page.rstrip("\n") + "\n" + seo[0] + "\n"
 
 
 async def protect_deps(wiki: Wiki, deps: list[str], dry_run: bool) -> None:
     """依赖页的保护补到与旧首页对应页面同级；只升不降。"""
-    sysop = {prod_title(t) for t in SYSOP_PAGES}
+    sysop = {prod_title(t) for t in SYSOP_PAGES} | LEGACY_SYSOP
     current = await wiki.protection(deps)
     for title in deps:
         want = "sysop" if title in sysop else "autoconfirmed"
@@ -299,7 +377,17 @@ async def publish_mainpage(
         text = to_prod(events.content, staged)
         await put(wiki, "首页/网页活动", text, dry_run, PROMOTE_SUMMARY)
 
-    deps = [prod_title(t) for t in staged] + [*DATA, *CREATE_ONLY]
+    # 旧版首页：新页面与只有旧版在用的页面，首页 引用它们之前都不影响现网
+    for title, filename in LEGACY.items():
+        text = (LEGACY_DIR / filename).read_text(encoding="utf-8")
+        await put(wiki, title, text, dry_run, LEGACY_SUMMARY)
+    for title in LEGACY_EDITS:
+        page = await wiki.read(title)
+        if page.missing:
+            raise SystemExit(f"旧版首页要用的 {title} 不存在，请人工看一下")
+        await put(wiki, title, to_legacy(page.content), dry_run, LEGACY_SUMMARY)
+
+    deps = [prod_title(t) for t in staged] + [*DATA, *CREATE_ONLY, *LEGACY]
     await protect_deps(wiki, deps, dry_run)
 
     page = to_prod(sources["首页/sandbox"].read_text(encoding="utf-8"), staged)

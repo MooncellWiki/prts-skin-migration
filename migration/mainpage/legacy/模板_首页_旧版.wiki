@@ -1,0 +1,54 @@
+<includeonly><templatestyles src="首页/旧版/styles.css" />{{#vardefine:mp-legacy|1}}<div class="mp-legacy">{{#Widget:mpstyle}}<div class="nomobile"><center>{{首页轮播/旧版}}</center><div style="margin-bottom:12px;">{{Ads/normal}}</div><div id="mpbutton-container"><div id="mpbutton-scaler">{{Mpbutton/旧版|posx=1|posy=1|label=干员档案|enlabel=OPERATORS|link=干员一览}}{{Mpbutton/旧版|posx=2|posy=1|label=敌人档案|enlabel=ENEMIES|link=敌人一览}}{{Mpbutton/旧版|posx=5|posy=1|label=道具资料|enlabel=DEPOT|link=道具一览}}{{Mpbutton/旧版|posx=4|posy=2|label=后勤技能|enlabel=LOGISTICS|link=后勤技能一览}}{{Mpbutton/旧版|posx=3|posy=1|label=关卡一览|enlabel=OPERATIONS|link=关卡一览}}{{Mpbutton/旧版|posx=2|posy=3|label=剧情记录|enlabel=STORIES|link=剧情一览}}{{Mpbutton/旧版|posx=3|posy=3|label=家具一览|enlabel=FURNITURE|link=家具一览}}{{Mpbutton/旧版|posx=1|posy=3|label=时装回廊|enlabel=OUTFITS|link=时装回廊}}{{Mpbutton/旧版|posx=5|posy=2|label=采购中心|enlabel=STORE|link=采购中心}}{{Mpbutton/旧版|posx=2|posy=2|label=卡池一览|enlabel=HEADHUNTS|link=卡池一览}}{{Mpbutton/旧版|posx=4|posy=1|label=活动一览|enlabel=EVENTS|link=活动一览}}{{Mpbutton/旧版|posx=1|posy=2|label=公招计算|enlabel=RECRUIT|link=公招计算}}</div></div>{{#widget:mpbutton}}
+<h2>今日信息</h2>
+<div class="mp-container-left">{{行动日历}}</div>
+<div class="mp-container-right"><div class="mp-today">{{当前信息/旧版}}</div></div>
+<h2>亮点干员</h2>
+{{:首页/亮点干员/旧版}}
+<h2>近期新增</h2>
+<div class="mp-extranav">
+<div class="mp-container-left">
+<h3>新增关卡</h3>
+{{:首页/新增关卡}}
+</div>
+<div class="mp-container-right">
+<h3>新增家具</h3>
+'''主题'''<br/>
+{{:首页/新增主题}}<br/>
+'''单件'''<br/>
+{{:首页/新增单件}}
+</div>
+</div>
+<h2>网站信息</h2>
+<div class="mp-siteinfo">
+
+*网站域名：
+:: <nowiki>prts.wiki（主要）　ak.mooncell.wiki</nowiki>（备用）
+
+<div class="mp-support-us skland-hidden">
+*关注&支持
+::<span class="mp-bili-charge-btn mp-siteinfo-btn">[[PRTS:如何帮助我们完善网站#B站充电计划|{{mdi|lightning-bolt}} B站充电]]</span><span class="mp-double-donate-btn mp-siteinfo-btn">[[PRTS:如何帮助我们完善网站#直接的经济资助|{{fa|weixin|b}}　打赏　{{fa|alipay|b}}]]</span>
+</div>
+
+<div class="mp-more-info">
+*了解更多
+::{{mdi|circle-outline}} [[PRTS:交流群组]]
+::{{mdi|circle-outline}} [[PRTS:收支一览]]
+::{{mdi|circle-outline}} [[PRTS:如何帮助我们完善网站]]
+::{{mdi|circle-outline}} [[PRTS:授权一览]]
+</div></div>
+</div>
+<div class="nodesktop">{{:首页/mobile}}</div>
+</div>{{#vardefine:mp-legacy|}}</includeonly><noinclude>
+'''旧版首页'''：[[首页]] 在 Arknights 以外的皮肤（Vector、Vector 2022、手机版 Minerva……）上显示的内容。
+
+解析缓存不分皮肤，所以 [[首页]] 里新旧两版都输出，由 [[模板:首页/旧版/styles.css]] 按 <code>body</code> 上的皮肤类二选一：
+Arknights 皮肤只显示新版（<code>.mp</code>），其它皮肤只显示旧版（<code>.mp-legacy</code>）。
+
+* 正文是新版上线前的 [[首页]]（rev 335501），被新版覆盖的模板改用 <code>/旧版</code> 副本：
+  {{tl|首页轮播/旧版}} · {{tl|Mpbutton/旧版}} · {{tl|当前信息/旧版}} · [[首页/亮点干员/旧版]]；手机版仍是 [[首页/mobile]]。
+* 近期新增与临时提醒和新版读同一份数据（[[首页/新增关卡]] [[首页/新增主题]] [[首页/新增单件]] {{tl|当前信息/临时提醒}}）。
+  这里先设变量 <code>mp-legacy</code>，{{tl|首页/新增关卡}} {{tl|首页/家具卡}} {{tl|当前信息/条}} 看到它就输出旧版的写法，末尾再清掉，
+  后面的新版不受影响。所以本模板要放在新版前面。
+* 源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/legacy/</code>。
+  Arknights 成为默认皮肤、旧皮肤退役后，连同各 <code>/旧版</code> 页面一起删掉。
+</noinclude>

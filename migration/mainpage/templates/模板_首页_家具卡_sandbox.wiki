@@ -1,6 +1,8 @@
-<includeonly>{{#if:{{{theme|}}}|{{#cargo_query:tables=furniture_themes|fields=_pageName=name,theme_icon=themeIcon,theme_desc=desc|where=furniture_themes._pageName='{{{1|}}}'|limit=1|more results text=|default={{首页/家具卡/渲染/sandbox|name={{{1|}}}|theme=1}}|format=template|template=首页/家具卡/渲染/sandbox|named args=yes}}|{{#ask:[[{{{1|}}}]]|?描述=desc|?IconId=iconId|?强制Wiki文件=forceWikiFile|?文件名=forceFileName|link=none|named args=yes|format=template|template=首页/家具卡/渲染/sandbox|userparam={{{1|}}}|default={{首页/家具卡/渲染/sandbox|name={{{1|}}}}}}}}}</includeonly><noinclude>
+<includeonly>{{#if:{{#var:mp-legacy}}|{{#if:{{{theme|}}}|{{家具主题|{{{1|}}}}}|{{家具|{{{1|}}}}}}}&#32;|{{#if:{{{theme|}}}|{{#cargo_query:tables=furniture_themes|fields=_pageName=name,theme_icon=themeIcon,theme_desc=desc|where=furniture_themes._pageName='{{{1|}}}'|limit=1|more results text=|default={{首页/家具卡/渲染/sandbox|name={{{1|}}}|theme=1}}|format=template|template=首页/家具卡/渲染/sandbox|named args=yes}}|{{#ask:[[{{{1|}}}]]|?描述=desc|?IconId=iconId|?强制Wiki文件=forceWikiFile|?文件名=forceFileName|link=none|named args=yes|format=template|template=首页/家具卡/渲染/sandbox|userparam={{{1|}}}|default={{首页/家具卡/渲染/sandbox|name={{{1|}}}}}}}}}}}</includeonly><noinclude>
 首页「新增家具」的一张卡。图与描述从家具页自己的数据里取，调用方只用写页面名：
 
 * 单件：<code><nowiki>{{首页/家具卡/sandbox|饰牌《清甜》}}</nowiki></code>（SMW：描述 / IconId）
 * 主题：<code><nowiki>{{首页/家具卡/sandbox|黑流印象|theme=1}}</nowiki></code>（Cargo：furniture_themes）
+
+旧版首页（{{tl|首页/旧版}}，设了变量 <code>mp-legacy</code>）读同一份数据，输出成旧版的 {{tl|家具主题}} / {{tl|家具}}。
 </noinclude>

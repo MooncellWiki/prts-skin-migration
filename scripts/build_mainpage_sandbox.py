@@ -487,19 +487,31 @@ HOST_SHIM = """
 # 非 Arknights 皮肤上，设计稿要的令牌 / 组件 / 字体由皮肤自己的 skins.arknights.components、
 # skins.arknights.fonts 用 JS 加载，同 prts-widgets 的 CharList / VoiceTable（Arknights 皮肤已全套加载，
 # 不用再要），.mp 加 .ak-scope 当作用域根。
+# 真首页上非 Arknights 皮肤看的是旧版（模板:首页/旧版 带的样式把 .mp 整块藏掉），这时什么都不加载；
+# 只有单独看新版（首页/sandbox）才要。.mp 藏没藏要等正文解析完才知道，所以放到 DOMContentLoaded。
 # 走 RLQ 的数组形式：函数形式由 startup 立即执行，那时 mediawiki.base 还没就绪、没有 mw.loader.using；
-# 数组形式由 mediawiki.base 就绪后 using 指定模块再回调。
+# 数组形式由 mediawiki.base 就绪后 using 指定模块再回调（就绪之后再 push 的也会照常处理）。
 HOST_SCRIPT = """
 (function () {
   if (document.body.classList.contains('skin-arknights')) { return; }
-  /* tokens.css 在 <html> 不带 skin-theme-clientpref-* 时跟随系统明暗。旧 Vector / Minerva 不输出这组类、页面恒为亮色，
-     系统暗色下首页会变成亮页面里的一块黑，所以钉成亮色。hero 的黑白两版也是按 :root 判的，只能钉在 <html> 上 */
-  var root = document.documentElement;
-  if (!/(^|\\s)skin-theme-clientpref-/.test(root.className)) { root.setAttribute('data-theme', 'light'); }
-  (window.RLQ = window.RLQ || []).push([['skins.arknights.components', 'skins.arknights.fonts'], function () {
-    $(function () { $('.mp').addClass('ak-scope is-ready'); });
-  }]);
+  document.addEventListener('DOMContentLoaded', function () {
+    var mp = document.querySelector('.mp');
+    if (!mp || !mp.getClientRects().length) { return; }
+    /* tokens.css 在 <html> 不带 skin-theme-clientpref-* 时跟随系统明暗。旧 Vector / Minerva 不输出这组类、页面恒为亮色，
+       系统暗色下首页会变成亮页面里的一块黑，所以钉成亮色。hero 的黑白两版也是按 :root 判的，只能钉在 <html> 上 */
+    var root = document.documentElement;
+    if (!/(^|\\s)skin-theme-clientpref-/.test(root.className)) { root.setAttribute('data-theme', 'light'); }
+    (window.RLQ = window.RLQ || []).push([['skins.arknights.components', 'skins.arknights.fonts'], function () {
+      $(mp).addClass('ak-scope is-ready');
+    }]);
+  });
 })();
+"""
+
+# 设计稿的脚本（轮播、时钟、倒计时……）只在新版显示时跑：真首页上非 Arknights 皮肤看的是旧版，新版整块藏着。
+RUN_GUARD = """
+var mpRoot = document.querySelector('.mp');
+if (!mpRoot || !mpRoot.getClientRects().length) { return; }
 """
 
 KEY_SHIM = """
@@ -536,6 +548,38 @@ def patch_heading_selectors(style: str) -> tuple[str, int]:
     return "\n".join(out), patched
 
 
+# 真首页上旧版（模板:首页/旧版，非 Arknights 皮肤看的）与新版同在一页、靠皮肤类二选一，两边都是 .mp-* 类名。
+# 旧版也在用的类（现在只有 .mp-today）收进新版根节点 .mp 下，免得新版的网格套到旧版的「今日信息」上。
+LEGACY_CLASSES = ("mp-today",)
+LEGACY_CLASS = re.compile(
+    r"(?<![\w-])\.(?:" + "|".join(map(re.escape, LEGACY_CLASSES)) + r")(?![\w-])"
+)
+
+
+def scope_legacy_classes(style: str) -> tuple[str, int]:
+    """与旧版首页撞名的类，选择器前面补上 .mp。"""
+    out, patched = [], 0
+    for line in style.splitlines():
+        head = line.split("{", 1)[0]
+        if "{" in line and LEGACY_CLASS.search(head):
+            indent = head[: len(head) - len(head.lstrip())]
+            sels = []
+            for sel in (x.strip() for x in head.split(",")):
+                if LEGACY_CLASS.search(sel) and not sel.startswith(".mp "):
+                    if not LEGACY_CLASS.match(sel):
+                        raise SystemExit(f"撞名的类不在选择器开头，请人工看一下：{sel}")
+                    sel = ".mp " + sel
+                    patched += 1
+                sels.append(sel)
+            line = indent + ", ".join(sels) + " {" + line.split("{", 1)[1]
+        out.append(line)
+    if not patched:
+        raise SystemExit(
+            "设计稿结构变了：找不到与旧版首页撞名的类，请检查 LEGACY_CLASSES"
+        )
+    return "\n".join(out), patched
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--design", type=Path, default=Path("../prts-design"))
@@ -551,6 +595,7 @@ def main() -> None:
     body = wrap_optional(body)
     body, icons, unmapped, anchors = convert_body(body)
     style, headings = patch_heading_selectors(strip_preview_patch(style))
+    style, scoped = scope_legacy_classes(style)
     style = (
         style
         + icon_css(args.design, all_icons | icons)
@@ -580,7 +625,7 @@ def main() -> None:
         "    document.addEventListener('DOMContentLoaded', run);\n"
         "  } else { run(); }\n"
         "})(function () {\n"
-        f"{script}\n{KEY_SHIM}\n"
+        f"{RUN_GUARD}\n{script}\n{KEY_SHIM}\n"
         "});\n"
         "</script>\n"
     )
@@ -591,6 +636,7 @@ def main() -> None:
         "  来源：prts-design preview/_src/pages/home.html\n"
         "  生成：prts-skin-migration/scripts/build_mainpage_sandbox.py\n"
         "  任何皮肤下都能看：非 Arknights 皮肤由微件脚本动态加载皮肤的组件样式\n"
+        "  （真首页上非 Arknights 皮肤显示旧版 模板:首页/旧版，这一份整块藏掉）\n"
         "-->__NOTOC__\n" + body + "\n"
     )
 
@@ -637,7 +683,8 @@ def main() -> None:
     )
     click.echo(
         f"微件 {len(widget)} 字节 · 页面 {len(page)} 字节 · 图标 {len(all_icons | icons)} 个 · "
-        f"<a> 转真链接 {anchors} 处 · 补 .mw-heading 的 CSS 规则 {headings} 条"
+        f"<a> 转真链接 {anchors} 处 · 补 .mw-heading 的 CSS 规则 {headings} 条 · "
+        f"与旧版撞名、收进 .mp 的规则 {scoped} 条"
     )
     if unmapped:
         click.echo(f"未映射素材 {len(unmapped)} 个（直接引设计稿的 GitHub Pages）：")

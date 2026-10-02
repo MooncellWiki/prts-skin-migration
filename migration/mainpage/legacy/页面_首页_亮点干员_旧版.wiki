@@ -1,0 +1,5 @@
+<div class="mp-operators">{{#if:{{#ask:[[分类:干员]][[生日::{{#time: Mj"日"|+8hours}}]]}}{{#ask:[[分类:干员]][[出厂日::{{#time: Mj"日"|+8hours}}]]}}|{{:首页/亮点干员/今天生日}}}}{{:首页/亮点干员/近期新增}}{{:首页/亮点干员/凭证兑换}}{{:首页/亮点干员/新增皮肤}}{{:首页/亮点干员/新增模组}}</div><noinclude>
+----
+旧版首页（{{tl|首页/旧版}}，非 Arknights 皮肤）的「亮点干员」：新版上线前的 [[首页/亮点干员]]（rev 364601）。新增时装 / 新增模组读的 <code>/数据</code> 页与新版共用。
+源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/legacy/</code>。
+</noinclude>

@@ -1,0 +1,22 @@
+<includeonly><div class="carousel-container" id="carousel-scaler-container-main" style="height:330px; max-height:330px; max-width:100%;"><div id="carousel-scaler-main" style="position: relative; transform-origin: top left;"><div class="carousel" style="height:300px;width: 936px;box-shadow:0px 5px 7px 0px rgba(0,0,0,0.5);overflow: hidden;">{{#ask:[[分类:有活动信息的页面]][[活动开始时间::<<{{#time:c|+48 hours}}]][[活动结束时间::>{{#time:c}}]]
+|?标题图文件名
+|link=none
+|sort=活动开始时间
+|order=desc
+|format=template
+|template=首页轮播/div
+|userparam=event
+}}
+{{#ask:[[Category:国服寻访]][[寻访开启时间cn::<<{{#time:c|+48 hours}}]][[寻访关闭时间cn::>{{#time:c}}]]
+|?卡池名
+|link=none
+|sort=寻访开启时间cn
+|order=desc
+|format=template
+|template=首页轮播/div
+|userparam=gacha
+}}</div></div></div></includeonly><noinclude>
+旧版首页（{{tl|首页/旧版}}，非 Arknights 皮肤）的轮播：新版上线前的 {{tl|首页轮播}}（rev 286344），slick 轮播由小工具 Carousel 驱动。
+新版轮播是 {{tl|首页轮播}}，两者分开维护。
+源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/legacy/</code>。
+</noinclude>

@@ -1,0 +1,4 @@
+<includeonly>{{#invoke:splitFormat|apply_template2|str={{{2}}}|sep0=,|sep1=:|sep2=|template=干员头像|other=:2=80px:{{{#userparam|}}}=1}}</includeonly><noinclude>
+旧版首页（{{tl|首页/旧版}}，非 Arknights 皮肤）「亮点干员」的头像列表：新版上线前的 {{tl|首页/亮点干员图标}}（rev 286392），由 [[首页/亮点干员/今天生日]] [[首页/亮点干员/近期新增|近期新增]] [[首页/亮点干员/凭证兑换|凭证兑换]] 调用。
+源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/legacy/</code>。
+</noinclude>

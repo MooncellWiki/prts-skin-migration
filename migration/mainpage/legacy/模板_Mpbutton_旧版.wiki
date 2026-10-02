@@ -1,0 +1,5 @@
+<includeonly><div class="mpbutton"><div class="mpbutton-icon" style="background-position: {{#expr:(1-{{{posx}}})*96}}px {{#expr:(1-{{{posy}}})*96}}px;"></div><div class="mpbutton-label {{#if:{{{enlabel|}}}|zh}}" lang="zh">{{{label}}}</div>{{#if:{{{enlabel|}}}|<div class="mpbutton-label en" lang="en">{{{enlabel}}}</div>}}<div class="mpbutton-mask">[[文件:Mpbutton-mask.png|150px|link={{{link|}}}]]</div></div></includeonly><noinclude>
+旧版首页（{{tl|首页/旧版}}，非 Arknights 皮肤）的入口格：新版上线前的 {{tl|Mpbutton}}（rev 286397），样式与缩放脚本在 <code><nowiki>{{#widget:mpbutton}}</nowiki></code>。
+<pre>{{#widget:mpbutton}}{{Mpbutton/旧版|posx=2|posy=1|label=干员档案|enlabel=Operators|link=干员一览}}</pre>
+源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/legacy/</code>。
+</noinclude>

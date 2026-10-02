@@ -1,3 +1,3 @@
-<includeonly><div class="ak-stage mp-a">[[{{{1|}}}|<span class="ak-stage__code">{{#explode:{{{1|}}}| |0}}</span><span class="ak-stage__name">{{#if:{{#pos:{{{1|}}}| }}|{{#sub:{{{1|}}}|{{#expr:{{#pos:{{{1|}}}| }}+1}}}}}}</span>]]</div></includeonly><noinclude>
+<includeonly>{{#if:{{#var:mp-legacy}}|<li>[[{{{1|}}}]]</li>|<div class="ak-stage mp-a">[[{{{1|}}}|<span class="ak-stage__code">{{#explode:{{{1|}}}| |0}}</span><span class="ak-stage__name">{{#if:{{#pos:{{{1|}}}| }}|{{#sub:{{{1|}}}|{{#expr:{{#pos:{{{1|}}}| }}+1}}}}}}</span>]]</div>}}</includeonly><noinclude>
 {{tl|首页/新增关卡/sandbox}} 里的一个关卡：<code>1</code>=关卡页面全名，第一个空格之前是关卡码、之后是关卡名。
 </noinclude>

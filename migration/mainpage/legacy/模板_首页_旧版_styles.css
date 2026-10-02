@@ -1,0 +1,8 @@
+/* 首页按皮肤分流：Arknights 皮肤看新版（.mp），其它皮肤看旧版（.mp-legacy，模板:首页/旧版）。
+   解析缓存不分皮肤，两版都在页面里，由 body 上的皮肤类二选一。
+   本样式随 模板:首页/旧版 输出、排在两版之前，任一版都不会先露一下再被藏掉。
+   见 prts-skin-migration/docs/首页迁移盘点.md */
+body.skin-arknights .mp-legacy,
+body:not(.skin-arknights) .mp {
+  display: none;
+}

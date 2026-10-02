@@ -5,10 +5,14 @@
 //   node scripts/mainpage_fold_sweep.mjs                     # 四种皮肤全扫
 //   node scripts/mainpage_fold_sweep.mjs arknights minerva   # 只扫这几种
 //   STEP=5 FROM=1100 TO=1400 node scripts/mainpage_fold_sweep.mjs vector-2022
+//   WIDGET=build/widget-mpstyle-newskin.txt node scripts/mainpage_fold_sweep.mjs   # 推之前：换上新生成的微件样式再量
 //
+// 非 Arknights 皮肤在 首页 上看的是旧版（新版整块藏着），只能量 首页/sandbox——它比 首页 多一截页面标题，
+// 而 FOLD_ABOVE 里这几种皮肤的值是分流前在 首页 上量的，比对时看新旧样式的差值，别直接抄。
 // Playwright 借用 ../prts-design 的依赖（pnpm install 过即可）；要用完整 Chromium
 // （channel: 'chromium'），headless shell 会被 prts.wiki 的 Tengine 403。
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(new URL('../../prts-design/package.json', import.meta.url));
 const { chromium } = require('@playwright/test');
@@ -17,12 +21,16 @@ const SKINS = { arknights: 'useskin=arknights', vector: 'useskin=vector', 'vecto
 const BANDS = [[1120, Infinity], [850, 1119], [690, 849], [640, 689], [0, 639]];   // 设计稿按视口切说明栏 / 入口格的断点
 const H = Number(process.env.H ?? 560);
 const FROM = Number(process.env.FROM ?? 360), TO = Number(process.env.TO ?? 1700), STEP = Number(process.env.STEP ?? 10);
+// 微件正文的注释里也有字面的 <style>，按微件的行结构切
+const CSS = process.env.WIDGET && readFileSync(process.env.WIDGET, 'utf8').match(/^<style>\n([\s\S]*?)<\/style>\n<link /m)[1];
 
 const browser = await chromium.launch({ channel: 'chromium' });
 for (const skin of process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(SKINS)) {
   const page = await (await browser.newContext({ viewport: { width: 1440, height: H } })).newPage();
   // 随便带个参数绕开 CDN 上 ?useskin= 变体的缓存（purge 只清规范 URL）
-  await page.goto(`https://prts.wiki/w/%E9%A6%96%E9%A1%B5?${SKINS[skin]}&nocache=${Date.now()}`, { waitUntil: 'load' });
+  const title = skin === 'arknights' ? '%E9%A6%96%E9%A1%B5' : '%E9%A6%96%E9%A1%B5/sandbox';
+  await page.goto(`https://prts.wiki/w/${title}?${SKINS[skin]}&nocache=${Date.now()}`, { waitUntil: 'load' });
+  if (CSS) await page.evaluate((css) => { [...document.querySelectorAll('style')].find((s) => s.textContent.includes('.mp-hero')).textContent = css; }, CSS);
   await page.evaluate(() => document.fonts.ready);
   const rows = [];
   for (let w = FROM; w <= TO; w += STEP) {

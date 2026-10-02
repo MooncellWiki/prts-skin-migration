@@ -12,6 +12,7 @@
    为什么不能用 ``display: contents``（拖不出链接），见设计稿 ``.mp-a`` 那段样式。
 3. **内联 ``<svg><use>`` 会被转义**——图标转成 CSS ``mask-image`` 类，
    与皮肤自己的 ``.ak-icon``（OOUI 图标包）同一机制，颜色照样跟 ``currentColor``。
+   照抄 Font Awesome 的几枚（``FA_ICONS``）直接出现网已有的 FA 字体图标。
 4. **``<input>`` 会被转义**——设计稿那个「演示：特别开放周」开关只在预览里有，去掉。
 
 页面上的内容全部由 ``/sandbox`` 模板产出（见 ``SLOTS``）；手写的模板在
@@ -132,6 +133,13 @@ RES_PAGE = "关卡一览/资源收集"
 SVG_USE = re.compile(
     r'<svg class="([^"]*)"[^>]*>\s*<use href="#(i-[a-z0-9-]+)"\s*/?>\s*</svg>'
 )
+# 设计稿照抄 Font Awesome Free 5.15.4 路径的图标 → FA 的类名。现网四种皮肤都从
+# static.prts.wiki 全局引了同一版 all.min.css（模板:Fa 也靠它），同 fgo.wiki 首页直接出
+# 字体图标，不转 mask。ak-icon 类留着：设计稿的尺寸 / 品牌色 / 悬停反白都挂在它上面。
+FA_ICONS = {"i-wechat": "fab fa-weixin", "i-alipay": "fab fa-alipay"}
+FA_EM = 512  # FA 5 的 units-per-em，SVG 的 viewBox 与字形同一套坐标
+# 设计稿给 FA 图标留的框（现在只有「关注 & 支持」三枚品牌按钮里用）
+BRAND_BOX = re.compile(r"\.mp-brand \.ak-icon \{ width: (\d+)px; height: \1px;")
 SWITCH = re.compile(r'<label class="ak-switch[^"]*"[^>]*>.*?</label>', re.DOTALL)
 IMG_SRC = re.compile(r'src="(assets/[^"]+)"')
 
@@ -315,11 +323,49 @@ def icon_css(design: Path, needed: set[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def fa_css(design: Path, style: str) -> str:
+    """FA 字体图标排成设计稿 SVG 的样子：框内按比例缩放、居中。
+
+    SVG 是 meet 缩放，比 1em 宽的字形（fa-weixin 576 宽）按框宽缩。
+    字体图标字号仍取框高，宽字形按 viewBox 的比例 scale 下来。
+    不直接缩字号：Chrome 会把 ascent / descent 取整（14.22px 时 12.44 → 12），
+    字形比 SVG 高 0.25–1.25px、随小数位置跳；缩放是逐像素同位。
+    """
+    box = BRAND_BOX.search(style)
+    if not box:
+        raise SystemExit("设计稿结构变了：找不到 .mp-brand .ak-icon 的图标框尺寸")
+    built = (design / "preview/home.html").read_text(encoding="utf-8")
+    boxes = dict(
+        re.findall(r'<symbol id="(i-[a-z0-9-]+)"[^>]*viewBox="([^"]+)"', built)
+    )
+    lines = [
+        "",
+        "/* ── 微信 / 支付宝：FA 5.15.4 字体图标（现网全站已引，同 fgo.wiki），",
+        " *    设计稿嵌的是同一版的 SVG 路径，宽字形按它在框里的比例缩放。",
+        " *    皮肤给非 svg 的 .ak-icon 铺 currentColor 底（OOUI mask 图标的画法），",
+        " *    字体图标没有 mask，不去掉就是一块实心色块 ── */",
+        f".mp-brand .ak-icon.fab{{display:inline-flex;align-items:center;"
+        f"justify-content:center;font-size:{box.group(1)}px;background:none}}",
+    ]
+    for name, classes in FA_ICONS.items():
+        if name not in boxes:
+            raise SystemExit(f"设计稿里找不到图标 {name}")
+        w, h = (float(x) for x in boxes[name].split()[2:])
+        if h != FA_EM:
+            raise SystemExit(f"{name} 的 viewBox 高不是 {FA_EM}，不像 FA 5 的图标")
+        if w > h:
+            fa = classes.split()[-1]
+            lines.append(f".mp-brand .{fa}::before{{transform:scale({h / w:.4f})}}")
+    return "\n".join(lines) + "\n"
+
+
 def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
     """正文 HTML → wikitext 能活下来的形式。"""
     icons: set[str] = set()
 
     def swap_icon(m: re.Match[str]) -> str:
+        if fa := FA_ICONS.get(m.group(2)):  # 字形是私用区字符，读屏会念出来，藏掉
+            return f'<i class="{m.group(1)} {fa}" aria-hidden="true"></i>'
         icons.add(m.group(2))
         return f'<span class="{m.group(1)} mp-i mp-i--{m.group(2)[2:]}"></span>'
 
@@ -397,12 +443,15 @@ def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
 
 
 def nav_sprite_css() -> str:
-    """12 个入口图标：现网雪碧图，坐标由 {{Mpbutton/sandbox}} 按百分比写在行内。"""
+    """12 个入口图标：现网雪碧图，坐标由 {{Mpbutton/sandbox}} 按百分比写在行内。
+
+    尺寸、定位全按设计稿的 .mp-nav__icon（桌面 52px，手机 63px 水印），这里只给背景。
+    雪碧图每格 96px，与设计稿的单张素材逐像素一致，手机水印的居中补偿照样成立。
+    """
     return """
 /* ── 入口图标：沿用现网那张 5 列 × 3 行的雪碧图。background-size / -position 都用百分比，
- *    图标多大都对得上（手机上是 40px），不需要现网 微件:Mpbutton 那段缩放脚本 ── */
+ *    图标多大都对得上（手机上是 63px 的水印），不需要现网 微件:Mpbutton 那段缩放脚本 ── */
 .mp-nav__icon{display:block;background:url(https://static.prts.wiki/Mpbuttons.4DCFB205.png) no-repeat;background-size:500% 300%}
-@media (max-width:639px){.mp-nav__tile .mp-nav__icon{width:40px;height:40px}}
 """
 
 
@@ -443,8 +492,11 @@ max-width:none;max-height:none;transform:translate(-50%,-50%)}
 # 含公告横幅（「我们正在测试新版皮肤」）那一截，横幅撤掉后偏大约 40px——
 # 只是矮屏上图框多压一点，入口照样露出。Vector 两种皮肤 <640 时正文列只剩
 # 120–340px，本来就是坏的，不另分档。
+# <640 档跟进设计稿 00150ca（入口格 96 → 64px 高、--mp-fold-below 121 → 92）重扫：
+# Arknights 在 首页 上扫（顺带吃进皮肤手机页眉两行并一行省下的 48px）；Minerva 在
+# 首页 上看的是旧版，只能在 首页/sandbox 上扫新旧样式的差值（−3）折回 首页 的基准。
 FOLD_ABOVE = {
-    "skin-arknights": [(None, 307), (1119, 390), (849, 385), (689, 337), (639, 299)],
+    "skin-arknights": [(None, 307), (1119, 390), (849, 385), (689, 337), (639, 248)],
     "skin-vector-legacy": [(None, 291), (1119, 357), (849, 299), (689, 283)],
     "skin-vector-2022": [
         (None, 354),
@@ -453,7 +505,7 @@ FOLD_ABOVE = {
         (849, 289),
         (689, 212),
     ],
-    "skin-minerva": [(None, 164), (1119, 196), (849, 191), (689, 151), (639, 154)],
+    "skin-minerva": [(None, 164), (1119, 196), (849, 191), (689, 151), (639, 151)],
 }
 
 
@@ -588,8 +640,8 @@ def main() -> None:
 
     style, body, script = extract(args.design)
     # 图标要在切槽之前收集：内容搬进模板后，页面上找不到它们了，
-    # 但模板仍然在用这些 mp-i--* 类，mask 必须照常生成。
-    all_icons = {m.group(2) for m in SVG_USE.finditer(body)}
+    # 但模板仍然在用这些 mp-i--* 类，mask 必须照常生成。FA 图标走字体，不生成 mask。
+    all_icons = {m.group(2) for m in SVG_USE.finditer(body)} - FA_ICONS.keys()
     body = apply_nav(body)
     body, extracted = apply_slots(body)
     body = wrap_optional(body)
@@ -599,6 +651,7 @@ def main() -> None:
     style = (
         style
         + icon_css(args.design, all_icons | icons)
+        + fa_css(args.design, style)
         + nav_sprite_css()
         + HEADING_SHIM
         + NOTES_SHIM
@@ -675,14 +728,19 @@ def main() -> None:
     (args.out / "page-mainpage-sandbox.wiki").write_text(page, encoding="utf-8")
     (args.out / "report.json").write_text(
         json.dumps(
-            {"icons": sorted(all_icons | icons), "unmapped_assets": unmapped},
+            {
+                "icons": sorted(all_icons | icons),
+                "fa_icons": FA_ICONS,
+                "unmapped_assets": unmapped,
+            },
             ensure_ascii=False,
             indent=2,
         ),
         encoding="utf-8",
     )
     click.echo(
-        f"微件 {len(widget)} 字节 · 页面 {len(page)} 字节 · 图标 {len(all_icons | icons)} 个 · "
+        f"微件 {len(widget)} 字节 · 页面 {len(page)} 字节 · "
+        f"图标 {len(all_icons | icons)} 个（另 FA {len(FA_ICONS)} 个）· "
         f"<a> 转真链接 {anchors} 处 · 补 .mw-heading 的 CSS 规则 {headings} 条 · "
         f"与旧版撞名、收进 .mp 的规则 {scoped} 条"
     )

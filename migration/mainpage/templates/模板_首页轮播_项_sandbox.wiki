@@ -10,8 +10,6 @@
 </div>
 </div>
 </div>
-<!-- ══ 活动 · 候选列表项 ══ -->
-|event-item=<li><div class="mp-hero__item mp-a">[[{{{1|}}}|<img class="mp-hero__thumb" src="{{filepath:{{{5|}}}}}" alt=""><span><span class="mp-hero__kind">{{#if:{{{4|}}}|{{{4}}}|限时活动}}</span><span class="mp-hero__name">{{#if:{{{2|}}}|{{{2}}}|{{{1|}}}}}</span></span>{{首页轮播/状态标/sandbox|start={{{6|}}}|end={{{7|}}}}}]]</div></li>
 <!-- ══ 寻访 · 轮播图 ══ 1=文件页 2=寻访名cn 3=卡池名 4=开启 5=关闭 -->
 |gacha-slide=<div class="swiper-slide mp-hero__slide">
 <div class="mp-hero__pic mp-a">[[{{#if:{{{3|}}}|{{{3}}}|卡池一览}}|<img class="mp-hero__bg" src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt=""><img src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt="">]]</div>
@@ -23,11 +21,9 @@
 </div>
 </div>
 </div>
-<!-- ══ 寻访 · 候选列表项 ══ -->
-|gacha-item=<li><div class="mp-hero__item mp-a">[[{{#if:{{{3|}}}|{{{3}}}|卡池一览}}|<img class="mp-hero__thumb" src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt=""><span><span class="mp-hero__kind">寻访</span><span class="mp-hero__name">{{{2|}}}</span></span>{{首页轮播/状态标/sandbox|start={{{4|}}}|end={{{5|}}}}}]]</div></li>
 }}</includeonly><noinclude>
 首页轮播的输出模板，由 {{tl|首页轮播/sandbox}} 的 <code>#ask</code> 以 <code>format=template</code> 调用。
-<code>#userparam</code> 取 <code>event-slide</code> / <code>event-item</code> / <code>gacha-slide</code> / <code>gacha-item</code>。
+<code>#userparam</code> 取 <code>event-slide</code> / <code>gacha-slide</code>。
 
 起止时间按北京时间显示；结束与开始不在同一年时，结束时间补上年份。
 

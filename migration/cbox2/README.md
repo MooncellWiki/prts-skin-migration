@@ -89,10 +89,27 @@
 - 不填 `icon` 的框换成线稿图标
 - 1px 边框、不投影（原来是阴影托起）；lv2 / lv3 同为黄色一档（组件文档的约定）
 
+## 旧类名的清理与适配
+
+旧 `/core` 的类名（`.cbox2` `.cbox2-lv-N` `.cbox2-custom-color` `.cbox2-icon` `.cbox2-content` `.cbox2-mobile` `.cbox-autonarrow`）不再输出。
+沙箱库全量扫描 + 线上搜索候选 1454 页逐页精确匹配，站内还写着它们的只有下面 7 页（另有一个用户沙盒自己拼的 `class="cbox2"`，不管），
+由 `scripts/cbox2_legacy_cleanup_apply.py` 处理（2026-10-02 10:53 上线，`reports/cbox2/live-run-legacy.log`）：
+
+| 页面 | 处理 | 修订 |
+| --- | --- | --- |
+| `MediaWiki:Common.css` | 删 Vector 2022 窄屏下 `.nodesktop.cbox2-mobile { display: flex }`（同块的 `.nomobile` / `.nodesktop` 规则不动） | r432728 → r432907 |
+| `MediaWiki:Gadget-Vector2022Fixes.css` | 同上 | r403350 → r432908 |
+| `MediaWiki:Gadget-Vector2022LayoutFixes.css` | 同上 | r410823 → r432909 |
+| `MediaWiki:Vector.css` | 删 `div.cbox-autonarrow` 1500px 以下收窄到 640px（连同注释和删空的 `@media`） | r429238 → r432910 |
+| `MediaWiki:Gadget-darkModeFix.css` | 删编辑页系统消息里 `.cbox2` 的暗色：同一段复制了 5 份，共 30 条、271 行。组件自带暗色，Vector 2022 暗色下实测正常 | r403842 → r432911 |
+| `模板:孤星2024/styles.css` | 删专项调查说明框的两条暗色（改由 `Cbox2/styles.css` 的复刻参阅紫色框给），os 分支按剩下的 night 规则重新生成 | r429600 → r432912 |
+| `岁的界园志异/事件一览` | **适配**：页面用 `{{#widget:style}}` 把「如岁：进入传说」等 12 个切换框限宽 35rem，选择器从 `.legend_switch .nomobile.cbox-autonarrow` 换成 `.legend_switch .ak-cbox` | r432775 → r432913 |
+
+脚本只删「每个选择器都只针对旧类名」的规则，删完逐条比对其余规则不变、旧类名一个不剩，否则不写。线上复测：切换框 12 个都回到 560px；
+孤星2024 的说明框暗色下是深色渐变、`#4b3c93` 图标井、`#f0f0f0` 正文。
+
 ## 遗留
 
-- 死规则：`MediaWiki:Common.css` 的 `.nodesktop.cbox2-mobile`、`Gadget-darkModeFix.css` / Vector 2022 两个 gadget 里的 `.cbox2*`、
-  `模板:孤星2024/styles.css` 里 `.lonetrail-2024-rerun-survey-note.cbox2-custom-color` 两条，都已匹配不到任何元素，随各自的清理一起删
 - 三个 Lua 模块（`BaseSkillInfo`、`SplitFormat`、`RhodesFashion`）用 `mw.addWarning("{{Cbox2|…}}")` 在编辑预览里出提示，只有编辑者看得到，没单独看
 
 ## 落地

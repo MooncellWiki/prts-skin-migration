@@ -423,6 +423,17 @@ NOTES_SHIM = """
 .mp-notes li.is-warning .ak-icon{background-color:var(--ak-yellow-500)}
 """
 
+# 设计稿的模组图标是剥掉光晕、裁到字形外接框的素材（~38×38），
+# 现网 模组类型_*_小图.png 是 68×50 原图，字形只占中间 ~32×31（各型号同一画布），
+# 照设计稿的 max-width 缩下去字形只剩 ~9px。这里把原图放大到字形 ~22px，
+# 居中压进 .mp-mod，四周的光晕由它的 overflow: hidden 裁掉。
+MOD_SHIM = """
+/* ── 模组图标：现网是带光晕的 68×50 原图（设计稿用的是裁好的），
+ *    放大居中，光晕裁在框外 ── */
+.mp-mod img{position:absolute;left:50%;top:50%;width:48px;height:auto;
+max-width:none;max-height:none;transform:translate(-50%,-50%)}
+"""
+
 # Swiper 在 static.prts.wiki 的 npm 镜像上（prts-static 桶 npm/swiper@版本/，与 npm 包根目录同构）。
 # 升级时先用 ossutil 传新版本的 swiper-bundle.min.{js,css,js.map}，再改这里。
 SWIPER = "https://static.prts.wiki/npm/swiper@11.2.10/"
@@ -507,6 +518,7 @@ def main() -> None:
         + nav_sprite_css()
         + HEADING_SHIM
         + NOTES_SHIM
+        + MOD_SHIM
         + HOST_SHIM
     )
 

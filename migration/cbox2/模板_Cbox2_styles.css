@@ -1,0 +1,50 @@
+/* 模板:Cbox2 输出设计系统的正文提示框 .ak-cbox：组件样式随皮肤加载（其他皮肤由 微件:AkComponents 加载），
+   等级配色、明暗主题、窄屏都由组件负责，这里只写模板特有的部分。
+   见 prts-skin-migration/migration/cbox2/README.md */
+
+/* 自定义配色的框钉成亮色令牌，组件 1px 边框也就是亮色的浅灰，暗色页面上成了一圈白框。
+   配色由传进来的颜色决定，边框透明、底色铺到边 */
+.ak-cbox.prts-cbox2--custom {
+  border-color: transparent;
+}
+
+/* 复刻参阅（模板:复刻参阅、孤星2024 的专项调查说明）：紫色渐变框，图标井紫底白图标。
+   原先写在行内（自定义配色），改由这里给，暗色下换深色渐变、文字跟随主题 */
+.ak-cbox.rerun-reference-box {
+  background: linear-gradient(90deg, #defcff, #e2dbff);
+}
+.ak-cbox.rerun-reference-box > .ak-cbox__icon {
+  background: #7051db;
+  color: #fff;
+}
+
+html.skin-theme-clientpref-night body .ak-cbox.rerun-reference-box {
+  background: linear-gradient(90deg, #1f3b46, #332f56);
+}
+html.skin-theme-clientpref-night body .ak-cbox.rerun-reference-box > .ak-cbox__icon {
+  background: #4b3c93;
+  color: #f8f9fa;
+}
+/* 「您将跳转到首次活动版」小标签：行内 darkred 底，暗色下压暗一档 */
+html.skin-theme-clientpref-night body .rerun-reference-warning {
+  background: #6b1f1f !important;
+  color: #fff2f2 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* 暗色：正文里为浅色底写的行内深色字（沿用旧版 Cbox2 的取值）。
+   自定义配色的框钉成亮色（[data-theme]），不在此列 */
+html.skin-theme-clientpref-night body .ak-cbox--danger:not([data-theme]) [style*="color:red"],
+html.skin-theme-clientpref-night body .ak-cbox--danger:not([data-theme]) [style*="color: red"],
+html.skin-theme-clientpref-night body .ak-cbox--danger:not([data-theme]) [style*="color:#ff0000"],
+html.skin-theme-clientpref-night body .ak-cbox--danger:not([data-theme]) [style*="color: #ff0000"] {
+  color: #ff9d9d !important;
+}
+html.skin-theme-clientpref-night body .prts-cbox2:not([data-theme]) [style*="color:#9b2c3b"],
+html.skin-theme-clientpref-night body .prts-cbox2:not([data-theme]) [style*="color: #9b2c3b"] {
+  color: #ffb3bd !important;
+}
+html.skin-theme-clientpref-night body .prts-cbox2:not([data-theme]) [style*="color:#47060f"],
+html.skin-theme-clientpref-night body .prts-cbox2:not([data-theme]) [style*="color: #47060f"] {
+  color: #ffd6dc !important;
+}

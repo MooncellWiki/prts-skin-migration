@@ -1,0 +1,29 @@
+<templatestyles src="Cbox2/styles.css" />{{#widget:AkComponents}}<!--
+  外层 .ak-host：其他皮肤上 微件:AkComponents 给它加 .ak-scope，样式到位前先藏起来。
+  自定义配色（bg 不是五个等级的默认值）的框钉成亮色：.ak-scope[data-theme="light"]，底色、图标井色、图标色原样，
+  框里的文字 / 链接也用亮色令牌——这些颜色是按浅色方案挑的。行内 background 压过 .ak-scope[data-theme] 铺的画布底。
+--><div class="ak-host"><div class="ak-cbox prts-cbox2 {{#switch:{{{lv|}}}
+ |0=ak-cbox--tip
+ |1=
+ |2|3=ak-cbox--warning
+ |4=ak-cbox--danger
+ |#default={{#switch:{{lc:{{{bg|}}}}}|#f9ffea=ak-cbox--tip|#fef9de|#fff7ed=ak-cbox--warning|#fdf5f5=ak-cbox--danger|#default=}}
+}} {{#switch:{{{narrow|}}}|1|true|True|yes|Yes|是=ak-cbox--narrow}} {{{boxclass|}}} {{#switch:{{lc:{{{bg|}}}}}|#f9ffea|#ebf7fe|#fef9de|#fff7ed|#fdf5f5|=|#default=ak-scope prts-cbox2--custom}}" role="note" {{#switch:{{lc:{{{bg|}}}}}
+ |#f9ffea|#ebf7fe|#fef9de|#fff7ed|#fdf5f5|={{#switch:{{lc:{{{iconcolor|}}}}}|#84b63c|#4487df|#f1bd4c|#e7815c|#e7615c|=|#default=style="--_c:{{{iconcolor}}};"}}
+ |#default=data-theme="light" style="background:{{{bg}}};{{#if:{{{iconcolor|}}}|--_c:{{{iconcolor}}};}}"
+}}><span class="ak-cbox__icon" {{#switch:{{lc:{{{bg|}}}}}|#f9ffea|#ebf7fe|#fef9de|#fff7ed|#fdf5f5|=|#default={{#if:{{{bgleft|}}}|style="background:{{{bgleft}}};"}}}}>{{#if:{{{icon|}}}
+ |{{#switch:{{{mdi|}}}
+   |1|true|True|yes|Yes|是={{mdi|{{{icon}}}|class={{{moreclass|}}}|size=20px|style=line-height:1;}}
+   |#default={{fa|{{{icon}}}|{{{iconclass|}}}|{{{moreclass|}}}|size=20px|style=line-height:1;}}
+ }}
+ |{{mdi|{{#switch:{{{lv|}}}
+   |0=arrow-top-right
+   |1=information-outline
+   |2|3|4=alert-outline
+   |#default={{#switch:{{lc:{{{bg|}}}}}|#f9ffea=arrow-top-right|#fef9de|#fff7ed|#fdf5f5=alert-outline|#default=information-outline}}
+ }}|size=20px|style=line-height:1;}}
+}}</span><div class="ak-cbox__body">{{#if:{{{title|}}}|<div class="ak-cbox__title">{{{title}}}</div>}}{{#if:{{{text|}}}|{{{text}}}}}{{#if:{{{content|}}}|{{{content}}}}}</div></div></div><noinclude>
+渲染 [[模板:Cbox2]]，参数见那里。直接调用本模板的只有 [[模板:复刻参阅]] 和 [[孤星2024]]：多一个 <code>boxclass</code>（加在 <code>.ak-cbox</code> 上），正文也可以写在 <code>content</code> 里。
+
+见 prts-skin-migration/migration/cbox2/README.md。
+</noinclude>

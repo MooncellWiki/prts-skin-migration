@@ -1,0 +1,69 @@
+正文提示框：左侧图标井 + 右侧正文。输出新皮肤设计系统的正文提示框组件（<code>.ak-cbox</code>），等级配色、明暗主题、窄屏排版都由组件负责；其他皮肤由 [[微件:AkComponents]] 加载同一套样式，各皮肤下外观一致。
+
+==参数==
+{{para|lv|等级：0 绿（另见 / 提示）、1 蓝（信息，默认）、2 / 3 黄（注意，两级同色）、4 红（警告）}}
+
+{{para|title|信息标题（加粗、等级色）}}
+
+{{para|text|信息正文}}
+
+{{para|narrow|1 / yes / true：最宽 640px；不填则铺满正文栏}}
+
+关于图标，目前站内接入了Material Design Icon图标系统，故不再建议使用原[[模板:Fa|Font Awesome]]图标。不填 <code>icon</code> 时按等级给默认图标（0 斜箭头、1 圆圈 i、2–4 三角叹号）。
+
+作为过渡，本模板暂时保留了Font Awesome图标参数。
+<tabber>
+MDI图标=
+{{para|mdi|true（使用这个参数激活MDI）}}
+
+{{para|icon|图标}}
+|-|
+FA图标(兼容性)=
+{{para|icon|图标}}
+
+{{para|iconclass|图标的类（s、r、l、b)}}
+</tabber>
+{{para|moreclass|图标的其他类}}
+
+===自定义配色===
+一般不需要：五个等级的配色在浅色、暗色下都已调好。活动主题框等需要自定义时：
+
+{{para|bg|整体（右侧）背景，可以是渐变}}
+
+{{para|bgleft|左侧图标井背景（不填则取图标色的淡色）}}
+
+{{para|iconcolor|图标与标题颜色}}
+
+<code>bg</code> 不是五个等级的默认色时，整个框按浅色方案显示（暗色主题下也一样），框里的文字、链接用浅色下的颜色。深色底请自己把文字写成浅色（如 <code><nowiki>{{color|white|…}}</nowiki></code>）。
+
+只填 <code>iconcolor</code>、不填 <code>bg</code> 时，图标与标题换色，其余跟随等级。
+
+==范例==
+<pre>
+{{cbox2|lv=0|text=这是一个测试文本。文本可以在局部'''加粗'''显示。}}
+{{cbox2|lv=1|title=这是一个测试标题}}
+{{cbox2|lv=2|title=这是一个测试标题|text=这是一个测试文本。文本可以在局部'''加粗'''显示。}}
+{{cbox2|lv=3|title=北京市第三区交通委提醒您：|text='''道路千万条，安全第一条。行车不规范，亲人两行泪！'''}}
+{{cbox2|lv=4|title=这是一个带有[[无效链接]]的测试标题|text=这是一个测试文本。这个文本带有[[首页]]链接和[https://zh.wikipedia.org 外部链接]，并且内容较长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长。你可以查看换行显示的效果。}}
+{{cbox2|lv=4|mdi=true|icon=compass-outline|moreclass=mdi-spin|text=这是一个参数被单独定义的套组范例，它使用了MDI图标。}}
+{{cbox2|lv=4|icon=compass|moreclass=fa-spin|text=这是一个参数被单独定义的套组范例，它使用了FA图标。}}
+{{cbox2|lv=1|narrow=1|text=这是一个较窄的提示框。}}
+{{cbox2|mdi=true|icon=checkbox-marked|iconcolor=white|bgleft=#865225|bg=#45260a|title={{color|white|这是一个自定义配色的范例}}|text={{color|white|深色底上的文字请自己写成浅色。}}}}
+</pre>
+
+{{cbox2|lv=0|text=这是一个测试文本。文本可以在局部'''加粗'''显示。}}
+{{cbox2|lv=1|title=这是一个测试标题}}
+{{cbox2|lv=2|title=这是一个测试标题|text=这是一个测试文本。文本可以在局部'''加粗'''显示。}}
+{{cbox2|lv=3|title=北京市第三区交通委提醒您：|text='''道路千万条，安全第一条。行车不规范，亲人两行泪！'''}}
+{{cbox2|lv=4|title=这是一个带有[[无效链接]]的测试标题|text=这是一个测试文本。这个文本带有[[首页]]链接和[https://zh.wikipedia.org 外部链接]，并且内容较长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长。你可以查看换行显示的效果。}}
+{{cbox2|lv=4|mdi=true|icon=compass-outline|moreclass=mdi-spin|text=这是一个参数被单独定义的套组范例，它使用了MDI图标。}}
+{{cbox2|lv=4|icon=compass|moreclass=fa-spin|text=这是一个参数被单独定义的套组范例，它使用了FA图标。}}
+{{cbox2|lv=1|narrow=1|text=这是一个较窄的提示框。}}
+{{cbox2|mdi=true|icon=checkbox-marked|iconcolor=white|bgleft=#865225|bg=#45260a|title={{color|white|这是一个自定义配色的范例}}|text={{color|white|深色底上的文字请自己写成浅色。}}}}
+
+==常用图标==
+{{fa/recommend}}
+
+==参阅==
+* [[模板:mdi]]
+* [[模板:fa]]

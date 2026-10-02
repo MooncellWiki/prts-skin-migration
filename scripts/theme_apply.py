@@ -1016,61 +1016,8 @@ async def step_arknights_css(c: Ctx) -> None:
     )
 
 
-def drop_legacy_night_blocks(text: str) -> str | None:
-    """删掉 Vector 时期手写的 ``@media screen { html.skin-theme-clientpref-night … }``。
-
-    只删顶层、且里面每条规则都是 night 规则的 ``@media screen`` 块；
-    ``theme:begin/end`` 区块里的内容不动。没有可删的返回 None。
-    """
-    kept = [
-        m.span()
-        for m in re.finditer(
-            r"/\* theme:begin\b.*?/\* theme:end [\w-]+ \*/", text, re.DOTALL
-        )
-    ]
-    out: list[str] = []
-    pos = 0
-    dropped = 0
-    for match in re.finditer(r"@media\s+screen\s*\{", text):
-        start = match.start()
-        if start < pos or any(a <= start < b for a, b in kept):
-            continue
-        depth = 1
-        end = match.end()
-        while end < len(text) and depth:
-            depth += {"{": 1, "}": -1}.get(text[end], 0)
-            end += 1
-        if depth:
-            raise SystemExit(f"@media 块没有闭合（偏移 {start}）")
-        inner = _css_only(text[match.end() : end - 1])
-        selectors = re.findall(r"([^{}]+)\{[^{}]*\}", inner)
-        if not selectors or not all(
-            "skin-theme-clientpref-night" in part
-            for selector in selectors
-            for part in selector.split(",")
-        ):
-            continue
-        out.append(text[pos:start].rstrip("\n") + "\n\n" if out or start else "")
-        pos = end
-        dropped += 1
-    if not dropped:
-        return None
-    out.append(text[pos:].lstrip("\n"))
-    return "".join(out).lstrip("\n")
-
-
-@step("cbox2")
-async def step_cbox2(c: Ctx) -> None:
-    """Cbox2 暗色重做：以浅色方案为基准推导，替换 Vector 时期手写的 night 规则。"""
-    await c.edit(
-        "模板:Cbox2/styles.css",
-        chain(
-            drop_legacy_night_blocks,
-            with_block("cbox2-night", "cbox2.css", NOTE),
-        ),
-        "Cbox2 暗色按浅色方案重新推导：去边框、图标按等级着色、lv2 / lv3 分开、"
-        "链接跟随皮肤；自定义配色的框压暗底色（原先浅底浅字看不清）",
-    )
+# Cbox2：2026-10-02 起整体换成设计系统的 .ak-cbox，模板:Cbox2/styles.css 由
+# scripts/cbox2_apply.py 维护（见 migration/cbox2/README.md），原 cbox2 一步已撤。
 
 
 @step("enemy_level")

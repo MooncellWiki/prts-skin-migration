@@ -1,0 +1,1 @@
+<noinclude>{{documentation}}[[分类:PRTS提示模板]]</noinclude><includeonly>{{cbox2/core|lv={{{lv|}}}|bg={{{bg|}}}|bgleft={{{bgleft|}}}|iconcolor={{{iconcolor|}}}|mdi={{{mdi|}}}|icon={{{icon|}}}|iconclass={{{iconclass|}}}|moreclass={{{moreclass|}}}|narrow={{{narrow|}}}|title={{{title|}}}|text={{{text|}}}}}</includeonly>

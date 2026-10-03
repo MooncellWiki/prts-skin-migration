@@ -14,6 +14,9 @@
    与皮肤自己的 ``.ak-icon``（OOUI 图标包）同一机制，颜色照样跟 ``currentColor``。
    照抄 Font Awesome 的几枚（``FA_ICONS``）直接出现网已有的 FA 字体图标。
 4. **``<input>`` 会被转义**——设计稿那个「演示：特别开放周」开关只在预览里有，去掉。
+5. **``<details>`` / ``<summary>`` / ``<thead>`` / ``<tbody>`` 也会被转义**（MediaWiki 1.43 的白名单里没有）——
+   「本周排期」改成 ``div`` + ``span[role=button]``、开合由微件脚本接；表格去掉 thead / tbody 两层，
+   表头那一行加类名。样式与脚本里对应的选择器一并换掉（``WIKITEXT_STYLE_SWAPS`` / ``WIKITEXT_SCRIPT_SWAPS``）。
 
 页面上的内容全部由 ``/sandbox`` 模板产出（见 ``SLOTS``）；手写的模板在
 ``migration/mainpage/templates/``，这里只生成页面、微件和 ``模板:行动日历/sandbox``。
@@ -110,7 +113,8 @@ HREF = re.compile(r'\s*\bhref="([^"]*)"')
 # 链接所在的格子：设计稿里 .mp-a 容器的开标签后面紧跟着 <a>
 CONTAINER = re.compile(r'<(?:div|span)\s[^>]*\bclass="([^"]*)"[^>]*>$')
 TAGS = re.compile(r"<[^>]+>")
-LABEL = re.compile(r'mp-label">([^<]+)<')
+# 资源格所在分组的标题（物资筹备 / 芯片搜索），资源格的链接按它对到 关卡一览/资源收集 的章节
+LABEL = re.compile(r'mp-res-group__label">([^<]+)<')
 # 行首是这些就不会被 MediaWiki 当成段落；其余的行并到上一行去（见 convert_body）
 BLOCK_LINE = re.compile(r"</?(?:div|ul|ol|li|h[1-6]|table|p)\b|\{\{|<!--")
 
@@ -127,7 +131,7 @@ LINKS = {
     "PRTS:如何帮助我们完善网站": "PRTS:如何帮助我们完善网站",
     "PRTS:授权一览": "PRTS:授权一览",
 }
-# 资源收集的卡按所在分组（.mp-label）链到 关卡一览/资源收集 的对应章节，同现网 模板:行动日历
+# 资源收集的格子按所在分组（.mp-res-group__label）链到 关卡一览/资源收集 的对应章节，同现网 模板:行动日历
 RES_PAGE = "关卡一览/资源收集"
 
 SVG_USE = re.compile(
@@ -142,6 +146,13 @@ FA_EM = 512  # FA 5 的 units-per-em，SVG 的 viewBox 与字形同一套坐标
 BRAND_BOX = re.compile(r"\.mp-brand \.ak-icon \{ width: (\d+)px; height: \1px;")
 SWITCH = re.compile(r'<label class="ak-switch[^"]*"[^>]*>.*?</label>', re.DOTALL)
 IMG_SRC = re.compile(r'src="(assets/[^"]+)"')
+# 本周排期（设计稿里唯一的 <details>）：写成 div + span[role=button]，开合由 DETAILS_SHIM 接
+WEEK_DETAILS = re.compile(r'<details class="mp-week">(.*?)</details>', re.DOTALL)
+WEEK_SUMMARY = re.compile(r"<summary>(.*?)</summary>", re.DOTALL)
+# 排期表的表头行：去掉 <thead> 这层，行上挂 .mp-week__head；<tbody> 直接去掉（浏览器自己补）
+THEAD_ROW = re.compile(r"<thead>\s*<tr>(.*?)</tr>\s*</thead>", re.DOTALL)
+TBODY_TAG = re.compile(r"</?tbody>")
+UNSUPPORTED_TAG = re.compile(r"</?(?:details|summary|thead|tbody|tfoot)\b")
 
 
 # 页面里这些容器的内容改由模板产出：容器保留（样式挂在它身上），内容换成模板调用。
@@ -379,6 +390,23 @@ def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
     body = SECTION_CLOSE.sub("</div>", body)
     body = SWITCH.sub("", body)  # <input> 会被转义，且这开关只在预览里有
 
+    # <details> / <summary> / <thead> / <tbody> 不在白名单里（见模块说明第 5 条）
+    def swap_week(m: re.Match[str]) -> str:
+        inner, n = WEEK_SUMMARY.subn(
+            r'<span class="mp-week__summary" role="button" tabindex="0">\1</span>',
+            m.group(1),
+            count=1,
+        )
+        if not n:
+            raise SystemExit("设计稿结构变了：本周排期的 <details> 里找不到 <summary>")
+        return '<div class="mp-week">' + inner + "</div>"
+
+    body = WEEK_DETAILS.sub(swap_week, body)
+    body = THEAD_ROW.sub(r'<tr class="mp-week__head">\1</tr>', body)
+    body = TBODY_TAG.sub("", body)
+    if m := UNSUPPORTED_TAG.search(body):
+        raise SystemExit(f"设计稿里还有 wikitext 写不出来的 {m.group(0)}，请补转换")
+
     # <button> 不在 wikitext 白名单里，转 span（脚本按 id 绑定，不受影响）
     body = BUTTON_OPEN.sub(
         lambda m: (
@@ -566,6 +594,36 @@ var mpRoot = document.querySelector('.mp');
 if (!mpRoot || !mpRoot.getClientRects().length) { return; }
 """
 
+# 本周排期收起时藏表格（原生 <details> 自己会藏）；无 JS 的访客开关不出、表格照常展开——
+# 原生 <details> 没有脚本也打得开，这里退而求其次，至少内容看得到。
+DETAILS_CSS = """
+/* ── 本周排期：wikitext 写不出 <details>，改成 div + span[role=button]，开合由脚本接；
+ *    无 JS 时开关不出、表格照常展开 ── */
+.client-js .mp-week:not(.is-open) > .mp-week__body{display:none}
+.client-nojs .mp-week > .mp-week__summary{display:none}
+"""
+
+DETAILS_SHIM = """
+/* 本周排期：<details> / <summary> 在 wikitext 里写不出来，转成了 div + span[role=button]，开合自己接（默认收起，同设计稿） */
+(function () {
+  var week = document.querySelector('.mp-week');
+  var btn = week && week.querySelector('.mp-week__summary');
+  var body = week && week.querySelector('.mp-week__body');
+  if (!btn || !body) { return; }
+  body.id = 'mp-week-body';
+  btn.setAttribute('aria-controls', body.id);
+  function set(open) {
+    week.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  set(false);
+  btn.addEventListener('click', function () { set(!week.classList.contains('is-open')); });
+  btn.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+  });
+})();
+"""
+
 KEY_SHIM = """
 /* <button> 在 wikitext 里写不出来，转成了 span[role=button]，回车 / 空格要自己接。
    上一张 / 下一张由 Swiper 的 a11y 模块接，这里只管暂停键。 */
@@ -577,6 +635,42 @@ KEY_SHIM = """
   });
 })();
 """
+
+
+# convert_body 把 <details> / <summary> / <thead> / <tbody> 换掉了，样式与脚本里的选择器跟着换。
+# 每条都必须命中；换完以后样式（去掉注释）与脚本的字符串里不能再有这几个标签名。
+WIKITEXT_STYLE_SWAPS = [
+    (".mp-week[open]", ".mp-week.is-open"),  # 先换：下一条要连 .mp-week.is-open > summary 一起换
+    ("> summary", "> .mp-week__summary"),  # 设计稿只有本周排期一处 <summary>
+    (".mp-week__table thead th", ".mp-week__table .mp-week__head th"),
+    (".mp-week__table tbody th", ".mp-week__table tr:not(.mp-week__head) th"),
+]
+WIKITEXT_SCRIPT_SWAPS = [
+    ("'thead th'", "'.mp-week__head th'"),
+    ("'tbody tr'", "'tr:not(.mp-week__head)'"),
+]
+WIKITEXT_TAG_NAME = re.compile(r"(?<![\w-])(?:details|summary|thead|tbody)(?![\w-])|\[open\]")
+CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+JS_STRING = re.compile(r"'[^'\n]*'|\"[^\"\n]*\"")
+
+
+def swap_wikitext_selectors(style: str, script: str) -> tuple[str, str]:
+    """样式 / 脚本里指向 <details> / <thead> 这些标签的选择器，换成 convert_body 转出来的写法。"""
+    for swaps, name in ((WIKITEXT_STYLE_SWAPS, "样式"), (WIKITEXT_SCRIPT_SWAPS, "脚本")):
+        for old, new in swaps:
+            text = style if name == "样式" else script
+            if old not in text:
+                raise SystemExit(f"设计稿{name}里找不到 {old}，请检查 WIKITEXT_*_SWAPS")
+            text = text.replace(old, new)
+            if name == "样式":
+                style = text
+            else:
+                script = text
+    left = WIKITEXT_TAG_NAME.findall(CSS_COMMENT.sub("", style))
+    left += [s for s in JS_STRING.findall(script) if WIKITEXT_TAG_NAME.search(s)]
+    if left:
+        raise SystemExit(f"样式 / 脚本里还有指向 wikitext 写不出来的标签的选择器：{left}")
+    return style, script
 
 
 HEADING_CHILD = re.compile(r"(>\s*)(h[1-6])\b")
@@ -606,6 +700,12 @@ LEGACY_CLASSES = ("mp-today",)
 LEGACY_CLASS = re.compile(
     r"(?<![\w-])\.(?:" + "|".join(map(re.escape, LEGACY_CLASSES)) + r")(?![\w-])"
 )
+# 撞名的类前面是选择器开头或后代组合符（空白）时，在它前面插 .mp：
+# .mp-today → .mp .mp-today；:root[data-theme="dark"] .mp-today → :root[data-theme="dark"] .mp .mp-today
+LEGACY_AT = re.compile(
+    r"(^|\s)(?=\.(?:" + "|".join(map(re.escape, LEGACY_CLASSES)) + r")(?![\w-]))"
+)
+SCOPED = re.compile(r"(?:^|\s)\.mp\s")
 
 
 def scope_legacy_classes(style: str) -> tuple[str, int]:
@@ -617,10 +717,12 @@ def scope_legacy_classes(style: str) -> tuple[str, int]:
             indent = head[: len(head) - len(head.lstrip())]
             sels = []
             for sel in (x.strip() for x in head.split(",")):
-                if LEGACY_CLASS.search(sel) and not sel.startswith(".mp "):
-                    if not LEGACY_CLASS.match(sel):
-                        raise SystemExit(f"撞名的类不在选择器开头，请人工看一下：{sel}")
-                    sel = ".mp " + sel
+                if LEGACY_CLASS.search(sel) and not SCOPED.search(sel):
+                    sel, n = LEGACY_AT.subn(r"\1.mp ", sel, count=1)
+                    if not n:
+                        raise SystemExit(
+                            f"撞名的类前面不是选择器开头或后代组合符，请人工看一下：{sel}"
+                        )
                     patched += 1
                 sels.append(sel)
             line = indent + ", ".join(sels) + " {" + line.split("{", 1)[1]
@@ -648,6 +750,7 @@ def main() -> None:
     body, icons, unmapped, anchors = convert_body(body)
     style, headings = patch_heading_selectors(strip_preview_patch(style))
     style, scoped = scope_legacy_classes(style)
+    style, script = swap_wikitext_selectors(style, script)
     style = (
         style
         + icon_css(args.design, all_icons | icons)
@@ -657,6 +760,7 @@ def main() -> None:
         + NOTES_SHIM
         + MOD_SHIM
         + fold_css()
+        + DETAILS_CSS
         + HOST_SHIM
     )
 
@@ -678,7 +782,7 @@ def main() -> None:
         "    document.addEventListener('DOMContentLoaded', run);\n"
         "  } else { run(); }\n"
         "})(function () {\n"
-        f"{RUN_GUARD}\n{script}\n{KEY_SHIM}\n"
+        f"{RUN_GUARD}\n{script}\n{KEY_SHIM}\n{DETAILS_SHIM}\n"
         "});\n"
         "</script>\n"
     )

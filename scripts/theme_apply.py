@@ -32,8 +32,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from wikibot.config import get_settings, load_config
+from wikibot.theme_hover import hover_keep_css
 from wikibot.theme_os import (
     add_os_branch_to_page,
+    is_stylesheet,
     strip_generated,
     style_spans,
 )
@@ -1114,6 +1116,80 @@ async def step_special_operator(c: Ctx) -> None:
                 "color:#fff !important;}",
             ),
             "特勤培训表格的黑底表头补白字（浅色下原为黑底深字）",
+        )
+
+
+# 行悬停（§13.15）：皮肤 .wikitable > tbody > tr:hover > td 的悬停底色（0,2,3）盖掉了
+# 这些单元格类上的底色。scripts/hover_audit.py 线上渲染确认过的才列在这里；
+# 值是该页样式里要保住底色的类名
+VECTOR_BREAKTHROUGH_CELLS = {
+    "buff",
+    "buffdesc",
+    "bufficon",
+    "buffstagename",
+    "reward",
+    "rew-limit",
+    "stagename",
+}
+HOVER_KEEP: dict[str, set[str]] = {
+    "沉沦者的黑流树海/黑流数据库": {"title", "icon"},
+    **dict.fromkeys(
+        ("矢量突破", "矢量突破/01", "矢量突破/02", "矢量突破/03", "矢量突破/2024"),
+        VECTOR_BREAKTHROUGH_CELLS,
+    ),
+    "关卡一览/活动关卡": {"retro"},
+    "关卡一览/主题曲/共享终端": {"title"},
+    "争锋频道": {"rainbow"},
+    "模板:争锋频道用户手册其他说明": {"rainbow"},
+    "模板:测试指标/全息/style": {"group_content"},
+    "岁的界园志异/见字图册": {"pacified"},
+    "雪山降临1101/重建评价": {"avt"},
+    "卫戍协议：盟约": {"preset"},
+    "卫戍协议：盟约 下半": {"preset"},
+    "月行水上/今日答案！": {"name"},
+    "重启锚点": {"porsrank"},
+    "干员模组一览/简表": {"typeback"},
+    "模板:沃伦姆德的薄暮/styles.css": {"wolumonde-dark-cell"},
+    "模板:叙拉古人/艺术评论/styles.css": {"siracusa-art-review-card"},
+}
+HOVER_NOTE = "行悬停时保住单元格底色（皮肤的悬停底色特异性更高），见 " + DOC
+
+
+def hover_keep(title: str, classes: set[str]) -> Transform:
+    """样式表整页、或页内每段含相关规则的样式末尾，放 ``hover-keep`` 区块。"""
+
+    def place(css: str, sanitized: bool) -> str | None:
+        body = hover_keep_css(css, classes, sanitized=sanitized)
+        return upsert_block(css, "hover-keep", body, HOVER_NOTE) if body else None
+
+    def run(text: str) -> str | None:
+        if is_stylesheet(title):
+            return place(text, sanitized=True)
+        out: list[str] = []
+        last = 0
+        for start, end in style_spans(text):
+            new_css = place(text[start:end], sanitized=False)
+            if new_css is None:
+                continue
+            if text[start:end].startswith("\n") and not new_css.startswith("\n"):
+                new_css = "\n" + new_css
+            out += [text[last:start], new_css]
+            last = end
+        if not out:
+            raise SystemExit(f"{title}: 样式里没有 {sorted(classes)} 的底色规则")
+        return "".join(out) + text[last:]
+
+    return run
+
+
+@step("hover_keep")
+async def step_hover_keep(c: Ctx) -> None:
+    """§13.15：皮肤的 wikitable 行悬停底色盖掉单元格底色，深底白字悬停成浅底白字。"""
+    for title, classes in HOVER_KEEP.items():
+        await c.edit(
+            title,
+            hover_keep(title, classes),
+            "行悬停时保住单元格底色（" + "、".join(sorted(classes)) + "）",
         )
 
 

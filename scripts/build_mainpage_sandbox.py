@@ -683,14 +683,21 @@ def main() -> None:
         "</script>\n"
     )
 
+    # 微件放进 .mp 根节点、紧跟开标签，不放在页面第一行：Widgets 扩展先把输出编码成一段纯文本
+    # （ENCODED_CONTENT…），解析和 Remex 整理都做完才解码回 HTML。正文顶层的裸文本会被包进 <p>，
+    # 放在第一行就是一个只装 <style> / <script> 的空段落，带着 16px 下外边距垫在 Hero 上面；
+    # 块级元素里面不包段落。真首页上旧版照样插在 .mp 前面（mainpage_sandbox_apply.py 的 MP_ROOT）。
+    root = '<div class="mp ak-not-prose">'
+    if not body.startswith(root):
+        raise SystemExit(f"设计稿结构变了：正文不是以 {root} 开头")
     page = (
-        "{{#Widget:Mpstyle/newskin}}<!--\n"
+        "<!--\n"
         "  新皮肤首页 · 生成物，别手改\n"
         "  来源：prts-design preview/_src/pages/home.html\n"
         "  生成：prts-skin-migration/scripts/build_mainpage_sandbox.py\n"
         "  任何皮肤下都能看：非 Arknights 皮肤由微件脚本动态加载皮肤的组件样式\n"
         "  （真首页上非 Arknights 皮肤显示旧版 模板:首页/旧版，这一份整块藏掉）\n"
-        "-->__NOTOC__\n" + body + "\n"
+        "-->__NOTOC__\n" + root + "{{#Widget:Mpstyle/newskin}}" + body[len(root):] + "\n"
     )
 
     # 整块搬走的容器：内容要过同一套 wikitext 转换，再写成模板

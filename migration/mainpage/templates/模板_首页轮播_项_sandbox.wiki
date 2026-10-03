@@ -1,33 +1,18 @@
 <includeonly>{{#switch:{{{#userparam|}}}
-<!-- ══ 活动 · 轮播图 ══ 1=页面 2=名称缩短 3=副标题 4=活动类型 5=标题图文件名 6=开始 7=结束 -->
+<!-- ══ 活动 · 轮播图 ══ 1=页面 2=名称缩短 3=标题图文件名 -->
 |event-slide=<div class="swiper-slide mp-hero__slide">
-<div class="mp-hero__pic mp-a">[[{{{1|}}}|<img class="mp-hero__bg" src="{{filepath:{{{5|}}}}}" alt=""><img src="{{filepath:{{{5|}}}}}" alt="">]]</div>
-<div class="mp-hero__caption">
-<div>
-<div class="mp-hero__eyebrow"><span>{{#if:{{{4|}}}|{{{4}}}|限时活动}} · {{#if:{{{3|}}}|{{{3}}}|Event}}</span>{{首页轮播/状态标/sandbox|start={{{6|}}}|end={{{7|}}}}}</div>
-<h2 class="mp-hero__title">[[{{{1|}}}|{{#if:{{{2|}}}|{{{2}}}|{{{1|}}}}}]]</h2>
-<div class="mp-hero__time"><span>{{#time:Y.m.d H:i|{{{6|}}} +8 hours}} — {{#time:{{#ifeq:{{#time:Y|{{{6|}}} +8 hours}}|{{#time:Y|{{{7|}}} +8 hours}}|m.d H:i|Y.m.d H:i}}|{{{7|}}} +8 hours}}</span> <span class="ak-countdown" data-until="{{#time:Y-m-d\TH:i:s|{{{7|}}} +8 hours}}+08:00"></span></div>
+<div class="mp-hero__pic mp-a">[[{{{1|}}}|<img class="mp-hero__bg" src="{{filepath:{{{3|}}}}}" alt=""><img src="{{filepath:{{{3|}}}}}" alt="{{#if:{{{2|}}}|{{{2}}}|{{{1|}}}}}">]]</div>
 </div>
-</div>
-</div>
-<!-- ══ 寻访 · 轮播图 ══ 1=文件页 2=寻访名cn 3=卡池名 4=开启 5=关闭 -->
+<!-- ══ 寻访 · 轮播图 ══ 1=文件页 2=寻访名cn 3=卡池名 -->
 |gacha-slide=<div class="swiper-slide mp-hero__slide">
-<div class="mp-hero__pic mp-a">[[{{#if:{{{3|}}}|{{{3}}}|卡池一览}}|<img class="mp-hero__bg" src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt=""><img src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt="">]]</div>
-<div class="mp-hero__caption">
-<div>
-<div class="mp-hero__eyebrow"><span>寻访 · Headhunting</span>{{首页轮播/状态标/sandbox|start={{{4|}}}|end={{{5|}}}}}</div>
-<h2 class="mp-hero__title">[[{{#if:{{{3|}}}|{{{3}}}|卡池一览}}|{{#if:{{{2|}}}|{{{2}}}|寻访}}]]</h2>
-<div class="mp-hero__time"><span>{{#time:Y.m.d H:i|{{{4|}}} +8 hours}} — {{#time:{{#ifeq:{{#time:Y|{{{4|}}} +8 hours}}|{{#time:Y|{{{5|}}} +8 hours}}|m.d H:i|Y.m.d H:i}}|{{{5|}}} +8 hours}}</span> <span class="ak-countdown" data-until="{{#time:Y-m-d\TH:i:s|{{{5|}}} +8 hours}}+08:00"></span></div>
-</div>
-</div>
+<div class="mp-hero__pic mp-a">[[{{#if:{{{3|}}}|{{{3}}}|卡池一览}}|<img class="mp-hero__bg" src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt=""><img src="{{filepath:{{PAGENAME:{{{1|}}}}}}}" alt="{{#if:{{{2|}}}|{{{2}}}|寻访}}">]]</div>
 </div>
 }}</includeonly><noinclude>
 首页轮播的输出模板，由 {{tl|首页轮播/sandbox}} 的 <code>#ask</code> 以 <code>format=template</code> 调用。
 <code>#userparam</code> 取 <code>event-slide</code> / <code>gacha-slide</code>。
 
-起止时间按北京时间显示；结束与开始不在同一年时，结束时间补上年份。
-
-整块可点的容器写成「带类名的容器 + 里面一条真链接」（<code>.mp-a</code>），链接铺满容器，不靠脚本。
-整张 slide 是一个热区：图是链接，标题链接的 <code>::after</code> 铺满说明栏，不另放按钮。
+每张只有一张横幅，整张是链接（「带类名的容器 + 里面一条真链接」，<code>.mp-a</code>，链接铺满容器，不靠脚本）。
+不另放说明栏：类别、标题、起止时间横幅上都有。标题写在主图的 <code>alt</code> 上，读屏与指示条的悬停提示用它；
+铺底那张模糊图 <code>alt</code> 留空，不读两遍。
 源文件在 [https://github.com/MooncellWiki/prts-skin-migration prts-skin-migration] 的 <code>migration/mainpage/templates/</code>。
 </noinclude>

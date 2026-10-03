@@ -1,7 +1,7 @@
-<includeonly>{{#ifexpr:{{#time:U|{{{end|2030-01-01}}} -8 hours}}>{{#time:U}}|<li><div class="mp-events__item mp-a">[[{{#if:{{{link|}}}|{{{link}}}|{{{1|}}}}}|<span class="mp-events__name">{{{1|}}}</span><span class="mp-events__time">{{#time:{{#ifeq:{{#time:Y|{{{start|}}}}}|{{#time:Y|{{{end|}}}}}|m.d H:i|Y.m.d H:i}}|{{{start|}}}}} — {{#time:{{#ifeq:{{#time:Y|{{{start|}}}}}|{{#time:Y|{{{end|}}}}}|m.d H:i|Y.m.d H:i}}|{{{end|}}}}}</span><span class="ak-countdown" data-until="{{#time:Y-m-d\TH:i:s|{{{end|}}}}}+08:00"></span><span class="ak-icon mp-i mp-i--chev-r"></span>]]</div></li>}}</includeonly><noinclude>
-网页活动列表的一行。<code>start</code> / <code>end</code> 写北京时间；到 <code>end</code> 自动消失，不用等人来删。
+<includeonly>{{#ifexpr:{{#time:U|{{{end|2030-01-01}}} -8 hours}}>{{#time:U}}|<li><span class="ak-icon mp-i mp-i--globe"></span><span>网页活动[[{{#if:{{{link|}}}|{{{link}}}|{{{1|}}}}}|{{{1|}}}]]</span>{{#if:{{{end|}}}|<span class="mp-notes__meta"><b>{{#time:n月j日 H:i|{{{end}}}}}</b> 结束</span>}}</li>}}</includeonly><noinclude>
+首页「今日信息 · 补充说明」里的一条网页活动，排在小编的临时提醒前面，格式同 {{tl|当前信息/条/sandbox}}。
+<code>start</code> / <code>end</code> 写北京时间；到 <code>end</code> 自动消失，不用等人来删。右侧只显示结束时间（进行中的才在这里，开始时间不用再写一遍）。
 <code>link</code> 留空时链接到与活动同名的页面。
-起止不在同一年时，两端都带上年份。
 
 用法：<code><nowiki>{{首页/网页活动行/sandbox|活动名|start=2026-08-12 10:00|end=2026-08-25 03:59|link=页面名}}</nowiki></code>
 </noinclude>

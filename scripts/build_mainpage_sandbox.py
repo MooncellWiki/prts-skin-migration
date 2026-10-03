@@ -90,7 +90,7 @@ TYPE_ATTR = re.compile(r'\s*\btype="[^"]*"')
 NAV_TILE = re.compile(
     r'<div class="mp-nav__tile mp-a"><a href="[^"]*"><img class="mp-nav__icon" '
     r'src="assets/mainpage/nav/([a-z]+)\.png"[^>]*>'
-    r'<span class="mp-nav__zh">([^<]*)</span><span class="mp-nav__en">([^<]*)</span>'
+    r'<span class="mp-nav__zh" data-en="([^"]*)">([^<]*)</span>'
     r"</a></div>"
 )
 # wikitext 的 HTML 白名单里没有 <nav>，换成 <div> 保留类名
@@ -155,12 +155,13 @@ TBODY_TAG = re.compile(r"</?tbody>")
 UNSUPPORTED_TAG = re.compile(r"</?(?:details|summary|thead|tbody|tfoot)\b")
 
 
+NOTES_CALL = "{{:首页/网页活动}}{{当前信息/sandbox}}"
 # 页面里这些容器的内容改由模板产出：容器保留（样式挂在它身上），内容换成模板调用。
 # 键是容器开标签的正则，值是 (标签名, 换进去的 wikitext)。
 INLINE_SLOTS = {
     r'<div class="swiper-wrapper">': ("div", "{{首页轮播/sandbox}}"),
-    r'<ul class="mp-events">': ("ul", "{{:首页/网页活动}}"),
-    r'<ul class="mp-notes">': ("ul", "{{当前信息/sandbox}}"),
+    # 补充说明：网页活动（人工维护的数据页）排在小编的临时信息前面
+    r'<ul class="mp-notes">': ("ul", NOTES_CALL),
     r'<div class="mp-ops">': ("div", "{{:首页/亮点干员/sandbox}}"),
     # 近期新增的三个数据页由 BotPtilopsis 直接按新格式写，sandbox 与真首页读同一份
     r'<div class="ak-panel__body mp-stages">': ("div", "{{:首页/新增关卡}}"),
@@ -184,8 +185,7 @@ EXTRACT_SLOTS = {
 # 没有内容时整块不输出的容器：(容器开标签的正则, 标签名, 判空用的 wikitext)。
 # 设计稿：没有网页活动 / 补充说明时不留空壳，也不显示「暂无」。
 OPTIONAL_BLOCKS = [
-    (r'<div class="mp-hero__events">', "div", "{{:首页/网页活动}}"),
-    (r'<div class="mp-today__notes">', "div", "{{当前信息/sandbox}}"),
+    (r'<div class="mp-today__notes">', "div", NOTES_CALL),
 ]
 
 # 12 个入口：雪碧图坐标与链接取自现网 首页 的 {{mpbutton|posx=|posy=|link=}}。
@@ -247,7 +247,7 @@ def apply_nav(body: str) -> str:
     """12 个入口换成 {{Mpbutton/sandbox}} 调用，参数与现网 {{mpbutton}} 一致。"""
 
     def call(m: re.Match[str]) -> str:
-        icon, zh, en = m.groups()
+        icon, en, zh = m.groups()
         if icon not in NAV:
             raise SystemExit(f"入口图标 {icon} 没有对应的雪碧图坐标 / 链接")
         x, y, link = NAV[icon]
@@ -581,18 +581,6 @@ DETAILS_SHIM = """
 })();
 """
 
-KEY_SHIM = """
-/* <button> 在 wikitext 里写不出来，转成了 span[role=button]，回车 / 空格要自己接。
-   上一张 / 下一张由 Swiper 的 a11y 模块接，这里只管暂停键。 */
-(function () {
-  var btn = document.getElementById('mp-hero-pause');
-  if (!btn) { return; }
-  btn.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
-  });
-})();
-"""
-
 
 # convert_body 把 <details> / <summary> / <thead> / <tbody> 换掉了，样式与脚本里的选择器跟着换。
 # 每条都必须命中；换完以后样式（去掉注释）与脚本的字符串里不能再有这几个标签名。
@@ -738,7 +726,7 @@ def main() -> None:
         "    document.addEventListener('DOMContentLoaded', run);\n"
         "  } else { run(); }\n"
         "})(function () {\n"
-        f"{RUN_GUARD}\n{script}\n{KEY_SHIM}\n{DETAILS_SHIM}\n"
+        f"{RUN_GUARD}\n{script}\n{DETAILS_SHIM}\n"
         "});\n"
         "</script>\n"
     )

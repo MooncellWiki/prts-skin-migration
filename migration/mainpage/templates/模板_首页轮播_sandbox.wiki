@@ -1,18 +1,17 @@
 <includeonly><!--
-  首页轮播。查询面：
-  旧版只取 ?标题图文件名 / ?卡池名（够拼张图），设计稿的 hero 还要标题、类型、
-  英文副标、起止时间、倒计时与「进行中」标记——这些属性 SMW 里本来就有。
+  首页轮播。查询面：每张只出一张横幅（链接 + 图），另取标题写进图的 alt。
+  起止时间只用来筛「进行中 + 48 小时内开始」，不输出（横幅上写着）。
 
   活动挂在条目页，寻访挂在文件页（横幅图本身），故分两组查询。
 -->{{#ask:[[分类:有活动信息的页面]][[活动开始时间::<<{{#time:c|+48 hours}}]][[活动结束时间::>{{#time:c}}]]
-|?名称缩短|?副标题|?活动类型|?标题图文件名|?活动开始时间#ISO|?活动结束时间#ISO
+|?名称缩短|?标题图文件名
 |sort=活动开始时间|order=desc|link=none|limit=6|searchlabel=
 |format=template|template=首页轮播/项/sandbox|userparam=event-slide
 }}{{#ask:[[分类:国服寻访]][[寻访开启时间cn::<<{{#time:c|+48 hours}}]][[寻访关闭时间cn::>{{#time:c}}]]
-|?寻访名cn|?卡池名|?寻访开启时间cn#ISO|?寻访关闭时间cn#ISO
+|?寻访名cn|?卡池名
 |sort=寻访开启时间cn|order=desc|link=none|limit=6|searchlabel=
 |format=template|template=首页轮播/项/sandbox|userparam=gacha-slide
 }}</includeonly><noinclude>
 新皮肤首页的轮播数据源，出轮播图（每张一个 slide）。输出结构见 {{tl|首页轮播/项/sandbox}}；
-箭头、计数与指示条在页面上、所有张共用，指示条由脚本按张数生成。
+箭头与指示条在页面上、所有张共用，指示条由脚本按张数生成。
 </noinclude>

@@ -1,5 +1,5 @@
-<includeonly>{{#if:{{{2|}}}|<div class="mp-ops__group"><div class="mp-ops__title"><span class="ak-icon mp-i mp-i--{{{icon|info}}}"></span><span class="cn">{{{1|}}}</span>{{{en|}}}</div><div class="mp-ops__row">{{{2|}}}</div></div>}}</includeonly><noinclude>
+<includeonly>{{#if:{{{2|}}}|<div class="mp-ops__group"><div class="mp-ops__title"><span class="ak-icon mp-i mp-i--{{{icon|info}}}"></span><span {{#if:{{{en|}}}|data-en="{{{en}}}"}}>{{{1|}}}</span></div><div class="mp-ops__row">{{{2|}}}</div></div>}}</includeonly><noinclude>
 「亮点干员」里的一组（标题 + 一行卡片）。内容为空时整组不输出。
 
-参数：<code>1</code>=中文标题 · <code>en</code>=英文小标 · <code>icon</code>=图标名（cake / plus-user / ticket / outfit / chip）· <code>2</code>=卡片
+参数：<code>1</code>=中文标题 · <code>en</code>=英文标题（写进 <code>data-en</code>，浏览器语言不是中文时首页脚本换上） · <code>icon</code>=图标名（cake / plus-user / ticket / outfit / chip）· <code>2</code>=卡片
 </noinclude>

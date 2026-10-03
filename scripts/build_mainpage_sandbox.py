@@ -473,12 +473,12 @@ def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
 def nav_sprite_css() -> str:
     """12 个入口图标：现网雪碧图，坐标由 {{Mpbutton/sandbox}} 按百分比写在行内。
 
-    尺寸、定位全按设计稿的 .mp-nav__icon（桌面 52px，手机 63px 水印），这里只给背景。
-    雪碧图每格 96px，与设计稿的单张素材逐像素一致，手机水印的居中补偿照样成立。
+    尺寸全按设计稿的 .mp-nav__icon（桌面 52px，手机 36px，都是图标在上、字在下），这里只给背景。
+    雪碧图每格 96px，与设计稿的单张素材逐像素一致，设计稿按图形透明边算的间距照样成立。
     """
     return """
 /* ── 入口图标：沿用现网那张 5 列 × 3 行的雪碧图。background-size / -position 都用百分比，
- *    图标多大都对得上（手机上是 63px 的水印），不需要现网 微件:Mpbutton 那段缩放脚本 ── */
+ *    图标多大都对得上（桌面 52px、手机 36px），不需要现网 微件:Mpbutton 那段缩放脚本 ── */
 .mp-nav__icon{display:block;background:url(https://static.prts.wiki/Mpbuttons.4DCFB205.png) no-repeat;background-size:500% 300%}
 """
 

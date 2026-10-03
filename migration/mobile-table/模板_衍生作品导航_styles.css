@@ -1,0 +1,46 @@
+/* 衍生作品导航的手机版（.nodesktop 那张表）。
+   表头最多叠 4 级（音乐 › OST › 危机合约 › 经典赛季），手机上内容列只剩 65px、一行两三个字，单格三十多行。
+   <640 把每一行拆成两行：同一行里的几级表头横排成一条，内容占满下一行。 */
+@media (max-width: 639px) {
+	/* 表格本身保持行内的 display:table：旧 Vector 靠 .nodesktop { display: none } 藏它，这里改 display 会把它放出来 */
+	.derivative-nav > tbody {
+		display: block;
+	}
+	.derivative-nav > tbody > tr {
+		display: flex;
+		flex-wrap: wrap;
+	}
+	/* 格子不再是表格单元格，border-collapse 不起作用：只留下边线，颜色沿用各皮肤给单元格的边框色 */
+	.derivative-nav > tbody > tr > th,
+	.derivative-nav > tbody > tr > td {
+		display: block;
+		box-sizing: border-box;
+		width: auto; /* 盖掉 th 上的 width="60px" / "80px" 属性 */
+		border-width: 0 0 1px;
+	}
+	.derivative-nav > tbody > tr > th {
+		flex: none;
+		text-align: left;
+	}
+	/* 最后一级表头补满整行，几级表头连成一条底色 */
+	.derivative-nav > tbody > tr > th:last-of-type {
+		flex-grow: 1;
+	}
+	.derivative-nav > tbody > tr > th + th {
+		padding-left: 0;
+	}
+	.derivative-nav > tbody > tr > th + th::before {
+		content: "›";
+		padding-right: 0.4em;
+		font-weight: normal;
+		opacity: 0.6;
+	}
+	.derivative-nav > tbody > tr > td {
+		flex: 1 1 100%;
+		min-width: 0;
+	}
+	/* 表格自己有外框，最后一行不再画下边线 */
+	.derivative-nav > tbody > tr:last-child > td {
+		border-bottom-width: 0;
+	}
+}

@@ -1063,6 +1063,60 @@ async def step_relic(c: Ctx) -> None:
     )
 
 
+@step("special_operator")
+async def step_special_operator(c: Ctx) -> None:
+    """特勤干员：说明栏写死浅灰渐变底，暗色下浅底浅字；特勤培训表格浅色下黑底深字；
+    表格宽度同 获得方式 表格（migration/char-obtain）。"""
+    await c.edit(
+        "模板:特勤干员/styles.css",
+        chain(
+            with_block("special-operator", "special_operator.css", NOTE),
+            with_block(
+                "special-operator-width",
+                "special_operator_width.css",
+                "窄屏宽度，同 prts-skin-migration/migration/char-obtain",
+            ),
+        ),
+        "说明栏暗色底；表格宽度同获得方式表格（手机上拉满）",
+        create=True,
+    )
+    await c.edit(
+        "模板:特勤干员",
+        chain(
+            # 宽度改由 特勤干员/styles.css 的 .so-notice 决定
+            # （原 prts-table-40p 即 width:40%）
+            sub(
+                '{|class="wikitable prts-table-40p prts-table-display',
+                '{|class="wikitable so-notice prts-table-display',
+            ),
+            # 放进第一个单元格，不在表格前多出一个只装 <style> 的段落
+            sub(
+                '|style="background: #000;"|[[文件:图标 特勤干员.png',
+                '|style="background: #000;"|'
+                '<templatestyles src="特勤干员/styles.css" />[[文件:图标 特勤干员.png',
+            ),
+            sub(
+                '|style="background: linear-gradient(180deg, #e9e9e9, #f6f6f6);"|',
+                '|class="so-notice-body" '
+                'style="background: linear-gradient(180deg, #e9e9e9, #f6f6f6);"|',
+            ),
+        ),
+        "说明栏挂类、加载 特勤干员/styles.css（暗色底；浅色外观不变）",
+    )
+    # 特勤培训表格的样式写在条目正文里（两页相同）：黑底表头只写了 --color-base，
+    # 皮肤 .wikitable > * > tr > th { color }（0,1,3）压过它，浅色下黑底深字。同 §5 C 类
+    for title in ("电弧", "机械师"):
+        await c.edit(
+            title,
+            sub(
+                ".sotrain th {background:#000 !important;--color-base:#fff;}",
+                ".sotrain th {background:#000 !important;--color-base:#fff;"
+                "color:#fff !important;}",
+            ),
+            "特勤培训表格的黑底表头补白字（浅色下原为黑底深字）",
+        )
+
+
 # --------------------------------------------------------------------------- 条目页
 
 

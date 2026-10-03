@@ -1,0 +1,5 @@
+/* 说明栏写死 #e9e9e9 → #f6f6f6 的浅灰渐变（模板行内 style），文字跟随主题，暗色下浅底浅字。
+   暗色值由浅色值逐个色标推导（dark_variant：surface-3 → surface-2）；行内样式要 !important 才盖得住 */
+html.skin-theme-clientpref-night body .so-notice-body {
+  background: linear-gradient(180deg, #2d2e30, #232425) !important;
+}

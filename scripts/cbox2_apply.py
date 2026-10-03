@@ -10,6 +10,7 @@
     uv run python scripts/cbox2_apply.py --dry-run               # 只打印 diff
     uv run python scripts/cbox2_apply.py -c config.sandbox.toml  # 沙箱演练
     uv run python scripts/cbox2_apply.py                         # 线上落地
+    uv run python scripts/cbox2_apply.py --summary "…"           # 追加改动，换编辑摘要
 """
 
 from __future__ import annotations
@@ -105,6 +106,7 @@ async def main() -> None:
     ap.add_argument(
         "-c", "--config", type=Path, help="换配置文件，如 config.sandbox.toml"
     )
+    ap.add_argument("--summary", help="覆盖各页的编辑摘要（上线后的追加改动用）")
     ns = ap.parse_args()
 
     cfg = load_config(ns.config)
@@ -134,7 +136,7 @@ async def main() -> None:
             if ns.dry_run:
                 print(f"  [dry-run] {title}（r{page.revid}）")
                 continue
-            await wiki.edit(title, new, summary, baserevid=page.revid)
+            await wiki.edit(title, new, ns.summary or summary, baserevid=page.revid)
             print(f"  ✔ {title} 已写入")
 
 

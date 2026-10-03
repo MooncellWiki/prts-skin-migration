@@ -4,7 +4,7 @@
 `模板:Cbox2/doc` r262393、`模板:复刻参阅` r402809、`孤星2024` r430674 · 脚本 `scripts/cbox2_apply.py`；
 同批退役 `模板:Mbox2`（`scripts/mbox2_retire_apply.py`）
 
-状态：**已上线**（2026-10-02 10:21，BotCathPalug）。
+状态：**已上线**（2026-10-02 10:21，BotCathPalug）；其他皮肤限宽 825px 2026-10-03 14:58 追加上线（见「其他皮肤限宽」）。
 
 ## 问题
 
@@ -127,6 +127,25 @@
 | 模板:Cbox2/doc | 旧 Vector | 正文栏 1375px；9 个宿主都是 825px、都加上了 `ak-scope`；各等级框和自定义配色框 825px，窄版 642px |
 | 模板:Cbox2/doc | Arknights | 宿主 `max-width: none`，框铺满正文栏 1030px，窄版 642px，与改前一致 |
 | 岁的界园志异/事件一览 | 旧 Vector | 12 个传说切换框 `max-width: 560px`（35rem）、宿主 825px；其余框 825px |
+
+上线：2026-10-03 14:58（UTC+8），`cbox2_apply.py --summary "…"`（只有这两页有差异，其余 4 页「已是目标内容」），`reports/cbox2/live-run-maxwidth.log`：
+
+| 时间 | 页面 | 修订 |
+| --- | --- | --- |
+| 14:58:36 | `模板:Cbox2/styles.css` | r432897 → r433460 |
+| 14:58:41 | `模板:Cbox2/core` | r432898 → r433461 |
+
+purge 了 模板:Cbox2/doc、岁的界园志异/事件一览、多索雷斯假日2022、傀影与猩红孤钻、PRTS:练习条目、孤星2024，其余靠自动排的 `htmlCacheUpdate`。
+线上复测（1600 宽，URL 加随机参数绕过 CDN）结果与沙箱相同：
+
+| 页面 | 皮肤 | 结果 |
+| --- | --- | --- |
+| 模板:Cbox2/doc | 旧 Vector | 正文栏 1375px；9 个宿主 825px、都有 `ak-scope`；各等级框和自定义配色框 825px，窄版 642px |
+| 模板:Cbox2/doc | Vector 2022 | 正文栏 862px；9 个宿主 825px，窄版 642px |
+| 模板:Cbox2/doc | Arknights | 宿主 `max-width: none`，框铺满正文栏 1030px，窄版 642px |
+| 岁的界园志异/事件一览 | 旧 Vector | 16 个宿主 825px；12 个传说切换框 `max-width: 560px`，其余框 825px |
+
+截图：`build/shots/cbox2-ak-live-maxwidth-vector.png`。
 
 ## 遗留
 

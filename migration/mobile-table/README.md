@@ -96,7 +96,8 @@ uv run python scripts/purge_embeddedin.py 模板:Code
 
 ## 第二、三步：皮肤给正文表格包横滑外壳、放宽竖条（2026-10-03）
 
-状态：**沙箱验证，未上线**。改动在两个仓库的工作区里，都没提交：
+状态：**沙箱验证，未上线**。复测后不再作为主方案，只给真二维和归不了类的表兜底，上不上待定（见 `docs/移动端表格问题归类与适配方案.md` §4、§5）。
+改动都没提交，收在两个仓库的 `git stash` 里（`table-fit: 手机正文表格横滑外壳 + 竖条放宽…`）：
 
 - `prts-design`：新建 `packages/css/src/table-fit.js`（皮肤与预览共用，无依赖，ES5，同 `sidebar-tree.js` 的做法）；
   `packages/css/src/chrome/responsive.css` ≤639 那条 `table.wikitable { display:block }` 改写；参考皮肤 `skin/`（`skin.json`、

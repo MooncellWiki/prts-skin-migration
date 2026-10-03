@@ -15,7 +15,7 @@
    照抄 Font Awesome 的几枚（``FA_ICONS``）直接出现网已有的 FA 字体图标。
 4. **``<input>`` 会被转义**——设计稿那个「演示：特别开放周」开关只在预览里有，去掉。
 5. **``<details>`` / ``<summary>`` / ``<thead>`` / ``<tbody>`` 也会被转义**（MediaWiki 1.43 的白名单里没有）——
-   「本周排期」改成 ``div`` + ``span[role=button]``、开合由微件脚本接；表格去掉 thead / tbody 两层，
+   「未来七天」改成 ``div`` + ``span[role=button]``、开合由微件脚本接；表格去掉 thead / tbody 两层，
    表头那一行加类名。样式与脚本里对应的选择器一并换掉（``WIKITEXT_STYLE_SWAPS`` / ``WIKITEXT_SCRIPT_SWAPS``）。
 
 页面上的内容全部由 ``/sandbox`` 模板产出（见 ``SLOTS``）；手写的模板在
@@ -146,7 +146,7 @@ FA_EM = 512  # FA 5 的 units-per-em，SVG 的 viewBox 与字形同一套坐标
 BRAND_BOX = re.compile(r"\.mp-brand \.ak-icon \{ width: (\d+)px; height: \1px;")
 SWITCH = re.compile(r'<label class="ak-switch[^"]*"[^>]*>.*?</label>', re.DOTALL)
 IMG_SRC = re.compile(r'src="(assets/[^"]+)"')
-# 本周排期（设计稿里唯一的 <details>）：写成 div + span[role=button]，开合由 DETAILS_SHIM 接
+# 未来七天（设计稿里唯一的 <details>）：写成 div + span[role=button]，开合由 DETAILS_SHIM 接
 WEEK_DETAILS = re.compile(r'<details class="mp-week">(.*?)</details>', re.DOTALL)
 WEEK_SUMMARY = re.compile(r"<summary>(.*?)</summary>", re.DOTALL)
 # 排期表的表头行：去掉 <thead> 这层，行上挂 .mp-week__head；<tbody> 直接去掉（浏览器自己补）
@@ -398,7 +398,7 @@ def convert_body(body: str) -> tuple[str, set[str], list[str], int]:
             count=1,
         )
         if not n:
-            raise SystemExit("设计稿结构变了：本周排期的 <details> 里找不到 <summary>")
+            raise SystemExit("设计稿结构变了：未来七天的 <details> 里找不到 <summary>")
         return '<div class="mp-week">' + inner + "</div>"
 
     body = WEEK_DETAILS.sub(swap_week, body)
@@ -594,17 +594,17 @@ var mpRoot = document.querySelector('.mp');
 if (!mpRoot || !mpRoot.getClientRects().length) { return; }
 """
 
-# 本周排期收起时藏表格（原生 <details> 自己会藏）；无 JS 的访客开关不出、表格照常展开——
+# 未来七天收起时藏表格（原生 <details> 自己会藏）；无 JS 的访客开关不出、表格照常展开——
 # 原生 <details> 没有脚本也打得开，这里退而求其次，至少内容看得到。
 DETAILS_CSS = """
-/* ── 本周排期：wikitext 写不出 <details>，改成 div + span[role=button]，开合由脚本接；
+/* ── 未来七天：wikitext 写不出 <details>，改成 div + span[role=button]，开合由脚本接；
  *    无 JS 时开关不出、表格照常展开 ── */
 .client-js .mp-week:not(.is-open) > .mp-week__body{display:none}
 .client-nojs .mp-week > .mp-week__summary{display:none}
 """
 
 DETAILS_SHIM = """
-/* 本周排期：<details> / <summary> 在 wikitext 里写不出来，转成了 div + span[role=button]，开合自己接（默认收起，同设计稿） */
+/* 未来七天：<details> / <summary> 在 wikitext 里写不出来，转成了 div + span[role=button]，开合自己接（默认收起，同设计稿） */
 (function () {
   var week = document.querySelector('.mp-week');
   var btn = week && week.querySelector('.mp-week__summary');
@@ -641,7 +641,7 @@ KEY_SHIM = """
 # 每条都必须命中；换完以后样式（去掉注释）与脚本的字符串里不能再有这几个标签名。
 WIKITEXT_STYLE_SWAPS = [
     (".mp-week[open]", ".mp-week.is-open"),  # 先换：下一条要连 .mp-week.is-open > summary 一起换
-    ("> summary", "> .mp-week__summary"),  # 设计稿只有本周排期一处 <summary>
+    ("> summary", "> .mp-week__summary"),  # 设计稿只有未来七天一处 <summary>
     (".mp-week__table thead th", ".mp-week__table .mp-week__head th"),
     (".mp-week__table tbody th", ".mp-week__table tr:not(.mp-week__head) th"),
 ]

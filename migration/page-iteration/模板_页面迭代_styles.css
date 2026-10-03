@@ -1,0 +1,6 @@
+/* 模板:页面迭代：提醒旧皮肤的读者本页的样式要随新版皮肤大改，只在 Arknights 以外的皮肤显示。
+   解析缓存不分皮肤，框照常输出，由 body 上的皮肤类藏掉；本样式排在框之前，不会先露一下再藏。
+   见 prts-skin-migration/migration/page-iteration/README.md */
+body.skin-arknights .prts-page-iteration {
+  display: none;
+}

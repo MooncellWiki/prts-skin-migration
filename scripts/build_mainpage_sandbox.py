@@ -510,49 +510,6 @@ MOD_SHIM = """
 max-width:none;max-height:none;transform:translate(-50%,-50%)}
 """
 
-# Hero 的「折叠线预算」（不把入口网格挤出第一屏）各项量自设计稿的预览骨架，
-# Hero 上方按页眉 56 + 动作行 71 算；设计稿注明真皮肤改 --mp-fold-above 一项即可。
-# 现网四种皮肤 Hero 上方各不相同（Arknights 有头图露出段，Vector 2022 在
-# 1120–1319 正文列被侧栏压到 800 以下……），说明栏、入口格与预算的出入
-# 也折进这一项。值按皮肤 × 设计稿的视口断点分档，取 2026-10-02 现网逐 10px
-# 扫出来的档内最大值（入口第一排整排露出、底下留 12px 所需的最小值；
-# scripts/mainpage_fold_sweep.mjs 重量）：(max-width, px)，None 是不限宽的默认档。
-# 含公告横幅（「我们正在测试新版皮肤」）那一截，横幅撤掉后偏大约 40px——
-# 只是矮屏上图框多压一点，入口照样露出。Vector 两种皮肤 <640 时正文列只剩
-# 120–340px，本来就是坏的，不另分档。
-# <640 档跟进设计稿 00150ca（入口格 96 → 64px 高、--mp-fold-below 121 → 92）重扫：
-# Arknights 在 首页 上扫（顺带吃进皮肤手机页眉两行并一行省下的 48px）；Minerva 在
-# 首页 上看的是旧版，只能在 首页/sandbox 上扫新旧样式的差值（−3）折回 首页 的基准。
-FOLD_ABOVE = {
-    "skin-arknights": [(None, 307), (1119, 390), (849, 385), (689, 337), (639, 248)],
-    "skin-vector-legacy": [(None, 291), (1119, 357), (849, 299), (689, 283)],
-    "skin-vector-2022": [
-        (None, 354),
-        (1319, 384),
-        (1119, 347),
-        (849, 289),
-        (689, 212),
-    ],
-    "skin-minerva": [(None, 164), (1119, 196), (849, 191), (689, 151), (639, 151)],
-}
-
-
-def fold_css() -> str:
-    """各皮肤的 --mp-fold-above：body 类名把特指度抬过设计稿按视口分档的那几条。"""
-    lines = [
-        "",
-        "/* ── 折叠线预算：Hero 上方按皮肤量（设计稿的值量自预览骨架），",
-        " *    说明栏 / 入口格与预算的出入一并折进来 ── */",
-    ]
-    for skin, steps in FOLD_ABOVE.items():
-        for width, px in steps:
-            rule = f"body.{skin} .mp-hero{{--mp-fold-above:{px}px}}"
-            if width is not None:
-                rule = f"@media (max-width:{width}px){{{rule}}}"
-            lines.append(rule)
-    return "\n".join(lines) + "\n"
-
-
 # Swiper 在 static.prts.wiki 的 npm 镜像上（prts-static 桶 npm/swiper@版本/，与 npm 包根目录同构）。
 # 升级时先用 ossutil 传新版本的 swiper-bundle.min.{js,css,js.map}，再改这里。
 SWIPER = "https://static.prts.wiki/npm/swiper@11.2.10/"
@@ -759,7 +716,6 @@ def main() -> None:
         + HEADING_SHIM
         + NOTES_SHIM
         + MOD_SHIM
-        + fold_css()
         + DETAILS_CSS
         + HOST_SHIM
     )

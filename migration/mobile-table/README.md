@@ -89,7 +89,8 @@ uv run python scripts/purge_embeddedin.py 模板:Code
 
 ### 没解决的
 
-- 导航整张表在音乐条目上仍是默认展开、近 7000px 高。手机上默认折叠要么改 `mw-collapsed` 的条件（会连带桌面以外的旧皮肤），
+- （已解决，见 `../derivative-nav/README.md`：手机版改成手风琴，`styles.css` 整页替换，本目录的源文件只留作记录。）
+  导航整张表在音乐条目上仍是默认展开、近 7000px 高。手机上默认折叠要么改 `mw-collapsed` 的条件（会连带桌面以外的旧皮肤），
   要么等并回单份 Navbox 时一起处理。
 - 长期按 `docs/nomobile-nodesktop响应式迁移方案.md` G 类并回单份 Navbox，前提是条目改成 `<li>`。
 - `模板:Code` 里的 `magin:5px` 是笔误，从来没生效过，没动。

@@ -1,0 +1,114 @@
+/* 衍生作品导航的手机版（.nodesktop）：手风琴，结构由 模块:衍生作品导航 输出。
+   .dnav > .dnav-title + .dnav-fold（.dnav-head + .dnav-body）；body 里是 .dnav-list、.dnav-group（小标题 + 列表）或下一级 .dnav-fold。
+   开合对齐 PRTS Design 的 Accordion（.ak-details）：标题左侧强调色的 + / − 记号，展开的标题行换底色。
+   颜色用 Codex 变量，新皮肤和 Minerva 都有；--ak-* 只有新皮肤有，带回退（TemplateStyles 不收嵌套的 var()）。 */
+.dnav {
+	margin: 1em 0;
+	border: 1px solid var(--border-color-base, #a2a9b1);
+	font-size: 14px;
+	line-height: 1.5;
+}
+.dnav-title {
+	padding: 10px 12px;
+	background: var(--background-color-neutral, #eaecf0);
+	font-size: 15px;
+	font-weight: 700;
+	text-align: center;
+}
+
+/* 标题行整行是开关（jquery.makeCollapsible 的自带开关位），点标题里的链接照常跳转 */
+.dnav .dnav-head {
+	float: none; /* 皮肤给 .mw-collapsible-toggle 的右浮动、小字、链接色都不要 */
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	min-height: 44px;
+	padding: 0 12px;
+	border-top: 1px solid var(--border-color-base, #a2a9b1);
+	background: var(--background-color-neutral, #eaecf0);
+	color: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	user-select: none;
+}
+.dnav .mw-collapsed > .dnav-head {
+	background: none;
+}
+/* + / − 用两条渐变拼（同 Panel 的开合记号，不依赖字体）：展开时竖的一条缩没 */
+.dnav .dnav-head::before {
+	content: "";
+	flex: none;
+	width: 12px;
+	height: 12px;
+	margin: 0 2px;
+	background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100% 2px, 2px 0;
+	color: var(--ak-accent, #36c);
+}
+.dnav .mw-collapsed > .dnav-head::before {
+	background-size: 100% 2px, 2px 100%;
+}
+/* 第二、三级逐级缩进 */
+.dnav-body .dnav-head {
+	min-height: 40px;
+	padding-left: 28px;
+}
+.dnav-body .dnav-body .dnav-head {
+	min-height: 36px;
+	padding-left: 44px;
+	border-top-color: var(--border-color-subtle, #c8ccd1);
+	font-weight: 400;
+}
+
+.dnav-body > .dnav-list,
+.dnav-body > .dnav-group {
+	padding: 8px 12px 10px;
+	border-top: 1px solid var(--border-color-subtle, #c8ccd1);
+}
+.dnav-body .dnav-body > .dnav-list,
+.dnav-body .dnav-body > .dnav-group {
+	padding-left: 28px;
+}
+.dnav-body .dnav-body .dnav-body > .dnav-list,
+.dnav-body .dnav-body .dnav-body > .dnav-group {
+	padding-left: 44px;
+}
+.dnav-label {
+	margin-bottom: 2px;
+	color: var(--color-subtle, #54595d);
+	font-size: 12px;
+	font-weight: 700;
+}
+/* 行距放大：链接上下相邻，手指点得准 */
+.dnav-list {
+	line-height: 1.8;
+}
+.dnav-item {
+	display: inline-block;
+	max-width: 100%;
+}
+.dnav-dot {
+	color: var(--color-subtle, #54595d);
+}
+/* 小标题下面再分的一层（网络动画 › 重力井动画） */
+.dnav-group > .dnav-group {
+	margin-top: 8px;
+	padding-left: 10px;
+	border-left: 2px solid var(--border-color-base, #a2a9b1);
+}
+/* 当前条目 */
+.dnav .mw-selflink {
+	padding: 0 6px;
+	background: var(--background-color-progressive-subtle, #eaf3ff);
+	box-shadow: inset 0 -2px var(--ak-accent, #36c);
+	color: var(--color-emphasized, #101418);
+	font-weight: 700;
+}
+/* 键盘焦点框收进行内，不压到外框 */
+.dnav .dnav-head:focus {
+	outline-offset: -2px;
+}

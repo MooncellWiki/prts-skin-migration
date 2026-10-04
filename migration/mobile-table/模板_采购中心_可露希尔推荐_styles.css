@@ -1,0 +1,26 @@
+/* 可露希尔推荐的四张台词表（.closure-lines，两列：商品名 / 日文 + 中文台词）。
+   商品名里的「珊瑚海岸/II/III/…/XXII」中间没有断点，手机上把商品名列顶到 326px，台词列只剩 121px、一段二十多行。
+   <640 两格上下排：商品名一条在上，台词占满下一行。桌面不变。 */
+@media (max-width: 639px) {
+	/* 表格本身保持行内的 display:table 和宽度 */
+	.closure-lines > tbody,
+	.closure-lines > tbody > tr {
+		display: block;
+	}
+	/* 格子不再是表格单元格，border-collapse 不起作用：只留下边线，颜色沿用各皮肤给单元格的边框色 */
+	.closure-lines > tbody > tr > th,
+	.closure-lines > tbody > tr > td {
+		display: block;
+		box-sizing: border-box;
+		width: auto !important; /* 第一张表的行头行内写了 width:120px */
+		border-width: 0 0 1px;
+	}
+	.closure-lines > tbody > tr > th {
+		text-align: left;
+		overflow-wrap: anywhere; /* 屏幕比最长的那串还窄时允许断开，不撑宽表格 */
+	}
+	/* 表格自己有外框，最后一行不再画下边线 */
+	.closure-lines > tbody > tr:last-child > td {
+		border-bottom-width: 0;
+	}
+}

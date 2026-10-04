@@ -1,0 +1,113 @@
+/* 家具一览的主题表（.furniture-table，7 列：图标 / 名称 / 描述 / 实装时间 / 获取途径 / 整套氛围值 / 家具零件需求；
+   会客室主题只有前 5 列）。手机上 7 列挤在 366px 里，描述列只剩 49px、一格二三十行。
+   <768 改成一个主题一张卡：图标 + 名称 + 实装时间在上，描述占满一行，其余各占一行、前面标列名。桌面不变。
+   断点比皮肤的 640 宽：640–767 之间正文栏 550–677px，描述列只有 104–150px，照样是竖条。 */
+@media (max-width: 767px) {
+	.furniture-table,
+	.furniture-table > thead,
+	.furniture-table > tbody {
+		display: block;
+	}
+	.furniture-table {
+		width: auto;
+		border: 0;
+		background: none;
+		overflow: visible;
+	}
+	.furniture-table > * > tr {
+		display: grid;
+		grid-template-columns: 100px 1fr; /* {{家具主题|…|100px}} 的图标是 100px 宽的行内块 */
+		grid-template-areas:
+			"icon name"
+			"icon date"
+			"desc desc"
+			"get get"
+			"amb amb"
+			"part part";
+		column-gap: 8px;
+		row-gap: 4px;
+		margin-top: 8px;
+		padding: 12px;
+		border: 1px solid var( --ak-border, #c8ccd1 );
+		border-radius: 4px;
+	}
+	.furniture-table > * > tr > th,
+	.furniture-table > * > tr > td {
+		display: block;
+		box-sizing: border-box;
+		width: auto !important; /* 表头行内写了 width:400px 一类的列宽 */
+		height: auto !important;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+		text-align: left;
+	}
+	/* 表题行（colspan 的那一格，折叠按钮在里面）保持一整条。
+	   两行表头在 tablesorter 跑完后搬进 thead，之前是 tbody 的头两行 */
+	.furniture-table > thead > tr:first-child,
+	.furniture-table:not( .jquery-tablesorter ) > tbody > tr:first-child {
+		display: block;
+		margin-top: 0;
+		background: var( --ak-bg-surface-2, #eaecf0 );
+	}
+	.furniture-table > * > tr > th[ colspan ] {
+		text-align: center;
+	}
+	/* 列名行：列名改写在每格前面，这一行不要 */
+	.furniture-table > thead > tr:nth-child( 2 ),
+	.furniture-table:not( .jquery-tablesorter ) > tbody > tr:nth-child( 2 ) {
+		display: none;
+	}
+	.furniture-table > * > tr > td:nth-child( 1 ) {
+		grid-area: icon;
+		align-self: center;
+	}
+	.furniture-table > * > tr > td:nth-child( 2 ) {
+		grid-area: name;
+		align-self: end;
+		font-size: 1.15em;
+		font-weight: bold;
+	}
+	.furniture-table > * > tr > td:nth-child( 3 ) {
+		grid-area: desc;
+		margin: 4px 0;
+	}
+	.furniture-table > * > tr > td:nth-child( 4 ) {
+		grid-area: date;
+		align-self: start;
+		opacity: 0.75;
+	}
+	.furniture-table > * > tr > td:nth-child( 5 ) {
+		grid-area: get;
+	}
+	.furniture-table > * > tr > td:nth-child( 6 ) {
+		grid-area: amb;
+	}
+	.furniture-table > * > tr > td:nth-child( 7 ) {
+		grid-area: part;
+	}
+	/* 获取途径、两个数值：列名在左，内容在右（获取途径一格里有几行，列名绝对定位占住左边一列） */
+	.furniture-table > * > tr > td:nth-child( n + 5 ) {
+		position: relative;
+		padding-left: 8em;
+	}
+	.furniture-table > * > tr > td:nth-child( n + 5 )::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		opacity: 0.75;
+	}
+	.furniture-table > * > tr > td:nth-child( 4 )::before {
+		content: "实装 ";
+	}
+	.furniture-table > * > tr > td:nth-child( 5 )::before {
+		content: "获取途径";
+	}
+	.furniture-table > * > tr > td:nth-child( 6 )::before {
+		content: "整套氛围值";
+	}
+	.furniture-table > * > tr > td:nth-child( 7 )::before {
+		content: "家具零件需求";
+	}
+}

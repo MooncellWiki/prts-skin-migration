@@ -1,0 +1,122 @@
+/* 黍的试验田/剧情 的对话表（table.story，3 列：左头像 / 台词 / 右头像；每行只有一侧有头像，
+   右侧说话的行在 tr 上行内写了浅色底；td.tut 是通栏的教学提示）。底色、字色在页内的 {{#widget:style}} 里。
+   表宽写死 800px，手机上只能横滑，标题和右侧的说话人都在屏幕外。 */
+table.story {
+	width: min( 800px, 100% ); /* 不用 max-width：WebKit 把表格的定长宽度当最小宽度 */
+}
+/* 底色写死是浅的，暗色主题下皮肤的链接色（#5ddcff）落在黄底上看不清：固定用浅色主题的三个链接色 */
+table.story a,
+table.story .mw-collapsible-toggle {
+	color: #0072a8;
+}
+table.story a:visited {
+	color: #2c6b88;
+}
+table.story a:hover {
+	color: #005a82;
+}
+
+/* <640 改成聊天版式：头像靠说话人那一侧，名字在上、台词在下成气泡，空着的那格头像不要。 */
+@media ( max-width: 639px ) {
+	table.story,
+	table.story > tbody {
+		display: block;
+	}
+	table.story {
+		width: auto;
+		border: 1px solid #ab944f;
+	}
+	table.story > tbody > tr > th,
+	table.story > tbody > tr > td {
+		padding: 0;
+		border: 0;
+	}
+
+	/* 标题条：标题靠左，折叠按钮靠右 */
+	table.story > tbody > tr:first-child,
+	table.story th.head {
+		display: block;
+	}
+	table.story th.head {
+		padding: 10px 12px;
+		text-align: left;
+	}
+	/* 展开后皮肤把按钮绝对定位到右上角（选择器里一串 :not，权重压不过），和折叠时的浮动差出一个内边距，按一下会跳 */
+	table.story th.head .mw-collapsible-toggle {
+		position: static !important;
+		float: right !important;
+		margin-left: 12px;
+		font-size: 0.875em;
+		font-weight: normal;
+	}
+
+	/* 对话行。折叠时 mw-collapsible 在 tr 上行内写 display:none，这里不能加 !important */
+	table.story > tbody > tr {
+		display: grid;
+		grid-template-columns: auto minmax( 0, 1fr );
+	}
+	/* 头像格拆开，图和名字直接当这一行的网格项；每行两格头像只有一格有内容 */
+	table.story td.avt {
+		display: contents;
+	}
+	table.story td.avt:last-child,
+	table.story tr[ style*="background" ] > td.avt:first-child {
+		display: none;
+	}
+	table.story td.avt > br {
+		display: none;
+	}
+	table.story td.avt > * {
+		grid-area: 1 / 1 / span 2;
+		width: 45px;
+		margin: 8px 0 8px 12px;
+		line-height: 0;
+	}
+	table.story td.avt > b {
+		grid-area: 1 / 2;
+		justify-self: start;
+		width: auto;
+		margin: 8px 24px 2px 8px;
+		font-size: 0.875em;
+		line-height: 1.4;
+	}
+	table.story td.dia {
+		grid-area: 2 / 2;
+		justify-self: start;
+		margin: 0 24px 8px 8px;
+		padding: 6px 12px;
+		border-radius: 2px 12px 12px 12px;
+		background: #fff7d1;
+	}
+
+	/* 右侧说话的行：左右对调。选择器认行内的底色——折叠再展开后每个 tr 都会留下空的 style 属性，不能只写 [style] */
+	table.story tr[ style*="background" ] {
+		grid-template-columns: minmax( 0, 1fr ) auto;
+	}
+	table.story tr[ style*="background" ] > td.avt:last-child {
+		display: contents;
+	}
+	table.story tr[ style*="background" ] > td.avt > * {
+		grid-column: 2;
+		margin: 8px 12px 8px 0;
+	}
+	table.story tr[ style*="background" ] > td.avt > b {
+		grid-column: 1;
+		justify-self: end;
+		margin: 8px 8px 2px 24px;
+	}
+	table.story tr[ style*="background" ] > td.dia {
+		grid-column: 1;
+		justify-self: end;
+		margin: 0 8px 8px 24px;
+		border-radius: 12px 2px 12px 12px;
+	}
+
+	/* 教学提示：通栏一条 */
+	table.story td.tut {
+		grid-column: 1 / -1;
+		margin: 4px 0;
+		padding: 4px 12px;
+		font-size: 0.875em;
+	}
+}

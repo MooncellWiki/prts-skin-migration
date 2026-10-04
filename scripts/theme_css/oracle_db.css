@@ -1,0 +1,43 @@
+/* 深色附件表（.od_knowledge：行内写的 #2f2f2f 底白字）里的折叠按钮跟随表格文字色。
+   皮肤给按钮、核心给按钮文字各上了一次链接色（#0072a8：深色标题栏上 2.3–2.8:1、#0098dc 上 1.6:1），
+   方括号是皮肤的次要文字色。各页原先在 #widget:style 里写的 .od_knowledge a.mw-collapsible-text
+   只认旧版的 <a> 按钮，按钮改成 <button><span> 之后就不生效了 */
+.od_knowledge .mw-collapsible-toggle,
+.od_knowledge .mw-collapsible-toggle .mw-collapsible-text,
+.od_knowledge .mw-collapsible-toggle-default::before,
+.od_knowledge .mw-collapsible-toggle-default::after {
+  color: inherit;
+}
+
+/* 深色附件表里用 ! 写的标题格（pv4「测试题库」）：皮肤给表头铺的浅灰底盖住了行上的深色渐变，
+   白字落在浅底上（Vector 下同样）。透出行的底色，和其余用 | 写的标题栏一致 */
+.od_knowledge > * > tr > th {
+  background: none;
+}
+
+/* 标签页压在浅灰渐变顶端的行（pv4「短文内容」）：页签固定用深色字。
+   皮肤的页签色随主题变（暗色下是浅色字，落在 #b6b6b6 上 1.3:1），
+   表格挂了 prts-table-dark 之后未选中的页签还会吃到它的浅蓝链接色 */
+.od-fade .tabber__tab,
+.od-fade .tabber__tab:visited {
+  color: #333;
+}
+.od-fade .tabber__tab[aria-selected="true"],
+.od-fade .tabber__tab[aria-selected="true"]:visited {
+  color: #004a6e;
+}
+.od-fade .tabber__indicator {
+  background: #004a6e;
+}
+
+/* 「发现新的存档文件」一类折叠面板（.od-appendix）：行内写的蓝 → 白渐变底，文字跟随主题，暗色下白底浅字。
+   行内样式要 !important 才盖得住 */
+html.skin-theme-clientpref-night body .od-appendix {
+  background: linear-gradient(180deg, #0006ff, #202122 20px) !important;
+}
+
+/* 结果栏里用 {{color|white}} 藏在白底上的内容（选中才看得到；pv2 的反白方块靠它和黑方块区分）：
+   暗色下结果栏换成 #202122 底，藏着的字跟着换成底色 */
+html.skin-theme-clientpref-night body .oracle-db-result span[style*="color:white"] {
+  color: #202122 !important;
+}

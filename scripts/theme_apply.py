@@ -1005,7 +1005,8 @@ async def step_dark_mode_fix(c: Ctx) -> None:
 
 @step("arknights_css")
 async def step_arknights_css(c: Ctx) -> None:
-    """皮肤作用域的站内兜底：行内图片垂直居中，对齐 Vector；反馈与建议版头公告框的底色。"""
+    """皮肤作用域的站内兜底：行内图片垂直居中，对齐 Vector；反馈与建议版头公告框的底色；
+    行内底色表头上的折叠按钮跟随文字色。"""
     await c.edit(
         "MediaWiki:Arknights.css",
         with_block("img-align", "arknights.css", NOTE),
@@ -1015,6 +1016,12 @@ async def step_arknights_css(c: Ctx) -> None:
         "MediaWiki:Arknights.css",
         with_block("forum-notice", "arknights_forum_notice.css", NOTE),
         "反馈与建议版头公告框（forum-notice-*）底色跟随主题，暗色下不再浅底浅字",
+    )
+    await c.edit(
+        "MediaWiki:Arknights.css",
+        with_block("toggle-inline-bg", "arknights_toggle.css", NOTE),
+        "行内写了底色的表头 / 单元格里，折叠按钮跟随文字色"
+        "（#0098DC 蓝底上的 [展开] 不再是蓝字）",
     )
 
 
@@ -1342,6 +1349,90 @@ async def step_is_pages(c: Ctx) -> None:
         ),
         "表格底色 / 表头改用语义变量（浅色值不变），暗色下不再是白底",
     )
+
+
+OD_ROOT = "ORACLE DATABASE"
+OD_STYLES = "模板:ORACLE DATABASE/index/styles.css"
+OD_STYLES_TAG = '<templatestyles src="ORACLE DATABASE/index/styles.css" />'
+# 各页 #widget:style 里的这条只认旧版的 <a> 折叠按钮，早已不生效；
+# 换成 styles.css 里对 <button><span> 生效的规则（oracle_db.css）
+_OD_DEAD_TOGGLE = ".od_knowledge a.mw-collapsible-text { color:white;}"
+_OD_DEAD_WIDGET = "{{#widget:style|style=" + _OD_DEAD_TOGGLE + " }}"
+_OD_WIDGET_OPEN = "{{#widget:style|style="
+_OD_APPENDIX = re.compile(
+    r'(<div class="mw-collapsible mw-collapsed)(" id="mw-customcollapsible-[^"]*" '
+    r'style="[^"]*linear-gradient\(180deg, #0006ff, white 20px\))'
+)
+
+
+def od_shared_styles(text: str) -> str | None:
+    """用到 styles.css 里的类的页面都加载它；去掉不生效的折叠按钮规则。
+
+    标签放在原来那段 #widget:style 的位置（或紧贴在它前面），不多出段落。
+    """
+    new = text
+    needs = OD_STYLES_TAG not in new and ("od_knowledge" in new or "od-appendix" in new)
+    tag = OD_STYLES_TAG if needs else ""
+    if _OD_DEAD_WIDGET in new:  # 整段只有这一条
+        new = replace_once(new, _OD_DEAD_WIDGET + ("" if tag else "\n"), tag)
+    elif _OD_WIDGET_OPEN + _OD_DEAD_TOGGLE + " " in new:  # 后面还有别的规则
+        new = replace_once(
+            new, _OD_WIDGET_OPEN + _OD_DEAD_TOGGLE + " ", tag + _OD_WIDGET_OPEN
+        )
+    elif needs:
+        raise SystemExit("没找到放 styles.css 标签的位置（页首的 #widget:style）")
+    return None if new == text else new
+
+
+def od_appendix_class(text: str) -> str | None:
+    new = _OD_APPENDIX.sub(r"\1 od-appendix\2", text)
+    return None if new == text else new
+
+
+OD_PAGE_FIXES: dict[str, tuple[Transform, ...]] = {
+    "ORACLE DATABASE/index/pv4": (
+        # 皮肤的 .mw-heading 是 flex，只给 h2–h4 写了 flex:1，h5 缩成文字宽度，
+        # 「左深右透明」的渐变只剩十几像素，白字落在白底上（pv3 的 h4 同一写法，没事）
+        sub(
+            "h5 {background: linear-gradient(90deg, #2f2f2f, #2220 20%);color: white;"
+            "padding: 0.2em 0.5em !important;}",
+            "h5 {background: linear-gradient(90deg, #2f2f2f, #2220 20%);color: white;"
+            "padding: 0.2em 0.5em !important;flex: 1 1 auto;}",
+        ),
+        sub(
+            '|- style="background:linear-gradient(180deg, #c6c6c6, #2f2f2f);"',
+            '|- class="od-fade" '
+            'style="background:linear-gradient(180deg, #c6c6c6, #2f2f2f);"',
+        ),
+    ),
+}
+
+
+@step("oracle_db")
+async def step_oracle_db(c: Ctx) -> None:
+    """§13.16：ORACLE DATABASE 系列（解密档案）。"""
+    await c.edit(
+        OD_STYLES,
+        with_block("oracle-db", "oracle_db.css", NOTE),
+        "深色附件表的折叠按钮跟随文字色；折叠面板暗色底；结果栏的隐藏字暗色下仍然隐藏",
+    )
+    source = c.live or c.wiki
+    titles = [OD_ROOT]
+    async for ref in source.iter_allpages(namespace=0, prefix=OD_ROOT + "/"):
+        titles.append(ref.title)
+    for title in titles:
+        await c.edit(
+            title,
+            chain(
+                *OD_PAGE_FIXES.get(title, ()),
+                od_appendix_class,
+                od_shared_styles,
+                mark_dark_tables,
+                page_dark(PageDark(sub=False), await _embedded_articles(source, title)),
+            ),
+            "深色底表格挂 prts-table-dark；页内浅色底 / 深色字补暗色值；"
+            "折叠按钮、折叠面板的样式改走 styles.css",
+        )
 
 
 @step("os_branch")

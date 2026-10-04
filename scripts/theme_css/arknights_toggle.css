@@ -1,0 +1,37 @@
+/* 折叠按钮所在的那一格（或它的行、整张表）在行内写了纯色底时，按钮的文字和方括号跟随那一格的文字色。
+   皮肤的按钮是链接色、方括号是次要文字色，都是对着皮肤自己的表头底色配的；底色被行内样式换掉后
+   （站内最常见的是 #0098DC 蓝底白字：浅色下按钮 1.6:1、方括号 1.0:1）就读不出来了。
+   那一格的文字色是作者对着这块底色选的，跟着它，按钮至少和旁边的标题一样清楚。
+   - 底色写在行 / 表格上的，只管透得出这块底色的格子：td，和非 wikitable 的 th
+     （wikitable 的 th 有皮肤自己的底色，盖住了行和表格的，按钮本来就是对的）。
+   - 渐变 / 图片底不管：按钮在最右边，那里的颜色和标题底下的不一定是一回事
+     （「左深右白」的渐变配白字标题，按钮跟成白字反而看不见），这类要改就给那一格挂 prts-cell-dark。
+   - 「哪一格」整段包在 :where() 里不计特指度，只比皮肤的规则高一个 button：模板 / 页面自己给按钮配的颜色
+     （.mw-collapsible-dark 的橙色、TemplateStyles 里的各种）照旧优先。
+   - 按钮文字的颜色不直接改，改它读的变量（核心：.mw-collapsible-text { color: var(--color-progressive) }，
+     悬停 / 按下各有一个）：一处管住三种状态，悬停时只多一条下划线。 */
+:where(
+  :is(th, td, caption, div):is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]),
+  tr:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > * > tr:not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > caption:not([style*="gradient" i], [style*="url(" i])
+) > button.mw-collapsible-toggle {
+  color: inherit;
+  --color-progressive: currentColor;
+  --color-progressive--hover: currentColor;
+  --color-progressive--active: currentColor;
+}
+:where(
+  :is(th, td, caption, div):is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]),
+  tr:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > * > tr:not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > caption:not([style*="gradient" i], [style*="url(" i])
+) > button.mw-collapsible-toggle-default::before,
+:where(
+  :is(th, td, caption, div):is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]),
+  tr:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > * > tr:not([style*="gradient" i], [style*="url(" i]) > :is(td, table:not(.wikitable) > * > tr > th):not([style*="gradient" i], [style*="url(" i]),
+  table:is([style*="background" i], [bgcolor]):not([style*="gradient" i], [style*="url(" i]) > caption:not([style*="gradient" i], [style*="url(" i])
+) > button.mw-collapsible-toggle-default::after {
+  color: inherit;
+}

@@ -1,0 +1,35 @@
+/* 模板:危机合约词条：合约矩阵里图标之间的连线。
+   连线是按 50px 图标、图标间距 = 两个单元格内边距 + 一条边线 画的绝对定位小条，
+   位置留在模板的行内样式里，长度放在这里：它跟着皮肤的单元格内边距走。
+   见 prts-skin-migration/migration/contract-rune/README.md */
+.prts-cc-rune-line-down {
+  height: 18px;
+}
+.prts-cc-rune-line-right {
+  width: 27px;
+}
+
+/* 新皮肤 .wikitable 的单元格内边距是 0.45em 0.7em（Vector 0.2em 0.4em）：
+   横向间距多 0.6em；竖向多 0.5em，加上行盒的字体差异实测也是 0.6em。
+   连线按差值补长，接到和 Vector 相同的位置 */
+body.skin-arknights .prts-cc-rune-line-down {
+  height: calc(18px + 0.6em);
+}
+body.skin-arknights .prts-cc-rune-line-right {
+  width: calc(27px + 0.6em);
+}
+
+/* 以下两条认合约矩阵表格上的 prts-cc-matrix 类（机器人加的，表格同时包在 .ak-table-scroll 横滑外壳里）。
+
+   新皮肤的 .mw-file-element { max-width:100% } 让单元格里的图标可以被压缩，表宽又是 100%，
+   图标会先被压小（手机上压到 0），连线全部对不上：矩阵里的图标保持原尺寸，放不下就在外壳里横滑。
+   没有连线的小表（轮换地点）不带这个类，照旧随宽度缩 */
+body.skin-arknights .prts-cc-matrix .prts-cc-rune-icon {
+  width: max-content;
+}
+
+/* 表格按最小宽度排版时，行首的「等级 N」会折成一字一行（3 行高过图标），把整行撑高，
+   竖向连线就够不到下一行的图标。行首格不折行，行高回到由图标决定 */
+body.skin-arknights .prts-cc-matrix > tbody > tr > td:first-child:not([colspan]) {
+  white-space: nowrap;
+}

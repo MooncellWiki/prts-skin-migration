@@ -1,4 +1,4 @@
-<includeonly>{{#if:{{{2|}}}|{{#invoke:splitFormat|apply_template2|str={{{2|}}}|sep0=,|sep1=:|sep2=|template={{{template|首页/亮点干员卡/sandbox}}}|other={{{other|}}}{{#switch:{{{#userparam|}}}|shop=:badge=兑:sub=高级凭证兑换|shop2=:badge=兑:badgetype=kernel:sub=中坚兑换|#default=}}}}}}</includeonly><noinclude>
+<includeonly>{{#if:{{{2|}}}|{{#invoke:splitFormat|apply_template2|str={{{2|}}}|sep0=,|sep1=:|sep2=|template={{{template|首页/亮点干员卡/sandbox}}}|other={{{other|}}}{{#switch:{{{#userparam|}}}|shop=:badge=兑:sub=高级凭证|shop2=:badge=兑:badgetype=kernel:sub=中坚兑换|#default=}}}}}}</includeonly><noinclude>
 把逗号分隔的干员名单拆成一张张干员卡，<code>#ask</code> 的结果直接喂给它。
 <code>#userparam</code> 取 <code>shop</code> / <code>shop2</code> 时自动带「兑」角标：<code>shop</code>（高级凭证兑换）黄，<code>shop2</code>（中坚兑换）中坚蓝。
 
